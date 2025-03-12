@@ -4,6 +4,7 @@ license="${mod_license}"
 [[mods]]
 modId="${mod_id}"
 version="${mod_version}"
+logoFile="icon.png"
 displayName="${mod_name}"
 authors="${mod_authors}"
 description='''${mod_description}'''
