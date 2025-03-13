@@ -10,4 +10,14 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }
 
-rootProject.name = 'CrystalFracture'
+include(":CrystalFracture")
+var projectName = [
+        "MapShow",
+        "ActionGuide",
+        "BendsAnimator",
+        "CrystalLib",
+        "FractureClient",
+        "HazeDungeon",
+        "NuQuest"
+]
+projectName.forEach { name -> include ":" + name }
