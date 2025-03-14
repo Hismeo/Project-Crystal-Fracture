@@ -6,6 +6,8 @@
   "mixins": [
   ],
   "client": [
+    "ModelPartCubeMixin",
+    "ModelPartMixin"
   ],
   "injectors": {
     "defaultRequire": 1
