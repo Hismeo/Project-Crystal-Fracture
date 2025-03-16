@@ -1,4 +1,4 @@
-package org.hismeo.bendsanimator.mixin;
+package org.hismeo.bendsanimator.client.mixin;
 
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ModelPart.class)
 public class ModelPartMixin {
     @Shadow public float xScale;
-
     @Shadow public float yScale;
 
     @Shadow public float zScale;

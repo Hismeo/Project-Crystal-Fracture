@@ -1,4 +1,4 @@
-package org.hismeo.bendsanimator;
+package org.hismeo.bendsanimator.client;
 
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;

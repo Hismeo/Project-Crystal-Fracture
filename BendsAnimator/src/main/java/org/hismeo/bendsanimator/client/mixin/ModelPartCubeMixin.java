@@ -1,4 +1,4 @@
-package org.hismeo.bendsanimator.mixin;
+package org.hismeo.bendsanimator.client.mixin;
 
 import net.minecraft.client.model.geom.ModelPart;
 import org.spongepowered.asm.mixin.Mixin;

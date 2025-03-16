@@ -16,9 +16,8 @@ java {
 legacyForge {
     version = "${minecraft_version}-${forge_version}"
 
-    if (Boolean.getBoolean(enableAccessTransformers)){
-        accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
-    }
+    accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
+
 
     if (mapping_channel=="parchment"){
         parchment {
