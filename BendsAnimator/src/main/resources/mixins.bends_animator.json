@@ -5,7 +5,26 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "ModelPartCubeMixin",
-    "ModelPartMixin"
+    "ModelPartMixin",
+    "model.AxolotlModelMixin",
+    "model.BeeModelMixin",
+    "model.BoatModelMixin",
+    "model.ChickenModelMixin",
+    "model.DragonModelMixin",
+    "model.ElytraModelMixin",
+    "model.FoxModelMixin",
+    "model.HierarchicalModelMixin",
+    "model.HoglinModelMixin",
+    "model.HorseModelMixin",
+    "model.HumanoidModelMixin",
+    "model.LlamaModelMixin",
+    "model.OcelotModelMixin",
+    "model.QuadruepModelMixin",
+    "model.RabbitModelMixin",
+    "model.RaftModelMixin",
+    "model.ShulkerModelMixin",
+    "model.TadpoleModelMixin",
+    "model.WolfModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
