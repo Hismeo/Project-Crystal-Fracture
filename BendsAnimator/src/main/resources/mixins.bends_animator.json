@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "EntityModelMixin",
+    "EntityRendererMixin",
     "ModelPartCubeMixin",
     "ModelPartMixin",
     "model.AxolotlModelMixin",
