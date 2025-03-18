@@ -4,6 +4,7 @@
   "package": "org.hismeo.bendsanimator.client.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "EntityModelMixin",
     "ModelPartCubeMixin",
     "ModelPartMixin",
     "model.AxolotlModelMixin",

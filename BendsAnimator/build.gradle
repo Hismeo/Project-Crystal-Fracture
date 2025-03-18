@@ -49,9 +49,14 @@ repositories {
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url "https://maven.shedaniel.me/" }
     maven { url 'https://jitpack.io' }
+    maven {
+        name "KosmX's maven"
+        url 'https://maven.kosmx.dev/'
+    }
 }
 
 dependencies {
+    compileOnly "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
     compileOnly 'org.jetbrains:annotations:24.0.1'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

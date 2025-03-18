@@ -18,16 +18,17 @@ public class ForgeEvent {
     @SubscribeEvent
     public static void testAnimator(ClientChatEvent event) {
         if (event.getOriginalMessage().equals("attack")){
-            ModelPart modelPart = ModelUtil.getEntityModelPart(Minecraft.getInstance().player);
-            modelPart.getChild("head").offsetScale(new Vector3f(4f));
+            Minecraft.getInstance().player.yHeadRot = 0;
+//            ModelPart modelPart = ModelUtil.getEntityModelPart(Minecraft.getInstance().player);
+//            modelPart.getChild("head").offsetScale(new Vector3f(4f));
         }
     }
 
     @SubscribeEvent
     public static void hitEntity(LivingHurtEvent event){
         ModelPart modelPart = ModelUtil.getEntityModelPart(event.getEntity());
-        if (modelPart.hasChild("head")){
-            modelPart.getChild("head").offsetScale(new Vector3f(4f));
+        if (modelPart.hasChild("right_arm")){
+            modelPart.getChild("right_arm").xRot = 10;
         }
     }
 }
