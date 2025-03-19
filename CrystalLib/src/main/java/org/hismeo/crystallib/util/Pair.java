@@ -1,22 +1,6 @@
 package org.hismeo.crystallib.util;
 
-public class Pair<F, S> {
-    private final F first;
-    private final S second;
-
-    public Pair(F first, S second) {
-        this.first = first;
-        this.second = second;
-    }
-
-    public F getFirst() {
-        return first;
-    }
-
-    public S getSecond() {
-        return second;
-    }
-
+public record Pair<F, S>(F first, S second) {
     public Pair<S, F> swap() {
         return new Pair<>(this.second, this.first);
     }
