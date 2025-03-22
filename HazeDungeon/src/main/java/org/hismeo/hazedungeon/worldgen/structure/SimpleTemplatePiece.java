@@ -2,6 +2,7 @@ package org.hismeo.hazedungeon.worldgen.structure;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Rotation;
@@ -20,6 +21,11 @@ public class SimpleTemplatePiece extends TemplateStructurePiece {
 
     public SimpleTemplatePiece(StructureTemplateManager structureTemplateManager, CompoundTag tag) {
         super(ModStructures.SIMPLE_TEMPLATE_PIECE.get(), tag, structureTemplateManager, location -> makeSettings(tag.getBoolean("OW"), tag.getBoolean("IE"), Rotation.valueOf(tag.getString("Rot"))));
+    }
+
+    @Override
+    protected ResourceLocation makeTemplateLocation() {
+        return HazeDungeon.asResource("simple_template/" + templateName);
     }
 
     private static StructurePlaceSettings makeSettings(boolean overwrite, boolean ignoreEntities, Rotation rotation) {
