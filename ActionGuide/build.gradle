@@ -53,6 +53,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(':CrystalLib'))
     compileOnly 'org.jetbrains:annotations:24.0.1'
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
