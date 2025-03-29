@@ -21,17 +21,15 @@ subprojects {
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
         mappings loom.layered {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_mappings}@zip")
+//            parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_mappings}@zip")
         }
         forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
-
-        compileOnly 'org.jetbrains:annotations:24.0.1'
     }
 
     java {
         withSourcesJar()
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
 
         toolchain.languageVersion = JavaLanguageVersion.of(17)
     }
