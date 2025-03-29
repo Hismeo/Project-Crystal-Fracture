@@ -1,11 +1,46 @@
 plugins {
     id 'idea'
-    id "dev.architectury.loom" version "1.9.428"
-//    id 'net.neoforged.moddev.legacyforge' version '2.0.78'
+    id "dev.architectury.loom" version "1.9.428" apply false
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+subprojects {
+    apply plugin: "dev.architectury.loom"
 
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    repositories {
+        maven { url "https://maven.parchmentmc.org" }
+        maven { url "https://maven.theillusivec4.top/" }
+        maven { url "https://maven.shedaniel.me/" }
+        maven { url "https://jitpack.io" }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.minecraft_version}"
+        mappings loom.layered {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_mappings}@zip")
+        }
+        forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+        compileOnly 'org.jetbrains:annotations:24.0.1'
+    }
+
+    java {
+        withSourcesJar()
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+
+        toolchain.languageVersion = JavaLanguageVersion.of(17)
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.encoding = 'UTF-8'
+        it.options.release = 17
+    }
+}
 
 idea {
     module {
