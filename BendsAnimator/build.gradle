@@ -1,6 +1,7 @@
 plugins {
     id 'idea'
-    id 'net.neoforged.moddev.legacyforge' version '2.0.78'
+    id "dev.architectury.loom" version "1.9.428"
+//    id 'net.neoforged.moddev.legacyforge' version '2.0.78'
 }
 
 group = mod_group_id
@@ -13,37 +14,46 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
 }
-legacyForge {
-    version = "${minecraft_version}-${forge_version}"
 
-    accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
-
-
-    if (mapping_channel=="parchment"){
-        parchment {
-            minecraftVersion = '1.20.1'
-            mappingsVersion = '2023.09.03'
-        }
-    }
-
-    runs {
-        client {
-            client()
-        }
-        data {
-            data()
-        }
-        server {
-            server()
-        }
-    }
-
-    mods {
-        testproject {
-            sourceSet sourceSets.main
-        }
+loom {
+    forge {
+        mixinConfigs = [
+                "mixins.${mod_id}.json"
+        ]
     }
 }
+
+//legacyForge {
+//    version = "${minecraft_version}-${forge_version}"
+//
+//    accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
+//
+//
+//    if (mapping_channel=="parchment"){
+//        parchment {
+//            minecraftVersion = '1.20.1'
+//            mappingsVersion = '2023.09.03'
+//        }
+//    }
+//
+//    runs {
+//        client {
+//            client()
+//        }
+//        data {
+//            data()
+//        }
+//        server {
+//            server()
+//        }
+//    }
+//
+//    mods {
+//        testproject {
+//            sourceSet sourceSets.main
+//        }
+//    }
+//}
 
 repositories {
     maven { url = "https://maven.theillusivec4.top/" }
@@ -56,17 +66,20 @@ repositories {
 }
 
 dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings(loom.officialMojangMappings())
+    forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
     compileOnly "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
 
     implementation(project(':CrystalLib'))
     compileOnly 'org.jetbrains:annotations:24.0.1'
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
-mixin {
-    add sourceSets.main, "mixins.${mod_id}.refmap.json"
-    config "mixins.${mod_id}.json"
-}
+//mixin {
+//    add sourceSets.main, "mixins.${mod_id}.refmap.json"
+//    config "mixins.${mod_id}.json"
+//}
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
