@@ -5,10 +5,42 @@ base {
     archivesName = mod_name
 }
 
-loom {
-    forge {
-        mixinConfigs("mixins.${mod_id}.json")
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
+
+    if (Boolean.getBoolean(enableAccessTransformers)){
+        accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
     }
+
+    if (mapping_channel=="parchment"){
+        parchment {
+            minecraftVersion = '1.20.1'
+            mappingsVersion = '2023.09.03'
+        }
+    }
+
+    runs {
+        client {
+            client()
+        }
+        data {
+            data()
+        }
+        server {
+            server()
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "mixins.${mod_id}.json"
 }
 
 dependencies {

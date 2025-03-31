@@ -1,14 +1,10 @@
 plugins {
     id 'idea'
-    id "dev.architectury.loom" version "1.9.428" apply false
+    id 'net.neoforged.moddev.legacyforge' version '2.0.80' apply false
 }
 
 subprojects {
-    apply plugin: "dev.architectury.loom"
-
-    loom {
-        silentMojangMappingsLicense()
-    }
+    apply plugin: "net.neoforged.moddev.legacyforge"
 
     repositories {
         maven { url "https://maven.parchmentmc.org" }
@@ -18,12 +14,7 @@ subprojects {
     }
 
     dependencies {
-        minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings loom.layered {
-            officialMojangMappings()
-//            parchment("org.parchmentmc.data:parchment-${project.minecraft_version}:${project.parchment_mappings}@zip")
-        }
-        forge "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+        annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     }
 
     java {
