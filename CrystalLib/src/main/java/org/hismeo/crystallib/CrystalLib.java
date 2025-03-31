@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 public class CrystalLib {
     public static final String MODID = "crystal_lib";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+
     public CrystalLib(){
         IEventBus modBusEvent = FMLJavaModLoadingContext.get().getModEventBus();
     }

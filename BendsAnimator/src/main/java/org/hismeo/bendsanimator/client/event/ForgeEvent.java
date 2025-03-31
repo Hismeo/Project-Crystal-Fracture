@@ -6,4 +6,5 @@ import org.hismeo.bendsanimator.client.BendsAnimator;
 
 @Mod.EventBusSubscriber(modid = BendsAnimator.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ForgeEvent {
+
 }
