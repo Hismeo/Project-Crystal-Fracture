@@ -42,6 +42,7 @@ public class TrailUtil {
             float width0 = width / trails.length * (i - 1);
             float width1 = width / trails.length * i;
 
+//            RenderUtil.drawSameXQuad();
             vertexConsumer.vertex(matrix4f, (float) x1, (float) y1, (float) z1 - width0)
                     .color(1, 1, 1, 0.5f)
                     .endVertex();
