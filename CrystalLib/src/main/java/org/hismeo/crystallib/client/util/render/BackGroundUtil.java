@@ -8,7 +8,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.CubeMap;
 import net.minecraft.client.renderer.PanoramaRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import org.hismeo.crystallib.api.TrailSaver;
+
+import static net.minecraft.util.FastColor.ARGB32.color;
 
 public class BackGroundUtil {
     private static final PanoramaRenderer panoramaRenderer = new PanoramaRenderer(new CubeMap(new ResourceLocation("textures/gui/title/background/panorama")));
@@ -19,7 +22,7 @@ public class BackGroundUtil {
                 panoramaRenderer.render(partialTick, 1.0f);
             }
             if (!(screen instanceof TitleScreen)){
-                guiGraphics.fillGradient(0, 0, width, height, -1072689136, -804253680);
+                guiGraphics.fillGradient(0, 0, width, height, color(64,0,0,0), color(32,0,0,0));
             }
         }
     }

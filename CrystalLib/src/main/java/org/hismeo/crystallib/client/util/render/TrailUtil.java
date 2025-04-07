@@ -7,25 +7,29 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+import org.hismeo.crystallib.CrystalLib;
+import org.hismeo.crystallib.client.util.render.vertex.VertexUtil;
 import org.joml.Matrix4f;
 
+import java.util.Arrays;
+
 public class TrailUtil {
-    public void renderTrail(Vec3[] trails, Entity entity, Camera camera, float width, PoseStack poseStack, MultiBufferSource multiBufferSource, RenderType renderType) {
-        renderTrail(trails, entity.position(), camera.getPosition(), width, poseStack, multiBufferSource, renderType);
+    public void renderTrail(Vec3[] trails, Entity entity, float width, PoseStack poseStack, MultiBufferSource multiBufferSource, RenderType renderType) {
+        renderTrail(trails, entity.position(), width, poseStack, multiBufferSource, renderType);
     }
 
-    public void renderTrail(Vec3[] trails, Vec3 entityPosition, Vec3 cameraPosition, float width, PoseStack poseStack, MultiBufferSource multiBufferSource, RenderType renderType) {
-//        poseStack.pushPose();
-//        poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-//        poseStack.translate(entityPosition.x, entityPosition.y, entityPosition.z());
+    public void renderTrail(Vec3[] trails, Vec3 entityPosition, float width, PoseStack poseStack, MultiBufferSource multiBufferSource, RenderType renderType) {
         Matrix4f matrix4f = poseStack.last().pose();
         VertexConsumer vertexConsumer = multiBufferSource.getBuffer(renderType);
         renderTrail(trails, entityPosition, width, vertexConsumer, matrix4f);
-//        poseStack.popPose();
     }
 
     public void renderTrail(Vec3[] trails, Vec3 position, float width, VertexConsumer vertexConsumer, Matrix4f matrix4f) {
-        if (trails == null) return;
+        if (trails == null) {
+            CrystalLib.LOGGER.warn("Trails is null!");
+            return;
+        }
+
         Vec3 pos0;
         Vec3 pos1;
 
@@ -42,32 +46,15 @@ public class TrailUtil {
             float width0 = width / trails.length * (i - 1);
             float width1 = width / trails.length * i;
 
-//            RenderUtil.drawSameXQuad();
-            vertexConsumer.vertex(matrix4f, (float) x1, (float) y1, (float) z1 - width0)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
-            vertexConsumer.vertex(matrix4f, (float) x1, (float) y1, (float) z1 + width0)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
-            vertexConsumer.vertex(matrix4f, (float) x2, (float) y2, (float) z2 + width1)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
-            vertexConsumer.vertex(matrix4f, (float) x2, (float) y2, (float) z2 - width1)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x1, y1, z1 - width0, 1, 1, 1, 0.5f);
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x1, y1, z1 + width0, 1, 1, 1, 0.5f);
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x1, y2, z2 + width1, 1, 1, 1, 0.5f);
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x1, y2, z2 - width1, 1, 1, 1, 0.5f);
 
-            vertexConsumer.vertex(matrix4f, (float) x1 - width0, (float) y1, (float) z1)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
-            vertexConsumer.vertex(matrix4f, (float) x1 + width0, (float) y1, (float) z1)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
-            vertexConsumer.vertex(matrix4f, (float) x2 + width1, (float) y2, (float) z2)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
-            vertexConsumer.vertex(matrix4f, (float) x2 - width1, (float) y2, (float) z2)
-                    .color(1, 1, 1, 0.5f)
-                    .endVertex();
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x1 - width0, y1, z1, 1, 1, 1, 0.5f);
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x1 + width0, y1, z1, 1, 1, 1, 0.5f);
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x2 + width1, y2, z1, 1, 1, 1, 0.5f);
+            VertexUtil.drawVertexColor(vertexConsumer, matrix4f, x2 + width1, y2, z1, 1, 1, 1, 0.5f);
         }
     }
 }
