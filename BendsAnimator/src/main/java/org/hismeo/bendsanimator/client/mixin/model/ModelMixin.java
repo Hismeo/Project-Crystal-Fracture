@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
         TadpoleModel.class,
         WolfModel.class
 })
-public class AxolotlModelMixin implements IEntityModelGetter {
+public class ModelMixin implements IEntityModelGetter {
     @Unique
     private ModelPart root;
     @Override

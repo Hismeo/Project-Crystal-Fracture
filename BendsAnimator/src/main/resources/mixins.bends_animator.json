@@ -8,9 +8,9 @@
     "EntityRendererMixin",
     "ModelPartCubeMixin",
     "ModelPartMixin",
-    "model.AxolotlModelMixin",
+    "model.ModelMixin",
     "model.HierarchicalModelMixin",
-    "model.HumanoidModelMixin",
+    "model.HumanoidModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
