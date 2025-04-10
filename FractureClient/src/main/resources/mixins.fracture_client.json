@@ -7,12 +7,17 @@
   ],
   "client": [
     "AbstractSelectionListMixin",
+    "CreateWorldScreenMixin",
+    "ExperimentsScreenMixin",
     "ScreenMixin",
+    "ScrollPanelMixin",
+    "TabNavigationBarMixin",
     "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "refmap": "mixins.fracture_client.refmap.json",
-  "mixinextras": {"minVersion": "0.5.0-rc.2"}
+  "mixinextras": {
+    "minVersion": "0.5.0-rc.2"}
 }

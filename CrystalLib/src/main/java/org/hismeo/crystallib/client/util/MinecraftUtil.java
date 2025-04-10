@@ -31,4 +31,8 @@ public class MinecraftUtil {
     public static ResourceManager getResourceManager(){
         return getMinecraft().getResourceManager();
     }
+
+    public static float getPartialTick(){
+        return getMinecraft().getPartialTick();
+    }
 }
