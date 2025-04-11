@@ -1,4 +1,4 @@
-**[整合包由破碎工坊云计算赞助开发，优惠码：KalebLangley](https://www.crash.work/cart?action=configureproduct&pid=1310)**
+**[整合包由破碎工坊云计算赞助开发，优惠码：KalebLangley](https://www.crash.work/buy/KalebLangley)**
 
 # 代号：结晶破碎
 这是一个整合包，一个拥有空岛，高机动，肉鸽，俯视角，动作，冒险要素的整合包。
