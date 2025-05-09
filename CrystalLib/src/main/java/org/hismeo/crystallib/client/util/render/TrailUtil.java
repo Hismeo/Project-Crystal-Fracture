@@ -24,6 +24,7 @@ public class TrailUtil {
         renderTrail(trails, entityPosition, width, vertexConsumer, matrix4f);
     }
 
+    // TODO 将枪械的新轨迹应用于此
     public void renderTrail(Vec3[] trails, Vec3 position, float width, VertexConsumer vertexConsumer, Matrix4f matrix4f) {
         if (trails == null) {
             CrystalLib.LOGGER.warn("Trails is null!");

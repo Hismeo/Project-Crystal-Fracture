@@ -6,13 +6,6 @@
   "mixins": [
   ],
   "client": [
-    "AbstractSelectionListMixin",
-    "CreateWorldScreenMixin",
-    "ExperimentsScreenMixin",
-    "ScreenMixin",
-    "ScrollPanelMixin",
-    "TabNavigationBarMixin",
-    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

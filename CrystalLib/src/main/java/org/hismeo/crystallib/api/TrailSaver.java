@@ -2,6 +2,17 @@ package org.hismeo.crystallib.api;
 
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
+
+// TODO 将枪械的新轨迹应用于此
 public interface TrailSaver {
-    Vec3[] getPastPositions();
+    List<Vec3> trail = new ArrayList<>();
+
+    default List<Vec3> getPastPositions(){
+        return trail;
+    }
+
+    default void savePos(){
+    }
 }
