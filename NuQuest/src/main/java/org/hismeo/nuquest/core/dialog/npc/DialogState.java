@@ -1,19 +1,19 @@
-package org.hismeo.nuquest.core.dialogue.npc;
+package org.hismeo.nuquest.core.dialog.npc;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import org.hismeo.nuquest.NuQuest;
 
-public class DialogueState {
+public class DialogState {
     private String state;
 
-    public DialogueState(String state) {
+    public DialogState(String state) {
         this.state = state;
     }
 
-    public DialogueState empty() {
-        return new DialogueState(null);
+    public DialogState empty() {
+        return new DialogState(null);
     }
 
     public String getState() {

@@ -1,4 +1,4 @@
-package org.hismeo.nuquest.core.dialogue;
+package org.hismeo.nuquest.core.dialog;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -8,14 +8,15 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
+import org.hismeo.nuquest.core.data.dialog.DialogManager;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class DialogueArgument implements ArgumentType<String> {
-    public static DialogueArgument dialogue() {
-        return new DialogueArgument();
+public class DialogArgument implements ArgumentType<String> {
+    public static DialogArgument dialogue() {
+        return new DialogArgument();
     }
 
     @Override
@@ -29,7 +30,7 @@ public class DialogueArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return SharedSuggestionProvider.suggest(DialogueManager.getDialogueMapView(), builder);
+        return SharedSuggestionProvider.suggest(DialogManager.getDialogueMapView(), builder);
     }
 
     @Override
