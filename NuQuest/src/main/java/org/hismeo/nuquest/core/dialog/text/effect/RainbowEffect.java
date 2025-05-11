@@ -4,14 +4,15 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
 
-public class TypewriterEffect implements ITextEffect {
+public class RainbowEffect implements ITextEffect {
     private final float speed;
-    public TypewriterEffect(){
+    public RainbowEffect(){
         this.speed = 1.0f;
     }
-    public TypewriterEffect(float speed){
+    public RainbowEffect(float speed){
         this.speed = speed;
     }
+
     @Override
     public void effectApply(GuiGraphics guiGraphics, Component text, float partialTick, int textHeight, int textWeight) {
 
@@ -19,6 +20,6 @@ public class TypewriterEffect implements ITextEffect {
 
     @Override
     public String getEffect() {
-        return "typewriter";
+        return "rainbow";
     }
 }

@@ -9,7 +9,11 @@ import net.minecraft.network.chat.Component;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DialogScreen extends Screen {
+    protected final List<Button> optionalButton = new ArrayList<>();
     private final DialogDefinition dialogDefinition;
     private final int maxPage;
     private int page;
@@ -27,11 +31,8 @@ public class DialogScreen extends Screen {
 
     @Override
     protected void init() {
-        ImageButton flipButton = new ImageButton(this.width - 40, this.height - 40, 20, 20, 0, 0, 20, Button.ACCESSIBILITY_TEXTURE, 32, 64, this::tryFlip);
-        this.addWidget(flipButton);
-        if (canFlip()){
-            this.addRenderableOnly(flipButton);
-        }
+        ImageButton flipButton = this.addRenderableWidget(new ImageButton(this.width - 40, this.height - 40, 20, 20, 0, 0, 20, Button.ACCESSIBILITY_TEXTURE, 32, 64, this::tryFlip));
+        optionalButton.add(flipButton);
     }
 
     @Override
@@ -39,10 +40,15 @@ public class DialogScreen extends Screen {
         int dialogueHeight = this.height / 3 * 2;
         guiGraphics.fillGradient(0, dialogueHeight, this.width, this.height, -1073741824, -1073741824);
 
+        String title = dialogDefinition.dialogTexts()[page].title();
         String text = dialogDefinition.dialogTexts()[page].text();
-        guiGraphics.drawString(this.font, Component.literal(text), 20, dialogueHeight + 20 + page * this.font.lineHeight, 0xFFFFFFFF);
-        if (canFlip()) {
-            super.render(guiGraphics, mouseX, mouseY, partialTick);
+        //  + page * this.font.lineHeight
+        guiGraphics.drawString(this.font, Component.translatable(title), 10, dialogueHeight + 4, 0xFFFFFFFF);
+        guiGraphics.fill(8, dialogueHeight + 4 + 10, 8 + 4 + this.font.width(title), dialogueHeight + 5 + 10, 0xFFFFFFFF);
+        guiGraphics.drawString(this.font, Component.translatable(text), 20, dialogueHeight + 25, 0xFFFFFFFF);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        if (!canFlip()) {
+            optionalButton.forEach(button -> button.active = false);
         }
     }
 
