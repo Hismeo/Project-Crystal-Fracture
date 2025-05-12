@@ -25,7 +25,8 @@ public class DialogScreen extends Screen {
     private final DialogText[] dialogTexts;
     private String title;
     private ResourceLocation imagePath;
-    private String text;
+    private String originText;
+    private String[] splitText;
     private SoundGroup soundGroup;
     private ITextEffect textEffect;
     private final int maxPage;
@@ -57,13 +58,15 @@ public class DialogScreen extends Screen {
         int dialogueHeight = this.height / 3 * 2;
         guiGraphics.fillGradient(0, dialogueHeight, this.width, this.height, -1073741824, -1073741824);
 
-        //  + page * this.font.lineHeight
-        guiGraphics.blit(this.imagePath, 0, dialogueHeight - 64, 0, 0, 64, 64, 64, 64);
+        //
+        guiGraphics.blit(this.imagePath, 0, dialogueHeight - 64, 64, 64, 0, 0, 64, 64, 64, 64);
         if (title != null) {
             guiGraphics.drawString(this.font, Component.translatable(this.title), 10, dialogueHeight + 4, 0xFFFFFFFF);
             guiGraphics.fill(8, dialogueHeight + 4 + 10, 8 + 4 + this.font.width(title), dialogueHeight + 5 + 10, 0xFFFFFFFF);
         }
-        guiGraphics.drawString(this.font, Component.translatable(this.text), 20, dialogueHeight + 25, 0xFFFFFFFF);
+        for (int i = 0; i < this.splitText.length; i++) {
+            guiGraphics.drawString(this.font, Component.translatable(this.splitText[i]), 20, dialogueHeight + 25 + (i * this.font.lineHeight + 4), 0xFFFFFFFF);
+        }
         if (!canFlip()) {
             optionalButton.forEach(button -> button.active = false);
         }
@@ -90,7 +93,8 @@ public class DialogScreen extends Screen {
         if (initPage != page) {
             this.title = dialogTexts[page].title();
             this.imagePath = dialogTexts[page].imagePath();
-            this.text = dialogTexts[page].text();
+            this.originText = dialogTexts[page].text();
+            this.splitText = originText.split("\n");
             this.soundGroup = dialogTexts[page].soundGroup();
             this.textEffect = dialogTexts[page].textEffect();
             if (soundGroup != null) soundGroup.playSound(getLevel());
