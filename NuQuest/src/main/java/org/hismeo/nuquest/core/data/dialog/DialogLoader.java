@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.hismeo.crystallib.util.JsonUtil.*;
+
 public class DialogLoader extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
@@ -74,8 +76,8 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             } else if (soundElement.isJsonObject()) {
                 JsonObject soundObject = soundElement.getAsJsonObject();
                 soundId = soundObject.get("sound").getAsString();
-                volume = tryGetFloat(soundObject, "volume");
-                pitch = tryGetFloat(soundObject, "pitch");
+                volume = tryGetFloat(soundObject, "volume", volume);
+                pitch = tryGetFloat(soundObject, "pitch", pitch);
             }
             return new SoundGroup(soundId, volume, pitch);
         }
@@ -84,7 +86,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
 
     private static ImageGroup getImageGroup(JsonElement imageElement) {
         ResourceLocation atlasLocation = null;
-        EvalInt x = new EvalInt(0), y = new EvalInt(0);
+        EvalInt x = new EvalInt(0), y = new EvalInt("(screenheight / 3 * 2) - 64");
         int width = 64, height = 64;
         float uOffset = 0, vOffset = 0;
         int uWidth = 64, vHeight = 64;
@@ -97,47 +99,16 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
                 atlasLocation = new ResourceLocation(imageObject.get("image").getAsString());
                 x = EvalInt.fromJson(imageObject.get("x"));
                 y = EvalInt.fromJson(imageObject.get("y"));
-                width = tryGetInt(imageObject, "width");
-                height = tryGetInt(imageObject, "height");
+                width = tryGetInt(imageObject, "width", width);
+                height = tryGetInt(imageObject, "height", height);
                 uOffset = tryGetFloat(imageObject, "uOffset");
                 vOffset = tryGetFloat(imageObject, "vOffset");
-                uWidth = tryGetInt(imageObject, "uWidth");
-                vHeight = tryGetInt(imageObject, "vHeight");
-                textureWidth = tryGetInt(imageObject, "textureWidth");
-                textureHeight = tryGetInt(imageObject, "textureHeight");
+                uWidth = tryGetInt(imageObject, "uWidth", uWidth);
+                vHeight = tryGetInt(imageObject, "vHeight", vHeight);
+                textureWidth = tryGetInt(imageObject, "textureWidth", textureWidth);
+                textureHeight = tryGetInt(imageObject, "textureHeight", textureHeight);
             }
             return new ImageGroup(atlasLocation, x, y, width, height, uOffset, vOffset, uWidth, vHeight, textureWidth, textureHeight);
-        }
-        return null;
-    }
-
-    private static int tryGetInt(JsonObject jsonObject, String name) {
-        return tryGetInt(jsonObject, name, 0);
-    }
-
-    private static int tryGetInt(JsonObject jsonObject, String name, int defaultValue) {
-        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsInt();
-    }
-
-    private static float tryGetFloat(JsonObject jsonObject, String name) {
-        return tryGetFloat(jsonObject, name, 0);
-    }
-
-    private static float tryGetFloat(JsonObject jsonObject, String name, float defaultValue) {
-        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsFloat();
-    }
-
-    private static String tryGetString(JsonObject jsonObject, String name) {
-        return tryGetString(jsonObject, name, null);
-    }
-
-    private static String tryGetString(JsonObject jsonObject, String name, String defaultValue) {
-        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsString();
-    }
-
-    private static JsonElement tryGet(JsonObject jsonObject, String name) {
-        if (jsonObject.has(name)) {
-            return jsonObject.get(name);
         }
         return null;
     }
