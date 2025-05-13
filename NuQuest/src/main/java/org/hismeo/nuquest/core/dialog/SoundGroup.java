@@ -6,7 +6,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.hismeo.crystallib.client.util.MinecraftUtil;
+import org.hismeo.crystallib.util.client.MinecraftUtil;
 
 public class SoundGroup {
     private final SoundEvent soundEvent;

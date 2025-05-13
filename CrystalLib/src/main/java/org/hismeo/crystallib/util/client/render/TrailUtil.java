@@ -1,17 +1,14 @@
-package org.hismeo.crystallib.client.util.render;
+package org.hismeo.crystallib.util.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.hismeo.crystallib.CrystalLib;
-import org.hismeo.crystallib.client.util.render.vertex.VertexUtil;
+import org.hismeo.crystallib.util.client.render.vertex.VertexUtil;
 import org.joml.Matrix4f;
-
-import java.util.Arrays;
 
 public class TrailUtil {
     public void renderTrail(Vec3[] trails, Entity entity, float width, PoseStack poseStack, MultiBufferSource multiBufferSource, RenderType renderType) {

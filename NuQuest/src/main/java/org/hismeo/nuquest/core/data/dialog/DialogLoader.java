@@ -5,8 +5,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
 import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.text.DialogText;
@@ -54,13 +56,12 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
     private static @NotNull DialogText getDialogText(JsonElement dialogTextElement) {
         JsonObject dialogTextObject = dialogTextElement.getAsJsonObject();
         String title = tryGetString(dialogTextObject, "title");
-        String image = tryGetString(dialogTextObject, "image");
+        ImageGroup imageGroup = getImageGroup(tryGet(dialogTextObject, "imageGroup"));
         String text = tryGetString(dialogTextObject, "text");
-
-        SoundGroup soundGroup = getSoundGroup(tryGet(dialogTextObject, "soundEvent"));
+        SoundGroup soundGroup = getSoundGroup(tryGet(dialogTextObject, "soundGroup"));
         ITextEffect textEffect = ITextEffect.getEffect(tryGetString(dialogTextObject, "textEffect"));
 
-        return new DialogText(title, image == null ? null : new ResourceLocation(image), text, soundGroup, textEffect);
+        return new DialogText(title, imageGroup, text, soundGroup, textEffect);
     }
 
     private static SoundGroup getSoundGroup(JsonElement soundElement) {
@@ -81,12 +82,57 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return null;
     }
 
+    private static ImageGroup getImageGroup(JsonElement imageElement) {
+        ResourceLocation atlasLocation = null;
+        EvalInt x = new EvalInt(0), y = new EvalInt(0);
+        int width = 64, height = 64;
+        float uOffset = 0, vOffset = 0;
+        int uWidth = 64, vHeight = 64;
+        int textureWidth = 64, textureHeight = 64;
+        if (imageElement != null) {
+            if (imageElement.isJsonPrimitive()) {
+                atlasLocation = new ResourceLocation(imageElement.getAsString());
+            } else if (imageElement.isJsonObject()) {
+                JsonObject imageObject = imageElement.getAsJsonObject();
+                atlasLocation = new ResourceLocation(imageObject.get("image").getAsString());
+                x = EvalInt.fromJson(imageObject.get("x"));
+                y = EvalInt.fromJson(imageObject.get("y"));
+                width = tryGetInt(imageObject, "width");
+                height = tryGetInt(imageObject, "height");
+                uOffset = tryGetFloat(imageObject, "uOffset");
+                vOffset = tryGetFloat(imageObject, "vOffset");
+                uWidth = tryGetInt(imageObject, "uWidth");
+                vHeight = tryGetInt(imageObject, "vHeight");
+                textureWidth = tryGetInt(imageObject, "textureWidth");
+                textureHeight = tryGetInt(imageObject, "textureHeight");
+            }
+            return new ImageGroup(atlasLocation, x, y, width, height, uOffset, vOffset, uWidth, vHeight, textureWidth, textureHeight);
+        }
+        return null;
+    }
+
+    private static int tryGetInt(JsonObject jsonObject, String name) {
+        return tryGetInt(jsonObject, name, 0);
+    }
+
+    private static int tryGetInt(JsonObject jsonObject, String name, int defaultValue) {
+        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsInt();
+    }
+
     private static float tryGetFloat(JsonObject jsonObject, String name) {
-        return jsonObject.get(name) == null ? 0.0f : jsonObject.get(name).getAsFloat();
+        return tryGetFloat(jsonObject, name, 0);
+    }
+
+    private static float tryGetFloat(JsonObject jsonObject, String name, float defaultValue) {
+        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsFloat();
     }
 
     private static String tryGetString(JsonObject jsonObject, String name) {
-        return jsonObject.get(name) == null ? null : jsonObject.get(name).getAsString();
+        return tryGetString(jsonObject, name, null);
+    }
+
+    private static String tryGetString(JsonObject jsonObject, String name, String defaultValue) {
+        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsString();
     }
 
     private static JsonElement tryGet(JsonObject jsonObject, String name) {

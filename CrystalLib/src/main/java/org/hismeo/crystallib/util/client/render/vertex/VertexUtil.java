@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.client.util.render.vertex;
+package org.hismeo.crystallib.util.client.render.vertex;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import org.joml.Matrix3f;

@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.common.util;
+package org.hismeo.crystallib.util;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;

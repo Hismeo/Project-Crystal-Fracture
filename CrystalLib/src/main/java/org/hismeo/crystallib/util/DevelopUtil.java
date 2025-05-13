@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.common.util;
+package org.hismeo.crystallib.util;
 
 import net.minecraftforge.fml.loading.FMLEnvironment;
 

@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.client.util.render.shader;
+package org.hismeo.crystallib.util.client.render.shader;
 
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.shaders.AbstractUniform;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hismeo.crystallib.client.util.MinecraftUtil.*;
+import static org.hismeo.crystallib.util.client.MinecraftUtil.*;
 
 public class EffectUtil {
     public static @NotNull AbstractUniform safeGetUniform(int pass, String name) {

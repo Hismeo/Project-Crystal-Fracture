@@ -53,6 +53,7 @@ mixin {
 
 dependencies {
     implementation(project(':CrystalLib'))
+    additionalRuntimeClasspath('org.openjdk.nashorn:nashorn-core:15.3')
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

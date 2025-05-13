@@ -23,7 +23,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
-import org.hismeo.crystallib.common.util.CodecUtil;
+import org.hismeo.crystallib.util.CodecUtil;
 import org.hismeo.hazedungeon.HazeDungeon;
 
 import java.util.ArrayList;

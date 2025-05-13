@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.impl;
+package org.hismeo.crystallib.api;
 
 public record Pair<F, S>(F first, S second) {
     public Pair<S, F> swap() {

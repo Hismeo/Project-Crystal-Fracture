@@ -1,10 +1,10 @@
-package org.hismeo.crystallib.client.util.render.shader;
+package org.hismeo.crystallib.util.client.render.shader;
 
 import net.minecraft.client.renderer.PostChain;
 import org.hismeo.crystallib.client.render.EffectType;
 
-import static org.hismeo.crystallib.client.util.render.shader.EffectUtil.*;
-import static org.hismeo.crystallib.client.util.MinecraftUtil.*;
+import static org.hismeo.crystallib.util.client.render.shader.EffectUtil.*;
+import static org.hismeo.crystallib.util.client.MinecraftUtil.*;
 
 public class BlurUtil {
     public static PostChain blurEffect;

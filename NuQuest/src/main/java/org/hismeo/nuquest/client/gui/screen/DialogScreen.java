@@ -6,25 +6,28 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.hismeo.crystallib.client.util.MinecraftUtil.*;
+import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
 
 public class DialogScreen extends Screen {
+    private final Map<String, Number> varMap = new HashMap<>();
     protected final List<Button> optionalButton = new ArrayList<>();
     private final DialogDefinition dialogDefinition;
     private final String dialogueId;
     private final DialogText[] dialogTexts;
     private String title;
-    private ResourceLocation imagePath;
+    private ImageGroup imageGroup;
     private String originText;
     private String[] splitText;
     private SoundGroup soundGroup;
@@ -58,8 +61,10 @@ public class DialogScreen extends Screen {
         int dialogueHeight = this.height / 3 * 2;
         guiGraphics.fillGradient(0, dialogueHeight, this.width, this.height, -1073741824, -1073741824);
 
-        //
-        guiGraphics.blit(this.imagePath, 0, dialogueHeight - 64, 64, 64, 0, 0, 64, 64, 64, 64);
+        if (this.imageGroup != null && this.imageGroup.hasImage()) {
+            this.imageGroup.blitImage(guiGraphics, varMap);
+        }
+
         if (title != null) {
             guiGraphics.drawString(this.font, Component.translatable(this.title), 10, dialogueHeight + 4, 0xFFFFFFFF);
             guiGraphics.fill(8, dialogueHeight + 4 + 10, 8 + 4 + this.font.width(title), dialogueHeight + 5 + 10, 0xFFFFFFFF);
@@ -90,9 +95,11 @@ public class DialogScreen extends Screen {
     }
 
     protected void initPage() {
+        varMap.put("screenwidth", this.width);
+        varMap.put("screenheight", this.height);
         if (initPage != page) {
             this.title = dialogTexts[page].title();
-            this.imagePath = dialogTexts[page].imagePath();
+            this.imageGroup = dialogTexts[page].imageGroup();
             this.originText = dialogTexts[page].text();
             this.splitText = originText.split("\n");
             this.soundGroup = dialogTexts[page].soundGroup();

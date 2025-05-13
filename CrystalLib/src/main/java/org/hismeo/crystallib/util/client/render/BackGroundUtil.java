@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.client.util.render;
+package org.hismeo.crystallib.util.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
@@ -9,11 +9,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.CubeMap;
 import net.minecraft.client.renderer.PanoramaRenderer;
 import net.minecraft.resources.ResourceLocation;
-import org.hismeo.crystallib.client.util.render.shader.BlurUtil;
+import org.hismeo.crystallib.util.client.render.shader.BlurUtil;
 
 import java.util.Arrays;
 
-import static org.hismeo.crystallib.client.util.MinecraftUtil.*;
+import static org.hismeo.crystallib.util.client.MinecraftUtil.*;
 
 
 public class BackGroundUtil {
