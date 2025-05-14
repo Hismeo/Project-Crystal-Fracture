@@ -17,7 +17,6 @@ public interface ITextEffect {
 
     static ITextEffect getEffect(String name){
         Type targetInterface = Type.getType(ITextEffect.class);
-
         for (ModFileScanData scanData : ModList.get().getAllScanData()) {
             for (ModFileScanData.ClassData classData : scanData.getClasses()) {
                 if (classData.interfaces().contains(targetInterface)) {

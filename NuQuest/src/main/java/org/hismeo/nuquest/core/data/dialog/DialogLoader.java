@@ -10,7 +10,9 @@ import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
+import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
+import org.hismeo.nuquest.core.dialog.context.action.IAction;
 import org.hismeo.nuquest.core.dialog.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,15 +40,21 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
                 JsonObject jsonObject = element.getAsJsonObject();
                 String dialogueId = jsonObject.get("dialogueId").getAsString();
                 JsonArray dialogTextsArray = jsonObject.getAsJsonArray("dialogTexts");
+                JsonArray dialogActionsDatasArray = jsonObject.getAsJsonArray("dialogActionsDatas");
 
                 List<DialogText> dialogTexts = new ArrayList<>();
-
                 for (JsonElement dialogTextElement : dialogTextsArray) {
                     DialogText dialogText = getDialogText(dialogTextElement);
                     dialogTexts.add(dialogText);
                 }
 
-                DialogDefinition dialogDefinition = new DialogDefinition(dialogueId, dialogTexts.toArray(DialogText[]::new));
+                List<DialogActionData> dialogActionDatas = new ArrayList<>();
+                for (JsonElement dialogTextElement : dialogActionsDatasArray) {
+                    DialogActionData dialogActionData = getDialogActionData(dialogTextElement);
+                    dialogActionDatas.add(dialogActionData);
+                }
+
+                DialogDefinition dialogDefinition = new DialogDefinition(dialogueId, dialogTexts.toArray(DialogText[]::new), dialogActionDatas.toArray(DialogActionData[]::new));
                 DialogManager.dataRegister(id.toString(), dialogDefinition);
             } catch (NullPointerException e) {
                 NuQuest.LOGGER.error("[DialogReloadListener] Failed to load dialogue: {} - {}", id, e.getMessage(), e);
@@ -64,6 +72,13 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         ITextEffect textEffect = ITextEffect.getEffect(tryGetString(dialogTextObject, "textEffect"));
 
         return new DialogText(title, imageGroup, text, soundGroup, textEffect);
+    }
+
+    private static DialogActionData getDialogActionData(JsonElement dialogActionDataElement){
+        JsonObject dialogActionDataObject = dialogActionDataElement.getAsJsonObject();
+        String message = tryGetString(dialogActionDataObject, "message");
+        IAction action =
+        return new DialogActionData(message, );
     }
 
     private static SoundGroup getSoundGroup(JsonElement soundElement) {

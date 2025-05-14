@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
+import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.text.DialogText;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +23,11 @@ import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
 
 public class DialogScreen extends Screen {
     private final Map<String, Number> varMap = new HashMap<>();
-    protected final List<Button> optionalButton = new ArrayList<>();
-    private final DialogDefinition dialogDefinition;
+    protected Button flipButton;
+    protected final List<Button> actionButton = new ArrayList<>();
     private final String dialogueId;
+    private final DialogDefinition dialogDefinition;
+    private final DialogActionData[] dialogActionDatas;
     private final DialogText[] dialogTexts;
     private String title;
     private ImageGroup imageGroup;
@@ -45,14 +48,29 @@ public class DialogScreen extends Screen {
         this.page = page;
         this.maxPage = dialogDefinition.dialogTexts().length;
         this.dialogDefinition = dialogDefinition;
+        this.dialogActionDatas = dialogDefinition.dialogActionData();
         this.dialogueId = dialogDefinition.dialogueId();
         this.dialogTexts = dialogDefinition.dialogTexts();
     }
 
     @Override
     protected void init() {
-        ImageButton flipButton = this.addRenderableWidget(new ImageButton(this.width - 40, this.height - 40, 20, 20, 0, 0, 20, Button.ACCESSIBILITY_TEXTURE, 32, 64, this::tryFlip));
-        optionalButton.add(flipButton);
+        this.flipButton = this.addRenderableWidget(new ImageButton(this.width - 40,
+                this.height - 40,
+                20, 20,
+                0, 0,
+                20, Button.ACCESSIBILITY_TEXTURE,
+                32, 64,
+                this::tryFlip)
+        );
+
+        if (dialogActionDatas != null) {
+            for (int i = 0; i < this.dialogActionDatas.length; i++) {
+                this.addRenderableWidget(new Button.Builder(Component.literal(this.dialogActionDatas[i].message()), button -> {
+                }).pos(0, 0).build());
+            }
+        }
+
         this.initPage();
     }
 
@@ -73,7 +91,9 @@ public class DialogScreen extends Screen {
             guiGraphics.drawString(this.font, Component.translatable(this.splitText[i]), 20, dialogueHeight + 25 + (i * this.font.lineHeight + 4), 0xFFFFFFFF);
         }
         if (!canFlip()) {
-            optionalButton.forEach(button -> button.active = false);
+            flipButton.active = false;
+        } else {
+
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
