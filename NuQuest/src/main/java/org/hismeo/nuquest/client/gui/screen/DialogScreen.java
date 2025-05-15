@@ -6,7 +6,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;

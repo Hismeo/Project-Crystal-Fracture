@@ -1,5 +1,7 @@
-package org.hismeo.nuquest.api.dialog.text;
+package org.hismeo.nuquest.api.dialog;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.hismeo.crystallib.util.ReflectionUtil;
@@ -11,6 +13,7 @@ public interface ITextEffect {
 
     String getEffect();
 
+    void parseJsonArray(JsonObject jsonArray);
     static ITextEffect getEffect(String name) {
         for (ITextEffect implClass : ReflectionUtil.getImplClass(ITextEffect.class)) {
             if (implClass.getEffect().equals(name)) {

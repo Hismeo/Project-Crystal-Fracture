@@ -1,6 +1,6 @@
 package org.hismeo.nuquest.core.dialog.context.text;
 
-import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
 

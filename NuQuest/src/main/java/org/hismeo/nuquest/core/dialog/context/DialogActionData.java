@@ -1,6 +1,6 @@
 package org.hismeo.nuquest.core.dialog.context;
 
-import org.hismeo.nuquest.core.dialog.context.action.IAction;
+import org.hismeo.nuquest.api.dialog.IAction;
 
-public record DialogActionData(String message, IAction action, Object... parameter) {
+public record DialogActionData(String message, IAction action) {
 }

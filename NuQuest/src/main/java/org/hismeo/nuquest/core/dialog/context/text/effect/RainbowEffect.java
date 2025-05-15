@@ -1,15 +1,15 @@
 package org.hismeo.nuquest.core.dialog.context.text.effect;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.api.dialog.ITextEffect;
 
 public class RainbowEffect implements ITextEffect {
-    private final float speed;
-    public RainbowEffect(){
-        this.speed = 1.0f;
-    }
-    public RainbowEffect(float speed){
+    private float speed = 1.0f;
+    public RainbowEffect() {}
+    public RainbowEffect(float speed) {
         this.speed = speed;
     }
 
@@ -21,5 +21,10 @@ public class RainbowEffect implements ITextEffect {
     @Override
     public String getEffect() {
         return "rainbow";
+    }
+
+    @Override
+    public void parseJsonArray(JsonObject jsonArray) {
+
     }
 }

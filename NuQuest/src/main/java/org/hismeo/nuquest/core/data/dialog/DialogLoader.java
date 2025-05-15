@@ -7,12 +7,12 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
 import org.hismeo.nuquest.NuQuest;
-import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
-import org.hismeo.nuquest.core.dialog.context.action.IAction;
+import org.hismeo.nuquest.api.dialog.IAction;
 import org.hismeo.nuquest.core.dialog.context.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,14 +70,17 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         String text = tryGetString(dialogTextObject, "text");
         SoundGroup soundGroup = getSoundGroup(tryGet(dialogTextObject, "soundGroup"));
         ITextEffect textEffect = ITextEffect.getEffect(tryGetString(dialogTextObject, "textEffect"));
-
+        JsonElement params = tryGet(dialogActionDataObject, "params");
+        if (params != null) { action.parseJsonArray(params.getAsJsonObject()); }
         return new DialogText(title, imageGroup, text, soundGroup, textEffect);
     }
 
-    private static DialogActionData getDialogActionData(JsonElement dialogActionDataElement){
+    private static DialogActionData getDialogActionData(JsonElement dialogActionDataElement) {
         JsonObject dialogActionDataObject = dialogActionDataElement.getAsJsonObject();
         String message = tryGetString(dialogActionDataObject, "message");
         IAction action = IAction.getAction(tryGetString(dialogActionDataObject, "action"));
+        JsonElement params = tryGet(dialogActionDataObject, "params");
+        if (params != null) { action.parseJsonArray(params.getAsJsonObject()); }
         return new DialogActionData(message, action);
     }
 

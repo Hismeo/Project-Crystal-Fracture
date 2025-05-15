@@ -1,14 +1,14 @@
 package org.hismeo.nuquest.core.dialog.context.text.effect;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.api.dialog.ITextEffect;
 
 public class TypewriterEffect implements ITextEffect {
-    private final float speed;
-    public TypewriterEffect(){
-        this.speed = 1.0f;
-    }
+    private float speed = 1.0f;
+    public TypewriterEffect(){}
     public TypewriterEffect(float speed){
         this.speed = speed;
     }
@@ -20,5 +20,10 @@ public class TypewriterEffect implements ITextEffect {
     @Override
     public String getEffect() {
         return "typewriter";
+    }
+
+    @Override
+    public void parseJsonArray(JsonObject jsonArray) {
+
     }
 }
