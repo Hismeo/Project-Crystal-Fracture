@@ -13,7 +13,7 @@ import org.hismeo.nuquest.core.dialog.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.context.action.IAction;
-import org.hismeo.nuquest.core.dialog.text.DialogText;
+import org.hismeo.nuquest.core.dialog.context.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
                 JsonObject jsonObject = element.getAsJsonObject();
                 String dialogueId = jsonObject.get("dialogueId").getAsString();
                 JsonArray dialogTextsArray = jsonObject.getAsJsonArray("dialogTexts");
-                JsonArray dialogActionsDatasArray = jsonObject.getAsJsonArray("dialogActionsDatas");
+                JsonArray dialogActionsDatasArray = jsonObject.getAsJsonArray("dialogActionDatas");
 
                 List<DialogText> dialogTexts = new ArrayList<>();
                 for (JsonElement dialogTextElement : dialogTextsArray) {
@@ -77,8 +77,8 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
     private static DialogActionData getDialogActionData(JsonElement dialogActionDataElement){
         JsonObject dialogActionDataObject = dialogActionDataElement.getAsJsonObject();
         String message = tryGetString(dialogActionDataObject, "message");
-        IAction action =
-        return new DialogActionData(message, );
+        IAction action = IAction.getAction(tryGetString(dialogActionDataObject, "action"));
+        return new DialogActionData(message, action);
     }
 
     private static SoundGroup getSoundGroup(JsonElement soundElement) {

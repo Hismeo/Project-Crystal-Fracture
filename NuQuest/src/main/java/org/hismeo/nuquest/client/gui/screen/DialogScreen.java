@@ -7,11 +7,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
+import org.hismeo.nuquest.client.gui.component.ActionButton;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
 import org.hismeo.nuquest.core.dialog.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
-import org.hismeo.nuquest.core.dialog.text.DialogText;
+import org.hismeo.nuquest.core.dialog.context.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
 public class DialogScreen extends Screen {
     private final Map<String, Number> varMap = new HashMap<>();
     protected Button flipButton;
-    protected final List<Button> actionButton = new ArrayList<>();
+    protected final List<ActionButton> actionButtons = new ArrayList<>();
     private final String dialogueId;
     private final DialogDefinition dialogDefinition;
     private final DialogActionData[] dialogActionDatas;
@@ -48,7 +49,7 @@ public class DialogScreen extends Screen {
         this.page = page;
         this.maxPage = dialogDefinition.dialogTexts().length;
         this.dialogDefinition = dialogDefinition;
-        this.dialogActionDatas = dialogDefinition.dialogActionData();
+        this.dialogActionDatas = dialogDefinition.dialogActionDatas();
         this.dialogueId = dialogDefinition.dialogueId();
         this.dialogTexts = dialogDefinition.dialogTexts();
     }
@@ -65,13 +66,29 @@ public class DialogScreen extends Screen {
         );
 
         if (dialogActionDatas != null) {
+            this.actionButtons.clear();
             for (int i = 0; i < this.dialogActionDatas.length; i++) {
-                this.addRenderableWidget(new Button.Builder(Component.literal(this.dialogActionDatas[i].message()), button -> {
-                }).pos(0, 0).build());
+                int finalI = i;
+                ActionButton actionButton = new ActionButton(this.width - 100, this.height / 3 * 2 - (i + 1) * 30,
+                        100, 20,
+                        Component.literal(this.dialogActionDatas[i].message()),
+                        () -> this.dialogActionDatas[finalI].action().action(this)
+                );
+                actionButton.hidden = true;
+                this.addRenderableWidget(actionButton);
+                this.actionButtons.add(actionButton);
             }
         }
 
         this.initPage();
+    }
+
+    @Override
+    public void tick() {
+        if (!canFlip()) {
+            flipButton.active = false;
+            actionButtons.forEach(button -> button.hidden = false);
+        }
     }
 
     @Override
@@ -89,11 +106,6 @@ public class DialogScreen extends Screen {
         }
         for (int i = 0; i < this.splitText.length; i++) {
             guiGraphics.drawString(this.font, Component.translatable(this.splitText[i]), 20, dialogueHeight + 25 + (i * this.font.lineHeight + 4), 0xFFFFFFFF);
-        }
-        if (!canFlip()) {
-            flipButton.active = false;
-        } else {
-
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }

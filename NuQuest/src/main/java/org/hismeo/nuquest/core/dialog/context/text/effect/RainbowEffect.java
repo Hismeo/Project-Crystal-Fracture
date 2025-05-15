@@ -1,4 +1,4 @@
-package org.hismeo.nuquest.core.dialog.text.effect;
+package org.hismeo.nuquest.core.dialog.context.text.effect;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;

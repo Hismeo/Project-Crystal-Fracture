@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReflectionUtil {
-    public static <R, T extends R> List<Class<T>> getImplClass(Class<R> interfaceClazz){
-        List<Class<T>> implClasses = new ArrayList<>();
+    @SuppressWarnings("unchecked")
+    public static <R> List<R> getImplClass(Class<R> interfaceClazz){
+        List<R> implClasses = new ArrayList<>();
         Type targetInterface = Type.getType(interfaceClazz);
         for (ModFileScanData scanData : ModList.get().getAllScanData()) {
             for (ModFileScanData.ClassData classData : scanData.getClasses()) {
@@ -19,7 +20,7 @@ public class ReflectionUtil {
                     try {
                         Class<?> clazz = Class.forName(classData.clazz().getClassName());
                         if (!Modifier.isAbstract(clazz.getModifiers()) && interfaceClazz.isAssignableFrom(clazz)) {
-                            Class<T> implClass = (Class<T>) clazz.getDeclaredConstructor().newInstance();
+                            R implClass = (R) clazz.getDeclaredConstructor().newInstance();
                             implClasses.add(implClass);
                         }
                     } catch (Exception e) {

@@ -1,4 +1,4 @@
-package org.hismeo.nuquest.core.dialog.text;
+package org.hismeo.nuquest.core.dialog.context.text;
 
 import org.hismeo.nuquest.api.dialog.text.ITextEffect;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
