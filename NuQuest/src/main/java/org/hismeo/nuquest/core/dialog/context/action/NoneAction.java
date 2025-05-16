@@ -17,7 +17,5 @@ public class NoneAction implements IAction {
     }
 
     @Override
-    public void parseJsonArray(JsonObject jsonArray) {
-
-    }
+    public void parseJson(JsonObject jsonObject) {}
 }

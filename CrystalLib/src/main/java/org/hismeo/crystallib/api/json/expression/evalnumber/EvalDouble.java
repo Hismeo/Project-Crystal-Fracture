@@ -18,12 +18,16 @@ public class EvalDouble implements IEval<Double> {
         this.expr = expression;
     }
 
-    public static EvalDouble fromJson(JsonElement el) {
-        if (el == null || el.isJsonNull()) return new EvalDouble(0.0);
-        if (el.isJsonPrimitive() && ((JsonPrimitive) el).isNumber()) {
-            return new EvalDouble(el.getAsDouble());
+    public static EvalDouble fromJson(JsonElement jsonElement) {
+        return fromJson(jsonElement, new EvalDouble(0));
+    }
+    
+    public static EvalDouble fromJson(JsonElement jsonElement, EvalDouble defaultValue) {
+        if (jsonElement == null || jsonElement.isJsonNull()) return defaultValue;
+        if (jsonElement.isJsonPrimitive() && ((JsonPrimitive) jsonElement).isNumber()) {
+            return new EvalDouble(jsonElement.getAsDouble());
         }
-        return new EvalDouble(el.getAsString());
+        return new EvalDouble(jsonElement.getAsString());
     }
 
     @Override

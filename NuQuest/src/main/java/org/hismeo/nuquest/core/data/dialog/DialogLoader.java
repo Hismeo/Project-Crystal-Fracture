@@ -33,54 +33,58 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
     protected void apply(@NotNull Map<ResourceLocation, JsonElement> object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         DialogManager.clearDataRegister();
         for (var entry : object.entrySet()) {
-            ResourceLocation id = entry.getKey();
+            ResourceLocation key = entry.getKey();
             JsonElement element = entry.getValue();
 
             try {
                 JsonObject jsonObject = element.getAsJsonObject();
-                String dialogueId = jsonObject.get("dialogueId").getAsString();
-                JsonArray dialogTextsArray = jsonObject.getAsJsonArray("dialogTexts");
-                JsonArray dialogActionsDatasArray = jsonObject.getAsJsonArray("dialogActionDatas");
+                String dialoguePath = jsonObject.get("dialogueId").getAsString();
+                String dialogueId = "%s:%s".formatted(key.getNamespace(), dialoguePath);
+                JsonArray textsArray = jsonObject.getAsJsonArray("dialogTexts");
+                JsonArray actionsDatasArray = jsonObject.getAsJsonArray("dialogActionDatas");
 
-                List<DialogText> dialogTexts = new ArrayList<>();
-                for (JsonElement dialogTextElement : dialogTextsArray) {
-                    DialogText dialogText = getDialogText(dialogTextElement);
-                    dialogTexts.add(dialogText);
+                List<DialogText> texts = new ArrayList<>();
+                for (JsonElement textElement : textsArray) {
+                    DialogText text = getDialogText(textElement);
+                    texts.add(text);
                 }
 
-                List<DialogActionData> dialogActionDatas = new ArrayList<>();
-                for (JsonElement dialogTextElement : dialogActionsDatasArray) {
-                    DialogActionData dialogActionData = getDialogActionData(dialogTextElement);
-                    dialogActionDatas.add(dialogActionData);
+                List<DialogActionData> actionDatas = new ArrayList<>();
+                for (JsonElement textElement : actionsDatasArray) {
+                    DialogActionData actionData = getDialogActionData(textElement);
+                    actionDatas.add(actionData);
                 }
 
-                DialogDefinition dialogDefinition = new DialogDefinition(dialogueId, dialogTexts.toArray(DialogText[]::new), dialogActionDatas.toArray(DialogActionData[]::new));
-                DialogManager.dataRegister(id.toString(), dialogDefinition);
+                DialogDefinition definition = new DialogDefinition(dialogueId, texts.toArray(DialogText[]::new), actionDatas.toArray(DialogActionData[]::new));
+                DialogManager.dataRegister(dialogueId, definition);
             } catch (NullPointerException e) {
-                NuQuest.LOGGER.error("[DialogReloadListener] Failed to load dialogue: {} - {}", id, e.getMessage(), e);
+                NuQuest.LOGGER.error("[DialogReloadListener] Failed to load dialogue: {} - {}", key, e.getMessage(), e);
             }
         }
         NuQuest.LOGGER.debug("[DialogReloadListener] Loaded {} dialogues.", DialogManager.getDialogueMapView().size());
     }
 
-    private static @NotNull DialogText getDialogText(JsonElement dialogTextElement) {
-        JsonObject dialogTextObject = dialogTextElement.getAsJsonObject();
-        String title = tryGetString(dialogTextObject, "title");
-        ImageGroup imageGroup = getImageGroup(tryGet(dialogTextObject, "imageGroup"));
-        String text = tryGetString(dialogTextObject, "text");
-        SoundGroup soundGroup = getSoundGroup(tryGet(dialogTextObject, "soundGroup"));
-        ITextEffect textEffect = ITextEffect.getEffect(tryGetString(dialogTextObject, "textEffect"));
-        JsonElement params = tryGet(dialogActionDataObject, "params");
-        if (params != null) { action.parseJsonArray(params.getAsJsonObject()); }
+    private static @NotNull DialogText getDialogText(JsonElement textElement) {
+        JsonObject textObject = textElement.getAsJsonObject();
+        String title = tryGetString(textObject, "title");
+        ImageGroup imageGroup = getImageGroup(tryGet(textObject, "imageGroup"));
+        String text = tryGetString(textObject, "text");
+        SoundGroup soundGroup = getSoundGroup(tryGet(textObject, "soundGroup"));
+        JsonObject effectObject = textObject.get("textEffect").getAsJsonObject();
+        ITextEffect textEffect = ITextEffect.getEffect(tryGetString(effectObject, "name"));
+        JsonElement params = tryGet(textObject, "params");
+        if (params != null) { textEffect.parseJson(params.getAsJsonObject()); }
         return new DialogText(title, imageGroup, text, soundGroup, textEffect);
     }
 
-    private static DialogActionData getDialogActionData(JsonElement dialogActionDataElement) {
-        JsonObject dialogActionDataObject = dialogActionDataElement.getAsJsonObject();
-        String message = tryGetString(dialogActionDataObject, "message");
-        IAction action = IAction.getAction(tryGetString(dialogActionDataObject, "action"));
-        JsonElement params = tryGet(dialogActionDataObject, "params");
-        if (params != null) { action.parseJsonArray(params.getAsJsonObject()); }
+    private static DialogActionData getDialogActionData(JsonElement actionDataElement) {
+        JsonObject actionDataObject = actionDataElement.getAsJsonObject();
+        String message = tryGetString(actionDataObject, "message");
+        // TODO: 行为组
+        JsonObject actionObject = actionDataObject.get("action").getAsJsonObject();
+        IAction action = IAction.getAction(tryGetString(actionObject, "name"));
+        JsonElement params = tryGet(actionObject, "params");
+        if (params != null) { action.parseJson(params.getAsJsonObject()); }
         return new DialogActionData(message, action);
     }
 
@@ -116,7 +120,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
                 JsonObject imageObject = imageElement.getAsJsonObject();
                 atlasLocation = new ResourceLocation(imageObject.get("image").getAsString());
                 x = EvalInt.fromJson(imageObject.get("x"));
-                y = EvalInt.fromJson(imageObject.get("y"));
+                y = EvalInt.fromJson(imageObject.get("y"), y);
                 width = tryGetInt(imageObject, "width", width);
                 height = tryGetInt(imageObject, "height", height);
                 uOffset = tryGetFloat(imageObject, "uOffset");

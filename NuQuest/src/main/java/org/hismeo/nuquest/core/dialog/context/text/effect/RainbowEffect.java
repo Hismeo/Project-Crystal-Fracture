@@ -6,9 +6,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 
+@SuppressWarnings("unused")
 public class RainbowEffect implements ITextEffect {
     private float speed = 1.0f;
     public RainbowEffect() {}
+
     public RainbowEffect(float speed) {
         this.speed = speed;
     }
@@ -24,7 +26,7 @@ public class RainbowEffect implements ITextEffect {
     }
 
     @Override
-    public void parseJsonArray(JsonObject jsonArray) {
+    public void parseJson(JsonObject jsonObject) {
 
     }
 }

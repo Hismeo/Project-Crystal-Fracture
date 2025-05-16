@@ -19,12 +19,16 @@ public class EvalLong implements IEval<Long> {
         this.expr = expression;
     }
 
-    public static EvalLong fromJson(JsonElement el) {
-        if (el == null || el.isJsonNull()) return new EvalLong(0L);
-        if (el.isJsonPrimitive() && ((JsonPrimitive) el).isNumber()) {
-            return new EvalLong(el.getAsLong());
+    public static EvalLong fromJson(JsonElement jsonElement) {
+        return fromJson(jsonElement, new EvalLong(0));
+    }
+
+    public static EvalLong fromJson(JsonElement jsonElement, EvalLong defaultValue) {
+        if (jsonElement == null || jsonElement.isJsonNull()) return defaultValue;
+        if (jsonElement.isJsonPrimitive() && ((JsonPrimitive) jsonElement).isNumber()) {
+            return new EvalLong(jsonElement.getAsLong());
         }
-        return new EvalLong(el.getAsString());
+        return new EvalLong(jsonElement.getAsString());
     }
 
     @Override

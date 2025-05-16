@@ -19,12 +19,16 @@ public class EvalInt implements IEval<Integer> {
         this.expr = expression;
     }
 
-    public static EvalInt fromJson(JsonElement el) {
-        if (el == null || el.isJsonNull()) return new EvalInt(0);
-        if (el.isJsonPrimitive() && ((JsonPrimitive) el).isNumber()) {
-            return new EvalInt(el.getAsInt());
+    public static EvalInt fromJson(JsonElement jsonElement) {
+        return fromJson(jsonElement, new EvalInt(0));
+    }
+
+    public static EvalInt fromJson(JsonElement jsonElement, EvalInt defaultValue) {
+        if (jsonElement == null || jsonElement.isJsonNull()) return defaultValue;
+        if (jsonElement.isJsonPrimitive() && ((JsonPrimitive) jsonElement).isNumber()) {
+            return new EvalInt(jsonElement.getAsInt());
         }
-        return new EvalInt(el.getAsString());
+        return new EvalInt(jsonElement.getAsString());
     }
 
     @Override

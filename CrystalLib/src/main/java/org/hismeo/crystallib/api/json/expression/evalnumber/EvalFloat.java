@@ -18,12 +18,16 @@ public class EvalFloat implements IEval<Float> {
         this.expr = expression;
     }
 
-    public static EvalFloat fromJson(JsonElement el) {
-        if (el == null || el.isJsonNull()) return new EvalFloat(0f);
-        if (el.isJsonPrimitive() && ((JsonPrimitive) el).isNumber()) {
-            return new EvalFloat(el.getAsFloat());
+    public static EvalFloat fromJson(JsonElement jsonElement) {
+        return fromJson(jsonElement, new EvalFloat(0));
+    }
+    
+    public static EvalFloat fromJson(JsonElement jsonElement, EvalFloat defaultValue) {
+        if (jsonElement == null || jsonElement.isJsonNull()) return defaultValue;
+        if (jsonElement.isJsonPrimitive() && ((JsonPrimitive) jsonElement).isNumber()) {
+            return new EvalFloat(jsonElement.getAsFloat());
         }
-        return new EvalFloat(el.getAsString());
+        return new EvalFloat(jsonElement.getAsString());
     }
 
     @Override

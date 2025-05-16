@@ -6,6 +6,8 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import org.hismeo.crystallib.util.client.MinecraftUtil;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
@@ -101,8 +103,10 @@ public class DialogScreen extends Screen {
         }
 
         if (title != null) {
-            guiGraphics.drawString(this.font, Component.translatable(this.title), 10, dialogueHeight + 4, 0xFFFFFFFF);
-            guiGraphics.fill(8, dialogueHeight + 4 + 10, 8 + 4 + this.font.width(title), dialogueHeight + 5 + 10, 0xFFFFFFFF);
+            MutableComponent translatable = Component.translatable(this.title);
+            String string = translatable.getString().replace("playername", MinecraftUtil.getPlayer().getScoreboardName());
+            guiGraphics.drawString(this.font, string, 10, dialogueHeight + 4, 0xFFFFFFFF);
+            guiGraphics.fill(8, dialogueHeight + 4 + 10, 8 + 4 + this.font.width(string), dialogueHeight + 5 + 10, 0xFFFFFFFF);
         }
         for (int i = 0; i < this.splitText.length; i++) {
             guiGraphics.drawString(this.font, Component.translatable(this.splitText[i]), 20, dialogueHeight + 25 + (i * this.font.lineHeight + 4), 0xFFFFFFFF);

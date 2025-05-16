@@ -25,8 +25,8 @@ public class DialogCommand {
     }
 
     private static int openDialogueScreen(ResourceLocation id) {
-        DialogDefinition def = DialogManager.getValue(id.toString());
-        MinecraftUtil.getMinecraft().setScreen(new DialogScreen(def));
+        DialogDefinition definition = DialogManager.getValue(id.toString());
+        MinecraftUtil.setScreen(new DialogScreen(definition));
         return 1;
     }
 }

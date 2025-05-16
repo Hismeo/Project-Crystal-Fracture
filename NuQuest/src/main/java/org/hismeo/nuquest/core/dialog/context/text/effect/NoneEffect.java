@@ -14,5 +14,5 @@ public class NoneEffect implements ITextEffect {
     public String getEffect() {return "none";}
 
     @Override
-    public void parseJsonArray(JsonObject jsonArray) {}
+    public void parseJson(JsonObject jsonObject) {}
 }

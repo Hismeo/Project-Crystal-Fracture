@@ -19,12 +19,14 @@ public record CommandPacketC2S(String command) {
 
     public static void handle(CommandPacketC2S packet, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(()->{
+        context.enqueueWork(() -> {
             ServerPlayer serverPlayer = context.getSender();
-            if (serverPlayer != null){
+            if (serverPlayer != null) {
+                String finalCommand = packet.command.replace("playername", serverPlayer.getScoreboardName());
                 MinecraftServer server = serverPlayer.server;
                 CommandSourceStack commandSourceStack = server.createCommandSourceStack().withSuppressedOutput();
-                server.getCommands().performPrefixedCommand(commandSourceStack, packet.command());
+
+                server.getCommands().performPrefixedCommand(commandSourceStack, finalCommand);
             }
         });
     }
