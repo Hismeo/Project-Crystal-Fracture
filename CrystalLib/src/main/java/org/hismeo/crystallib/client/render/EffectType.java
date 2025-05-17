@@ -6,5 +6,5 @@ public class EffectType {
     /**
      * @see fade_in_blur.json
      */
-    public static final ResourceLocation FADE_IN_BLUR = new ResourceLocation("shaders/post/fade_in_blur.json");
+    public static final ResourceLocation FADE_IN_BLUR = ResourceLocation.withDefaultNamespace("shaders/post/fade_in_blur.json");
 }

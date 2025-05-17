@@ -40,7 +40,6 @@ neoForge {
 }
 
 dependencies {
-    implementation(project(':CrystalLib'))
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
@@ -50,7 +49,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
             neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
+            neoforge_version_range : neo_version_range,
             loader_version_range   : loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,

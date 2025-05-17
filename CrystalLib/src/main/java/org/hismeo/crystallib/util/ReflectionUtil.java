@@ -1,7 +1,7 @@
 package org.hismeo.crystallib.util;
 
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.ModFileScanData;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.hismeo.crystallib.CrystalLib;
 import org.objectweb.asm.Type;
 

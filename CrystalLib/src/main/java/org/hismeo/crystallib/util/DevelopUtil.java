@@ -1,6 +1,7 @@
 package org.hismeo.crystallib.util;
 
-import net.minecraftforge.fml.loading.FMLEnvironment;
+
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class DevelopUtil {
     public static boolean isDev() {

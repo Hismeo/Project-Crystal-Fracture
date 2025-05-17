@@ -36,10 +36,6 @@ public class MinecraftUtil {
         return getMinecraft().getResourceManager();
     }
 
-    public static float getPartialTick() {
-        return getMinecraft().getPartialTick();
-    }
-
     public static ClientLevel getLevel() {
         return getMinecraft().level;
     }

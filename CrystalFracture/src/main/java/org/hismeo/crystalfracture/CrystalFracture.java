@@ -1,9 +1,8 @@
 package org.hismeo.crystalfracture;
 
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.hismeo.mapshow.MapShow;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 public class CrystalFracture {
     public static final String MODID = "crystal_fracture";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
-    public CrystalFracture(){
-        IEventBus modBusEvent = FMLJavaModLoadingContext.get().getModEventBus();
+    public CrystalFracture(IEventBus iEventBus, ModContainer modContainer){
     }
 }
