@@ -1,10 +1,10 @@
 plugins {
     id 'idea'
-    id 'net.neoforged.moddev.legacyforge' version '2.0.80' apply false
+    id 'net.neoforged.moddev' version '2.0.86' apply false
 }
 
 subprojects {
-    apply plugin: "net.neoforged.moddev.legacyforge"
+    apply plugin: "net.neoforged.moddev"
 
     repositories {
         maven { url "https://maven.parchmentmc.org" }
@@ -14,23 +14,19 @@ subprojects {
     }
 
     dependencies {
-        compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0-rc.2"))
-
-        compileOnly 'org.jetbrains:annotations:24.0.1'
-        annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     }
 
     java {
         withSourcesJar()
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
 
-        toolchain.languageVersion = JavaLanguageVersion.of(17)
+        toolchain.languageVersion = JavaLanguageVersion.of(21)
     }
 
     tasks.withType(JavaCompile).configureEach {
         it.options.encoding = 'UTF-8'
-        it.options.release = 17
+        it.options.release = 21
     }
 }
 

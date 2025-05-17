@@ -5,18 +5,16 @@ base {
     archivesName = mod_name
 }
 
-legacyForge {
-    version = "${minecraft_version}-${forge_version}"
+neoForge {
+    version = neo_version
 
-    if (Boolean.getBoolean(enableAccessTransformers)){
-        accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
+    if (Boolean.getBoolean(enableAccessTransformers)) {
+        accessTransformers = file('src/main/resources/META-INF/accesstransformer.cfg')
     }
 
-    if (mapping_channel=="parchment"){
-        parchment {
-            minecraftVersion = '1.20.1'
-            mappingsVersion = '2023.09.03'
-        }
+    parchment {
+        minecraftVersion = minecraft_version
+        mappingsVersion = parchment_mappings
     }
 
     runs {
@@ -33,7 +31,7 @@ legacyForge {
         configureEach {
             jvmArgument "-XX:+AllowEnhancedClassRedefinition"
             jvmArgument "-XX:HotswapAgent=fatjar"
-            if (isRunningInIdea()){
+            if (isRunningInIdea()) {
                 systemProperty "terminal.jline", "true"
             }
         }
@@ -46,48 +44,33 @@ legacyForge {
     }
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "mixins.${mod_id}.json"
-}
-
 dependencies {
     implementation(project(':CrystalLib'))
-    additionalRuntimeClasspath('org.openjdk.nashorn:nashorn-core:15.3')
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
-processResources {
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
     ]
-
     inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
 }
-
-jar {
-//    from "LICENSE"
-
-    manifest.attributes([
-            "Specification-Title": mod_id,
-            "Specification-Vendor": mod_authors,
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": project.jar.archiveVersion,
-            "Implementation-Vendor": mod_authors,
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "mixins.${mod_id}.json"
-    ])
-}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
 
 def isRunningInIdea() {
     return System.getProperty("idea.active") == "true"
