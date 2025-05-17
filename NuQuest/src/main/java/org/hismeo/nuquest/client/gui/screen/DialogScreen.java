@@ -3,10 +3,12 @@ package org.hismeo.nuquest.client.gui.screen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.hismeo.crystallib.util.client.MinecraftUtil;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
@@ -25,6 +27,9 @@ import java.util.Map;
 import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
 
 public class DialogScreen extends Screen {
+    private static final WidgetSprites CROSS_BUTTON_SPRITES = new WidgetSprites(
+            ResourceLocation.withDefaultNamespace("widget/cross_button"), ResourceLocation.withDefaultNamespace("widget/cross_button_highlighted")
+    );
     private final Map<String, Number> varMap = new HashMap<>();
     protected Button flipButton;
     protected final List<ActionButton> actionButtons = new ArrayList<>();
@@ -61,9 +66,7 @@ public class DialogScreen extends Screen {
         this.flipButton = this.addRenderableWidget(new ImageButton(this.width - 40,
                 this.height - 40,
                 20, 20,
-                0, 0,
-                20, Button.ACCESSIBILITY_TEXTURE,
-                32, 64,
+                CROSS_BUTTON_SPRITES,
                 this::tryFlip)
         );
 
@@ -144,5 +147,11 @@ public class DialogScreen extends Screen {
             initPage = page;
         }
     }
+
+    @Override
+    protected void renderBlurredBackground(float partialTick) {}
+
+    @Override
+    protected void renderMenuBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {}
 }
 

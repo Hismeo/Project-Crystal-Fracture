@@ -36,6 +36,6 @@ public class DialogState {
     }
 
     public void syncData(EntityDataAccessor<String> dialogueId, SynchedEntityData entityData) {
-        entityData.define(dialogueId, state);
+        entityData.set(dialogueId, state);
     }
 }

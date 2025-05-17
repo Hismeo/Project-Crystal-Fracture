@@ -1,13 +1,13 @@
 package org.hismeo.nuquest.event.client;
 
-import net.minecraftforge.client.event.RegisterClientCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.common.command.DialogCommand;
 
-@Mod.EventBusSubscriber(modid = NuQuest.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ForgeEvent {
+@EventBusSubscriber(modid = NuQuest.MODID, bus = EventBusSubscriber.Bus.GAME)
+public class GameEvent {
     @SubscribeEvent
     public static void registerCommand(RegisterClientCommandsEvent event){
         DialogCommand.register(event.getDispatcher());

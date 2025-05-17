@@ -1,6 +1,5 @@
 package org.hismeo.nuquest.core.dialog.context.text.effect;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;

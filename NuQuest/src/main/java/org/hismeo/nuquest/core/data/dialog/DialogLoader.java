@@ -115,10 +115,10 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         int textureWidth = 64, textureHeight = 64;
         if (imageElement != null) {
             if (imageElement.isJsonPrimitive()) {
-                atlasLocation = new ResourceLocation(imageElement.getAsString());
+                atlasLocation = ResourceLocation.tryParse(imageElement.getAsString());
             } else if (imageElement.isJsonObject()) {
                 JsonObject imageObject = imageElement.getAsJsonObject();
-                atlasLocation = new ResourceLocation(imageObject.get("image").getAsString());
+                atlasLocation = ResourceLocation.tryParse(imageObject.get("image").getAsString());
                 x = EvalInt.fromJson(imageObject.get("x"));
                 y = EvalInt.fromJson(imageObject.get("y"), y);
                 width = tryGetInt(imageObject, "width", width);

@@ -1,14 +1,14 @@
 package org.hismeo.nuquest.event;
 
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.core.data.dialog.DialogLoader;
 
-@Mod.EventBusSubscriber(modid = NuQuest.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ForgeEvent {
+@EventBusSubscriber(modid = NuQuest.MODID, bus = EventBusSubscriber.Bus.GAME)
+public class GameEvent {
     @SubscribeEvent
     public static void registerCommand(RegisterCommandsEvent event){
     }
