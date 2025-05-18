@@ -72,6 +72,10 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
 
+jar {
+    from "LICENSE"
+}
+
 def isRunningInIdea() {
     return System.getProperty("idea.active") == "true"
 }
