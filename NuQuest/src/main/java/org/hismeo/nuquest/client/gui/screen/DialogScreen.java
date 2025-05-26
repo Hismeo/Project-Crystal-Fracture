@@ -76,7 +76,7 @@ public class DialogScreen extends Screen {
                 int finalI = i;
                 ActionButton actionButton = new ActionButton(this.width - 100, this.height / 3 * 2 - (i + 1) * 30,
                         100, 20,
-                        Component.literal(this.dialogActionDatas[i].message()),
+                        Component.translatable(this.dialogActionDatas[i].message()),
                         () -> this.dialogActionDatas[finalI].action().action(this)
                 );
                 actionButton.hidden = true;

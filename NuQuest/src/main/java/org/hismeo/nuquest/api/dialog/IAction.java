@@ -3,7 +3,7 @@ package org.hismeo.nuquest.api.dialog;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.screens.Screen;
 import org.hismeo.crystallib.util.ReflectionUtil;
-import org.hismeo.nuquest.core.dialog.context.action.NoneAction;
+import org.hismeo.nuquest.core.dialog.context.action.CloseAction;
 
 import java.util.List;
 
@@ -21,6 +21,6 @@ public interface IAction {
                 return implClass;
             }
         }
-        return new NoneAction();
+        return new CloseAction();
     }
 }

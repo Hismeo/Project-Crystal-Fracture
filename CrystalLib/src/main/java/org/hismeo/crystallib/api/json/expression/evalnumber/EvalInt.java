@@ -2,7 +2,6 @@ package org.hismeo.crystallib.api.json.expression.evalnumber;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import org.hismeo.crystallib.api.json.expression.ExpressionParserDouble;
 import org.hismeo.crystallib.api.json.expression.ExpressionParserLong;
 import org.hismeo.crystallib.api.json.expression.IEval;
 
