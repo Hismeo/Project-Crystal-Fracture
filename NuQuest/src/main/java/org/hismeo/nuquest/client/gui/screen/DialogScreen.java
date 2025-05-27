@@ -9,7 +9,10 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.hismeo.crystallib.util.client.MinecraftUtil;
+import org.hismeo.nuquest.api.dialog.IAction;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
 import org.hismeo.nuquest.core.dialog.ImageGroup;
@@ -26,6 +29,7 @@ import java.util.Map;
 
 import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
 
+@OnlyIn(Dist.CLIENT)
 public class DialogScreen extends Screen {
     private static final WidgetSprites CROSS_BUTTON_SPRITES = new WidgetSprites(
             ResourceLocation.withDefaultNamespace("widget/cross_button"), ResourceLocation.withDefaultNamespace("widget/cross_button_highlighted")
@@ -73,12 +77,7 @@ public class DialogScreen extends Screen {
         if (dialogActionDatas != null) {
             this.actionButtons.clear();
             for (int i = 0; i < this.dialogActionDatas.length; i++) {
-                int finalI = i;
-                ActionButton actionButton = new ActionButton(this.width - 100, this.height / 3 * 2 - (i + 1) * 30,
-                        100, 20,
-                        Component.translatable(this.dialogActionDatas[i].message()),
-                        () -> this.dialogActionDatas[finalI].action().action(this)
-                );
+                ActionButton actionButton = getActionButton(i);
                 actionButton.hidden = true;
                 this.addRenderableWidget(actionButton);
                 this.actionButtons.add(actionButton);
@@ -88,10 +87,22 @@ public class DialogScreen extends Screen {
         this.initPage();
     }
 
+    private @NotNull ActionButton getActionButton(int i) {
+        return new ActionButton(this.width - 100, this.height / 3 * 2 - (i + 1) * 30,
+                100, 20,
+                Component.translatable(this.dialogActionDatas[i].message()),
+                () -> {
+                    for (IAction action : this.dialogActionDatas[i].action()) {
+                        action.action(this);
+                    }
+                }
+        );
+    }
+
     @Override
     public void tick() {
         if (!canFlip()) {
-            flipButton.active = false;
+            flipButton.visible = false;
             actionButtons.forEach(button -> button.hidden = false);
         }
     }

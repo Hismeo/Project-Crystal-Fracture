@@ -4,9 +4,10 @@
 
 ## TODO
 
-1. [ ] Action组，一次按钮不止一个行为，可以多个
+1. [x] Action组，一次按钮不止一个行为，可以多个
 2. [ ] 将ImageGroup的图片参数提取出来，方便写DialogConfig的
 3. [ ] TextEffect补全，FontSetting控制字体渲染参数
 4. [ ] 对话字符串渲染时的占位符号替换
 5. [ ] Event支持
 6. [ ] DialogConfig的补全，将对话框屏幕的Magic Number为数据驱动
+7. [ ] Network发包数据，同步客户端的对话框数据

@@ -1,6 +1,5 @@
 package org.hismeo.nuquest.core.dialog.context.text.effect;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -27,6 +26,8 @@ public class RainbowEffect implements ITextEffect {
 
     @Override
     public void parseJson(JsonObject jsonObject) {
-
+        if (jsonObject.has("speed")) {
+            this.speed = jsonObject.get("speed").getAsFloat();
+        }
     }
 }

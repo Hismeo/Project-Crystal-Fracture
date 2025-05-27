@@ -14,6 +14,7 @@ import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.api.dialog.IAction;
 import org.hismeo.nuquest.core.dialog.context.text.DialogText;
+import org.hismeo.nuquest.core.dialog.context.text.effect.NoneEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -38,24 +39,22 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
 
             try {
                 JsonObject jsonObject = element.getAsJsonObject();
-                String dialoguePath = jsonObject.get("dialogueId").getAsString();
+                String dialoguePath = jsonObject.get("dialogId").getAsString();
                 String dialogueId = "%s:%s".formatted(key.getNamespace(), dialoguePath);
                 JsonArray textsArray = jsonObject.getAsJsonArray("dialogTexts");
                 JsonArray actionsDatasArray = jsonObject.getAsJsonArray("dialogActionDatas");
+                DialogText[] texts = new DialogText[textsArray.size()];
+                DialogActionData[] actionDatas = new DialogActionData[actionsDatasArray.size()];
 
-                List<DialogText> texts = new ArrayList<>();
-                for (JsonElement textElement : textsArray) {
-                    DialogText text = getDialogText(textElement);
-                    texts.add(text);
+                for (int i = 0; i < textsArray.size(); i++) {
+                    texts[i] = getDialogText(textsArray.get(i));
                 }
 
-                List<DialogActionData> actionDatas = new ArrayList<>();
-                for (JsonElement textElement : actionsDatasArray) {
-                    DialogActionData actionData = getDialogActionData(textElement);
-                    actionDatas.add(actionData);
+                for (int i = 0; i < actionsDatasArray.size(); i++) {
+                    actionDatas[i] = getDialogActionData(actionsDatasArray.get(i));
                 }
 
-                DialogDefinition definition = new DialogDefinition(dialogueId, texts.toArray(DialogText[]::new), actionDatas.toArray(DialogActionData[]::new));
+                DialogDefinition definition = new DialogDefinition(dialogueId, texts, actionDatas);
                 DialogManager.dataRegister(dialogueId, definition);
             } catch (NullPointerException e) {
                 NuQuest.LOGGER.error("[DialogReloadListener] Failed to load dialogue: {} - {}", key, e.getMessage(), e);
@@ -70,22 +69,26 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         ImageGroup imageGroup = getImageGroup(tryGet(textObject, "imageGroup"));
         String text = tryGetString(textObject, "text");
         SoundGroup soundGroup = getSoundGroup(tryGet(textObject, "soundGroup"));
-        JsonObject effectObject = textObject.get("textEffect").getAsJsonObject();
-        ITextEffect textEffect = ITextEffect.getEffect(tryGetString(effectObject, "name"));
-        JsonElement params = tryGet(textObject, "params");
-        if (params != null) { textEffect.parseJson(params.getAsJsonObject()); }
+        JsonElement effectElement = tryGet(textObject, "textEffect");
+        ITextEffect textEffect = getTextEffect(effectElement);
         return new DialogText(title, imageGroup, text, soundGroup, textEffect);
     }
 
     private static DialogActionData getDialogActionData(JsonElement actionDataElement) {
         JsonObject actionDataObject = actionDataElement.getAsJsonObject();
         String message = tryGetString(actionDataObject, "message");
-        // TODO: 行为组
-        JsonObject actionObject = actionDataObject.get("action").getAsJsonObject();
-        IAction action = IAction.getAction(tryGetString(actionObject, "name"));
-        JsonElement params = tryGet(actionObject, "params");
-        if (params != null) { action.parseJson(params.getAsJsonObject()); }
-        return new DialogActionData(message, action);
+
+        JsonArray actionsArray = actionDataObject.getAsJsonArray("actions");
+        IAction[] actions = new IAction[actionsArray.size()];
+        for (int i = 0; i < actionsArray.size(); i++) {
+            JsonObject jsonObject = actionsArray.get(i).getAsJsonObject();
+            actions[i] = IAction.getAction(tryGetString(jsonObject, "name"));
+            JsonElement params = tryGet(jsonObject, "params");
+            if (params != null) {
+                actions[i].parseJson(params.getAsJsonObject());
+            }
+        }
+        return new DialogActionData(message, actions);
     }
 
     private static SoundGroup getSoundGroup(JsonElement soundElement) {
@@ -104,6 +107,19 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             return new SoundGroup(soundId, volume, pitch);
         }
         return null;
+    }
+
+    private static ITextEffect getTextEffect(JsonElement jsonElement) {
+        ITextEffect effect = new NoneEffect();
+        if (jsonElement != null) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            effect = ITextEffect.getEffect(tryGetString(jsonObject, "name"));
+            JsonElement params = tryGet(jsonObject, "params");
+            if (params != null) {
+                effect.parseJson(params.getAsJsonObject());
+            }
+        }
+        return effect;
     }
 
     private static ImageGroup getImageGroup(JsonElement imageElement) {

@@ -28,6 +28,8 @@ public class TypewriterEffect implements ITextEffect {
 
     @Override
     public void parseJson(JsonObject jsonObject) {
-
+        if (jsonObject.has("speed")) {
+            this.speed = jsonObject.get("speed").getAsFloat();
+        }
     }
 }

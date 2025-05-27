@@ -24,12 +24,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
         RabbitModel.class,
         RaftModel.class,
         ShulkerModel.class,
-        TadpoleModel.class,
         WolfModel.class
 })
 public class ModelMixin implements IEntityModelGetter {
     @Unique
     private ModelPart root;
+
     @Override
     public ModelPart getRoot() {
         return root;

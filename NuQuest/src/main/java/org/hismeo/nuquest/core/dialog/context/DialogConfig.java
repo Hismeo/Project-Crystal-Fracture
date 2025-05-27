@@ -1,4 +1,4 @@
 package org.hismeo.nuquest.core.dialog.context;
 
-public class DialogConfig {
+public record DialogConfig() {
 }
