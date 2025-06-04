@@ -1,4 +1,4 @@
-package org.hismeo.nuquest.core.dialog;
+package org.hismeo.nuquest.core.dialog.context.config.group;
 
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.hismeo.crystallib.util.client.MinecraftUtil;
 
 public class SoundGroup {

@@ -1,0 +1,10 @@
+{
+  "dialog.nuquest.intro.title": "欢迎",
+  "dialog.nuquest.intro.text": "欢迎游玩 NuQuest 模组！这是你冒险旅程的第一步。",
+  "dialog.nuquest.intro.continue": "继续",
+  "dialog.nuquest.intro.exit": "离开",
+  "dialog.nuquest.intro2.title": "旅程开始",
+  "dialog.nuquest.intro2.text": "这片土地充满了神秘。你愿意接受挑战吗？",
+  "dialog.nuquest.intro2.accept": "是的，出发！",
+  "dialog.nuquest.intro2.decline": "暂时不了"
+}

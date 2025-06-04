@@ -1,0 +1,64 @@
+{
+  "dialogId": "intro_2",
+  "dialogTexts": [
+    {
+      "title": "dialog.nuquest.intro2.title",
+      "text": "dialog.nuquest.intro2.text",
+      "imageGroup": {
+        "image": "nuquest:textures/gui/quest_icon.png",
+        "imageConfig": {
+          "x": "screenwidth-64"
+        }
+      },
+      "soundGroup": {
+        "sound": "minecraft:entity.villager.celebrate",
+        "volume": 1.0,
+        "pitch": 1.2
+      },
+      "textEffect": {
+        "name": "rainbow",
+        "params": {
+          "speed": 1.0
+        }
+      }
+    },
+    {
+      "text": "当然了，你也可以选择不用翻译键"
+    }
+  ],
+  "dialogActionDatas": [
+    {
+      "message": "dialog.nuquest.intro2.accept",
+      "actions": [
+        {
+          "name": "quest",
+          "params": {
+            "quest": "nuquest:first_steps"
+          }
+        }
+      ]
+    },
+    {
+      "message": "dialog.nuquest.intro2.decline",
+      "actions": [
+        {
+          "name": "close"
+        }
+      ]
+    },
+    {
+      "message": "给我阎魔刀",
+      "actions": [
+        {
+          "name": "command",
+          "params": {
+            "command": "/give playername minecraft:netherite_sword"
+          }
+        },
+        {
+          "name": "close"
+        }
+      ]
+    }
+  ]
+}

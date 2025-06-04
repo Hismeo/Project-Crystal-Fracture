@@ -15,8 +15,8 @@ import org.hismeo.crystallib.util.client.MinecraftUtil;
 import org.hismeo.nuquest.api.dialog.IAction;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
-import org.hismeo.nuquest.core.dialog.ImageGroup;
-import org.hismeo.nuquest.core.dialog.SoundGroup;
+import org.hismeo.nuquest.core.dialog.context.config.group.ImageGroup;
+import org.hismeo.nuquest.core.dialog.context.config.group.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.context.text.DialogText;
@@ -42,7 +42,7 @@ public class DialogScreen extends Screen {
     private final DialogActionData[] dialogActionDatas;
     private final DialogText[] dialogTexts;
     private String title;
-    private ImageGroup imageGroup;
+    private ImageGroup[] imageGroups;
     private String originText;
     private String[] splitText;
     private SoundGroup soundGroup;
@@ -112,8 +112,10 @@ public class DialogScreen extends Screen {
         int dialogueHeight = this.height / 3 * 2;
         guiGraphics.fillGradient(0, dialogueHeight, this.width, this.height, -1073741824, -1073741824);
 
-        if (this.imageGroup != null && this.imageGroup.hasImage()) {
-            this.imageGroup.blitImage(guiGraphics, varMap);
+        if (this.imageGroups != null) {
+            for (ImageGroup imageGroup : this.imageGroups) {
+                if (imageGroup.hasImage()) imageGroup.blitImage(guiGraphics, varMap);
+            }
         }
 
         if (title != null) {
@@ -149,7 +151,7 @@ public class DialogScreen extends Screen {
         varMap.put("screenheight", this.height);
         if (initPage != page) {
             this.title = dialogTexts[page].title();
-            this.imageGroup = dialogTexts[page].imageGroup();
+            this.imageGroups = dialogTexts[page].imageGroup();
             this.originText = dialogTexts[page].text();
             this.splitText = originText.split("\n");
             this.soundGroup = dialogTexts[page].soundGroup();
@@ -160,9 +162,11 @@ public class DialogScreen extends Screen {
     }
 
     @Override
-    protected void renderBlurredBackground(float partialTick) {}
+    protected void renderBlurredBackground(float partialTick) {
+    }
 
     @Override
-    protected void renderMenuBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {}
+    protected void renderMenuBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {
+    }
 }
 

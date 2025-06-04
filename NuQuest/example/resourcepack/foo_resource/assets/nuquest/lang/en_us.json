@@ -1,0 +1,10 @@
+{
+  "dialog.nuquest.intro.title": "Welcome",
+  "dialog.nuquest.intro.text": "Welcome to the NuQuest mod! This is your first step into an adventure.",
+  "dialog.nuquest.intro.continue": "Continue",
+  "dialog.nuquest.intro.exit": "Leave",
+  "dialog.nuquest.intro2.title": "Your Journey Begins",
+  "dialog.nuquest.intro2.text": "This land is full of mystery. Will you accept the challenge?",
+  "dialog.nuquest.intro2.accept": "Yes, let's go!",
+  "dialog.nuquest.intro2.decline": "Not now"
+}

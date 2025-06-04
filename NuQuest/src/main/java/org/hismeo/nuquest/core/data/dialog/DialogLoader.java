@@ -8,8 +8,9 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
 import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
-import org.hismeo.nuquest.core.dialog.ImageGroup;
-import org.hismeo.nuquest.core.dialog.SoundGroup;
+import org.hismeo.nuquest.core.dialog.context.config.ImageConfig;
+import org.hismeo.nuquest.core.dialog.context.config.group.ImageGroup;
+import org.hismeo.nuquest.core.dialog.context.config.group.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogActionData;
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.api.dialog.IAction;
@@ -17,8 +18,6 @@ import org.hismeo.nuquest.core.dialog.context.text.DialogText;
 import org.hismeo.nuquest.core.dialog.context.text.effect.NoneEffect;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static org.hismeo.crystallib.util.JsonUtil.*;
@@ -66,12 +65,25 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
     private static @NotNull DialogText getDialogText(JsonElement textElement) {
         JsonObject textObject = textElement.getAsJsonObject();
         String title = tryGetString(textObject, "title");
-        ImageGroup imageGroup = getImageGroup(tryGet(textObject, "imageGroup"));
+        JsonElement imageGroupElement = tryGet(textObject, "imageGroup");
+        ImageGroup[] imageGroups = new ImageGroup[]{};
+        if (imageGroupElement != null) {
+            if (imageGroupElement.isJsonObject()) {
+                imageGroups = new ImageGroup[]{getImageGroup(imageGroupElement)};
+            } else {
+                JsonArray imageGroupArray = imageGroupElement.getAsJsonArray();
+                ImageGroup[] temporaryImageGroups = new ImageGroup[imageGroupArray.size()];
+                for (int i = 0; i < imageGroupArray.size(); i++) {
+                    temporaryImageGroups[i] = getImageGroup(imageGroupArray.get(i));
+                }
+                imageGroups = temporaryImageGroups;
+            }
+        }
         String text = tryGetString(textObject, "text");
         SoundGroup soundGroup = getSoundGroup(tryGet(textObject, "soundGroup"));
         JsonElement effectElement = tryGet(textObject, "textEffect");
         ITextEffect textEffect = getTextEffect(effectElement);
-        return new DialogText(title, imageGroup, text, soundGroup, textEffect);
+        return new DialogText(title, imageGroups, text, soundGroup, textEffect);
     }
 
     private static DialogActionData getDialogActionData(JsonElement actionDataElement) {
@@ -135,18 +147,23 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             } else if (imageElement.isJsonObject()) {
                 JsonObject imageObject = imageElement.getAsJsonObject();
                 atlasLocation = ResourceLocation.tryParse(imageObject.get("image").getAsString());
-                x = EvalInt.fromJson(imageObject.get("x"));
-                y = EvalInt.fromJson(imageObject.get("y"), y);
-                width = tryGetInt(imageObject, "width", width);
-                height = tryGetInt(imageObject, "height", height);
-                uOffset = tryGetFloat(imageObject, "uOffset");
-                vOffset = tryGetFloat(imageObject, "vOffset");
-                uWidth = tryGetInt(imageObject, "uWidth", uWidth);
-                vHeight = tryGetInt(imageObject, "vHeight", vHeight);
-                textureWidth = tryGetInt(imageObject, "textureWidth", textureWidth);
-                textureHeight = tryGetInt(imageObject, "textureHeight", textureHeight);
+                JsonElement imageConfigElement = tryGet(imageObject, "imageConfig");
+                if (imageConfigElement != null) {
+                    JsonObject imageConfigObject = imageConfigElement.getAsJsonObject();
+                    x = EvalInt.fromJson(imageConfigObject.get("x"));
+                    y = EvalInt.fromJson(imageConfigObject.get("y"), y);
+                    width = tryGetInt(imageConfigObject, "width", width);
+                    height = tryGetInt(imageConfigObject, "height", height);
+                    uOffset = tryGetFloat(imageConfigObject, "uOffset");
+                    vOffset = tryGetFloat(imageConfigObject, "vOffset");
+                    uWidth = tryGetInt(imageConfigObject, "uWidth", uWidth);
+                    vHeight = tryGetInt(imageConfigObject, "vHeight", vHeight);
+                    textureWidth = tryGetInt(imageConfigObject, "textureWidth", textureWidth);
+                    textureHeight = tryGetInt(imageConfigObject, "textureHeight", textureHeight);
+                }
             }
-            return new ImageGroup(atlasLocation, x, y, width, height, uOffset, vOffset, uWidth, vHeight, textureWidth, textureHeight);
+            ImageConfig imageConfig = new ImageConfig(x, y, width, height, uOffset, vOffset, uWidth, vHeight, textureWidth, textureHeight);
+            return new ImageGroup(atlasLocation, imageConfig);
         }
         return null;
     }

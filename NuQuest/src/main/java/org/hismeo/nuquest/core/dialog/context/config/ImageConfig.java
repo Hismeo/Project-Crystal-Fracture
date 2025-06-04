@@ -1,14 +1,12 @@
-package org.hismeo.nuquest.core.dialog;
+package org.hismeo.nuquest.core.dialog.context.config;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
 
 import java.util.Map;
 
 /**
- * @param atlasLocation 纹理图集的位置。
  * @param x             绘制区域左上角的 x 坐标。
  * @param y             绘制区域左上角的 y 坐标。
  * @param width         要绘制部分的宽度。
@@ -20,16 +18,9 @@ import java.util.Map;
  * @param textureWidth  纹理的总宽度。
  * @param textureHeight 纹理的总高度。
  */
-public record ImageGroup(ResourceLocation atlasLocation, EvalInt x, EvalInt y, int width,
-                         int height, float uOffset,
-                         float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
-    public static final ImageGroup EMPTY = new ImageGroup(TextureAtlas.LOCATION_PARTICLES, new EvalInt(0), new EvalInt(64), 64, 64, 0, 0, 64, 64, 64, 64);
-
-    public boolean hasImage() {
-        return atlasLocation != null;
-    }
-
-    public void blitImage(GuiGraphics guiGraphics, Map<String, Number> varMap) {
+public record ImageConfig(EvalInt x, EvalInt y, int width, int height, float uOffset, float vOffset, int uWidth,
+                          int vHeight, int textureWidth, int textureHeight) {
+    public void blitImage(ResourceLocation atlasLocation, GuiGraphics guiGraphics, Map<String, Number> varMap) {
         guiGraphics.blit(atlasLocation,
                 x.eval(varMap),
                 y.eval(varMap),

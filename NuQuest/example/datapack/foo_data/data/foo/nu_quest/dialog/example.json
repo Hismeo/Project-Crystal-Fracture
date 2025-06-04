@@ -1,0 +1,56 @@
+{
+  "dialogId": "intro",
+  "dialogTexts": [
+    {
+      "title": "dialog.nuquest.intro.title",
+      "text": "dialog.nuquest.intro.text",
+      "imageGroup": {
+        "image": "foo:textures/gui/npc.png",
+        "imageConfig": {
+          "x": "0",
+          "y": "(screenheight / 3 * 2) - 64",
+          "width": 64,
+          "height": 64,
+          "uOffset": 0,
+          "vOffset": 0,
+          "uWidth": 64,
+          "vHeight": 64,
+          "textureWidth": 64,
+          "textureHeight": 64
+        }
+      },
+      "soundGroup": {
+        "sound": "minecraft:entity.villager.yes",
+        "volume": 1.0,
+        "pitch": 1.0
+      },
+      "textEffect": {
+        "name": "typewriter"
+      },
+      "params": {
+        "speed": 2
+      }
+    }
+  ],
+  "dialogActionDatas": [
+    {
+      "message": "dialog.nuquest.intro.continue",
+      "actions": [
+        {
+          "name": "dialog",
+          "params": {
+            "dialogId": "foo:intro_2"
+          }
+        }
+      ]
+    },
+    {
+      "message": "dialog.nuquest.intro.exit",
+      "actions": [
+        {
+          "name": "close"
+        }
+      ]
+    }
+  ]
+}
