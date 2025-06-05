@@ -1,5 +1,6 @@
 package org.hismeo.nuquest.client.gui.screen;
 
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
@@ -8,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -44,7 +46,7 @@ public class DialogScreen extends Screen {
     private String title;
     private ImageGroup[] imageGroups;
     private String originText;
-    private String[] splitText;
+    private List<String> splitText;
     private SoundGroup soundGroup;
     private ITextEffect textEffect;
     private final int maxPage;
@@ -124,8 +126,8 @@ public class DialogScreen extends Screen {
             guiGraphics.drawString(this.font, string, 10, dialogueHeight + 4, 0xFFFFFFFF);
             guiGraphics.fill(8, dialogueHeight + 4 + 10, 8 + 4 + this.font.width(string), dialogueHeight + 5 + 10, 0xFFFFFFFF);
         }
-        for (int i = 0; i < this.splitText.length; i++) {
-            guiGraphics.drawString(this.font, Component.translatable(this.splitText[i]), 20, dialogueHeight + 25 + (i * this.font.lineHeight + 4), 0xFFFFFFFF);
+        for (int i = 0; i < this.splitText.size(); i++) {
+            guiGraphics.drawString(this.font, Component.translatable(this.splitText.get(i)), 20, dialogueHeight + 25 + (i * this.font.lineHeight + 4), 0xFFFFFFFF);
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
@@ -153,12 +155,24 @@ public class DialogScreen extends Screen {
             this.title = dialogTexts[page].title();
             this.imageGroups = dialogTexts[page].imageGroup();
             this.originText = dialogTexts[page].text();
-            this.splitText = originText.split("\n");
             this.soundGroup = dialogTexts[page].soundGroup();
             this.textEffect = dialogTexts[page].textEffect();
             if (soundGroup != null) soundGroup.playSound(getLevel());
             initPage = page;
         }
+        this.splitText = this.splitString(originText);
+    }
+
+    private List<String> splitString(String string) {
+        List<String> splits = new ArrayList<>();
+        List<String> lineBreaksSplits = List.of(string.split("\n"));
+        StringSplitter fontSplitter = this.font.getSplitter();
+        for (String split : lineBreaksSplits) {
+            fontSplitter.splitLines(split, this.width - 40, Style.EMPTY).forEach(
+                    formattedText -> splits.add(formattedText.getString())
+            );
+        }
+        return splits;
     }
 
     @Override
