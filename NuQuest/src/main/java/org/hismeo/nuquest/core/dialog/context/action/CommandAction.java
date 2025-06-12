@@ -3,7 +3,7 @@ package org.hismeo.nuquest.core.dialog.context.action;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.screens.Screen;
 import org.hismeo.nuquest.api.dialog.IAction;
-import org.hismeo.nuquest.common.network.CommandPacketC2S;
+import org.hismeo.nuquest.common.network.c2s.CommandPacketC2S;
 
 @SuppressWarnings("unused")
 public class CommandAction implements IAction {
@@ -18,7 +18,7 @@ public class CommandAction implements IAction {
 
     @Override
     public void action(Screen screen) {
-        CommandPacketC2S.sendToServer(this.command);
+        CommandPacketC2S.handleCommand(this.command);
     }
 
     @Override

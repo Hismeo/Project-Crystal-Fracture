@@ -15,16 +15,16 @@ public class DialogCommand {
         dispatcher.register(
                 Commands.literal("dialog")
                         .requires(src -> src.hasPermission(2))
-                        .then(Commands.argument("id", DialogArgument.dialogue())
+                        .then(Commands.argument("id", DialogArgument.dialog())
                                 .executes(ctx -> {
-                                    ResourceLocation id = DialogArgument.getDialogueId(ctx, "id");
-                                    return openDialogueScreen(id);
+                                    ResourceLocation id = DialogArgument.getDialogId(ctx, "id");
+                                    return openDialogScreen(id);
                                 })
                         )
         );
     }
 
-    private static int openDialogueScreen(ResourceLocation id) {
+    private static int openDialogScreen(ResourceLocation id) {
         DialogDefinition definition = DialogManager.getValue(id.toString());
         MinecraftUtil.setScreen(new DialogScreen(definition));
         return 1;

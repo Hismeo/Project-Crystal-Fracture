@@ -1,39 +1,49 @@
 package org.hismeo.nuquest.core.data.dialog;
 
 import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
+import org.hismeo.nuquest.core.dialog.context.config.DialogConfig;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class DialogManager {
     private static final Map<String, DialogDefinition> generalDialogMap = new LinkedHashMap<>();
-    private static final Map<String, DialogDefinition> dataDialogueMap = new LinkedHashMap<>();
+    private static final Map<String, DialogDefinition> dataDialogMap = new LinkedHashMap<>();
+    private static DialogConfig globalDialogConfig = null;
 
-    public static void register(String id, DialogDefinition dialogue) {
-        if (generalDialogMap.putIfAbsent(id, dialogue) != null || dataDialogueMap.containsKey(id)) {
-            throw new IllegalArgumentException("Duplicate dialogue ID: " + id);
+    public static void register(String id, DialogDefinition dialog) {
+        if (generalDialogMap.putIfAbsent(id, dialog) != null || dataDialogMap.containsKey(id)) {
+            throw new IllegalArgumentException("Duplicate dialog ID: " + id);
         }
     }
 
-    static void dataRegister(String id, DialogDefinition dialogue) {
+    static void dataRegister(String id, DialogDefinition dialog) {
         if (generalDialogMap.containsKey(id)) {
-            throw new IllegalArgumentException("ID conflict with code-defined dialogue: " + id);
+            throw new IllegalArgumentException("ID conflict with code-defined dialog: " + id);
         }
-        dataDialogueMap.put(id, dialogue);
+        dataDialogMap.put(id, dialog);
     }
 
     static void clearDataRegister() {
-        dataDialogueMap.clear();
+        dataDialogMap.clear();
     }
 
-    public static Set<String> getDialogueMapView() {
+    static void configRegister(DialogConfig dialogConfig) {
+        globalDialogConfig = dialogConfig;
+    }
+
+    public static Set<String> getDialogMapView() {
         Set<String> set = new LinkedHashSet<>();
         set.addAll(generalDialogMap.keySet());
-        set.addAll(dataDialogueMap.keySet());
+        set.addAll(dataDialogMap.keySet());
         return Collections.unmodifiableSet(set);
     }
 
     public static DialogDefinition getValue(@Nullable String id) {
-        return generalDialogMap.getOrDefault(id, dataDialogueMap.getOrDefault(id, DialogDefinition.EMPTY));
+        return generalDialogMap.getOrDefault(id, dataDialogMap.getOrDefault(id, DialogDefinition.EMPTY));
+    }
+
+    public static DialogConfig getGlobalDialogConfig() {
+        return globalDialogConfig;
     }
 }

@@ -4,6 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class JsonUtil {
+    public static boolean tryGetBoolean(JsonObject jsonObject, String name, Boolean defaultValue) {
+        return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsBoolean();
+    }
+
     public static int tryGetInt(JsonObject jsonObject, String name) {
         return tryGetInt(jsonObject, name, 0);
     }

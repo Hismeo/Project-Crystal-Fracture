@@ -8,36 +8,14 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import org.hismeo.crystallib.util.client.MinecraftUtil;
 
-public class SoundGroup {
-    private final SoundEvent soundEvent;
-    private final float volume;
-    private final float pitch;
-
+public record SoundGroup(SoundEvent soundEvent, float volume, float pitch) {
     public SoundGroup(String soundId, float volume, float pitch) {
         this(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.tryParse(soundId)), volume, pitch);
     }
 
-    public SoundGroup(SoundEvent soundEvent, float volume, float pitch) {
-        this.soundEvent = soundEvent;
-        this.volume = volume;
-        this.pitch = pitch;
-    }
-
-    public SoundEvent getSoundEvent() {
-        return soundEvent;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public void playSound(Level level){
-        if (this.getSoundEvent() == null) return;
-        if (level.isClientSide){
+    public void playSound(Level level) {
+        if (this.soundEvent == null) return;
+        if (level.isClientSide) {
             LocalPlayer player = MinecraftUtil.getPlayer();
             level.playSound(player, player.blockPosition(), this.soundEvent, SoundSource.PLAYERS, this.volume, this.pitch);
         } else {

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class DialogArgument implements ArgumentType<ResourceLocation> {
-    public static DialogArgument dialogue() {
+    public static DialogArgument dialog() {
         return new DialogArgument();
     }
 
@@ -26,13 +26,13 @@ public class DialogArgument implements ArgumentType<ResourceLocation> {
         return ResourceLocationArgument.id().parse(reader);
     }
 
-    public static ResourceLocation getDialogueId(CommandContext<CommandSourceStack> context, String name) {
+    public static ResourceLocation getDialogId(CommandContext<CommandSourceStack> context, String name) {
         return context.getArgument(name, ResourceLocation.class);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return SharedSuggestionProvider.suggest(DialogManager.getDialogueMapView().stream(), builder);
+        return SharedSuggestionProvider.suggest(DialogManager.getDialogMapView().stream(), builder);
     }
 
     @Override

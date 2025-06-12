@@ -29,13 +29,13 @@ public class DialogState {
 
     public void saveData(CompoundTag compoundTag) {
         if (this.state == null) {
-            NuQuest.LOGGER.error("The dialogueState is null!!!");
+            NuQuest.LOGGER.error("The dialogState is null!!!");
             return;
         }
-        compoundTag.putString("dialogueId", this.state);
+        compoundTag.putString("dialogId", this.state);
     }
 
-    public void syncData(EntityDataAccessor<String> dialogueId, SynchedEntityData entityData) {
-        entityData.set(dialogueId, state);
+    public void syncData(EntityDataAccessor<String> dialogId, SynchedEntityData entityData) {
+        entityData.set(dialogId, state);
     }
 }

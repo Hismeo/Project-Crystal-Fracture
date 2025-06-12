@@ -1,7 +1,8 @@
-package org.hismeo.nuquest.common.network;
+package org.hismeo.nuquest.common.network.c2s;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,10 +30,13 @@ public record CommandPacketC2S(String command) implements CustomPacketPayload {
 
                 server.getCommands().performPrefixedCommand(commandSourceStack, finalCommand);
             }
+        }).exceptionally(throwable -> {
+            context.disconnect(Component.translatable("neoforge.network.invalid_flow", throwable.getMessage()));
+            return null;
         });
     }
 
-    public static void sendToServer(String command) {
+    public static void handleCommand(String command) {
         PacketDistributor.sendToServer(new CommandPacketC2S(command));
     }
 }
