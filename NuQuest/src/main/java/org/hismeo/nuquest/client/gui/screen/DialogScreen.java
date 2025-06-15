@@ -27,10 +27,8 @@ import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.context.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
@@ -48,14 +46,14 @@ public class DialogScreen extends Screen {
     protected final List<ActionButton> actionButtons = new ArrayList<>();
     private final String dialogId;
     private final DialogDefinition dialogDefinition;
-    private final DialogConfig dialogConfig;
-    private final boolean pauseScreen;
-    private final BackgroundConfig backgroundConfig;
-    private final TitleConfig titleConfig;
-    private final TextConfig textConfig;
-    private final ImageConfig[] imageConfigs;
-    private final ActionButtonConfig[] actionButtonConfigs;
-    private final FlipButtonConfig flipButtonConfig;
+    private DialogConfig dialogConfig;
+    private Boolean pauseScreen;
+    private BackgroundConfig backgroundConfig;
+    private TitleConfig titleConfig;
+    private TextConfig textConfig;
+    private ImageConfig[] imageConfigs;
+    private ActionButtonConfig[] actionButtonConfigs;
+    private FlipButtonConfig flipButtonConfig;
     private final DialogActionData[] dialogActionDatas;
     private final DialogText[] dialogTexts;
     private String title;
@@ -84,21 +82,52 @@ public class DialogScreen extends Screen {
         this.page = page;
         this.maxPage = dialogDefinition.dialogTexts().length;
         this.dialogDefinition = dialogDefinition;
-        if (dialogDefinition.dialogConfig() != null) {
-            this.dialogConfig = dialogDefinition.dialogConfig();
-        } else {
-            this.dialogConfig = DialogManager.getGlobalDialogConfig();
-        }
-        this.pauseScreen = dialogConfig.pauseScreen();
-        this.backgroundConfig = dialogConfig.backgroundConfig();
-        this.titleConfig = dialogConfig.titleConfig();
-        this.textConfig = dialogConfig.textConfig();
-        this.imageConfigs = dialogConfig.imageConfigs();
-        this.actionButtonConfigs = dialogConfig.actionButtonConfigs();
-        this.flipButtonConfig = dialogConfig.flipButtonConfig();
+        this.initConfig();
         this.dialogActionDatas = dialogDefinition.dialogActionDatas();
         this.dialogId = dialogDefinition.dialogId();
         this.dialogTexts = dialogDefinition.dialogTexts();
+    }
+
+    private void initConfig() {
+        DialogConfig globalConfig = DialogManager.getGlobalDialogConfig();
+        DialogConfig definitionConfig = dialogDefinition.dialogConfig();
+        ActionButtonConfig[] globalAction = globalConfig.getActionButtonConfigs();
+        ImageConfig[] globalImage = globalConfig.getImageConfigs();
+
+        this.dialogConfig = definitionConfig != null ? definitionConfig : globalConfig;
+        this.pauseScreen = dialogConfig.isPauseScreen();
+        this.backgroundConfig = dialogConfig.getBackgroundConfig();
+        this.titleConfig = dialogConfig.getTitleConfig();
+        this.textConfig = dialogConfig.getTextConfig();
+        this.imageConfigs = dialogConfig.getImageConfigs();
+        this.actionButtonConfigs = dialogConfig.getActionButtonConfigs();
+        this.flipButtonConfig = dialogConfig.getFlipButtonConfig();
+
+        if (definitionConfig != null) {
+            if (pauseScreen) pauseScreen = globalConfig.isPauseScreen();
+            if (backgroundConfig == null) backgroundConfig = globalConfig.getBackgroundConfig();
+            if (titleConfig == null) titleConfig = globalConfig.getTitleConfig();
+            if (textConfig == null) textConfig = globalConfig.getTextConfig();
+            if (flipButtonConfig == null) flipButtonConfig = globalConfig.getFlipButtonConfig();
+            if (imageConfigs == null) imageConfigs = globalImage;
+            else if (imageConfigs.length < globalImage.length) {
+                imageConfigs = mergeArrayConfig(imageConfigs, globalImage, ImageConfig.class);
+            }
+            if (actionButtonConfigs == null) actionButtonConfigs = globalAction;
+            else if (actionButtonConfigs.length < globalAction.length) {
+                actionButtonConfigs = mergeArrayConfig(actionButtonConfigs, globalAction, ActionButtonConfig.class);
+            }
+        }
+    }
+
+    private <T> T[] mergeArrayConfig(T[] originalConfig, T[] globalConfig, Class<T> clazz) {
+        @SuppressWarnings("unchecked")
+        T[] mergeConfigs = (T[]) Array.newInstance(clazz, globalConfig.length);
+        for (int i = 0; i < mergeConfigs.length; i++) {
+            if (originalConfig.length > i) mergeConfigs[i] = originalConfig[i];
+            else mergeConfigs[i] = globalConfig[i];
+        }
+        return mergeConfigs;
     }
 
     @Override
@@ -154,8 +183,15 @@ public class DialogScreen extends Screen {
     }
 
     private void arrayBlitImage(ImageGroup[] imageGroups, GuiGraphics guiGraphics) {
+        if (imageGroups == null) return;
         for (int i = 0; i < imageGroups.length; i++) {
-            imageGroups[i].blitImage(this.imageConfigs[i], guiGraphics, this.numberVarMap);
+            ImageConfig imageConfig;
+            if (this.imageConfigs.length <= i) {
+                imageConfig = imageConfigs[imageConfigs.length - 1];
+            } else {
+                imageConfig = imageConfigs[i];
+            }
+            imageGroups[i].blitImage(imageConfig, guiGraphics, this.numberVarMap);
         }
     }
 
@@ -167,7 +203,13 @@ public class DialogScreen extends Screen {
     @NotNull
     private ActionButton getActionButton(int index) {
         MutableComponent translatable = Component.translatable(this.dialogActionDatas[index].message());
-        return this.actionButtonConfigs[index].getActionButton(index,
+        ActionButtonConfig actionConfig;
+        if (this.actionButtonConfigs.length <= index) {
+            actionConfig = actionButtonConfigs[actionButtonConfigs.length - 1];
+        } else {
+            actionConfig = actionButtonConfigs[index];
+        }
+        return actionConfig.getActionButton(index,
                 translatable,
                 () -> {
                     for (IAction action : this.dialogActionDatas[index].action()) {

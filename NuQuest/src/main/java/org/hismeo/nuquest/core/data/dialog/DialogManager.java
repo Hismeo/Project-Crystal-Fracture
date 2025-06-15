@@ -9,7 +9,7 @@ import java.util.*;
 public class DialogManager {
     private static final Map<String, DialogDefinition> generalDialogMap = new LinkedHashMap<>();
     private static final Map<String, DialogDefinition> dataDialogMap = new LinkedHashMap<>();
-    private static DialogConfig globalDialogConfig = null;
+    private static final DialogConfig globalDialogConfig = new DialogConfig();
 
     public static void register(String id, DialogDefinition dialog) {
         if (generalDialogMap.putIfAbsent(id, dialog) != null || dataDialogMap.containsKey(id)) {
@@ -28,8 +28,12 @@ public class DialogManager {
         dataDialogMap.clear();
     }
 
-    static void configRegister(DialogConfig dialogConfig) {
-        globalDialogConfig = dialogConfig;
+    static void replaceConfig(DialogConfig dialogConfig) {
+        globalDialogConfig.replace(dialogConfig);
+    }
+
+    public static DialogConfig getGlobalDialogConfig() {
+        return globalDialogConfig;
     }
 
     public static Set<String> getDialogMapView() {
@@ -41,9 +45,5 @@ public class DialogManager {
 
     public static DialogDefinition getValue(@Nullable String id) {
         return generalDialogMap.getOrDefault(id, dataDialogMap.getOrDefault(id, DialogDefinition.EMPTY));
-    }
-
-    public static DialogConfig getGlobalDialogConfig() {
-        return globalDialogConfig;
     }
 }

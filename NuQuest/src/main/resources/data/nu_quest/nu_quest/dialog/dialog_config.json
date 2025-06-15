@@ -1,0 +1,61 @@
+{
+  "pauseScreen": false,
+  "backgroundConfig": {
+    "x": 0,
+    "y": "@screenheight/3*2",
+    "width": "@screenwidth",
+    "height": "@screenheight",
+    "colorFrom": -1073741824,
+    "colorTo": -1073741824
+  },
+  "titleConfig": {
+    "x": 10,
+    "y": "@screenheight/3*2+4",
+    "color": -1,
+    "useUnderline": true,
+    "underlineConfig": {
+      "minX": 8,
+      "minY": "@screenheight/3*2+14",
+      "maxX": "@textwidth+12",
+      "maxY": "@screenheight/3*2+15",
+      "color": -1
+    }
+  },
+  "textConfig": {
+    "x": 20,
+    "y": "@screenheight+29+@index*9",
+    "color": -1
+  },
+  "imageConfigs": [
+    {
+      "x": "0",
+      "y": "(@screenheight / 3 * 2) - 64",
+      "width": 64,
+      "height": 64,
+      "uOffset": 0,
+      "vOffset": 0,
+      "uWidth": 64,
+      "vHeight": 64,
+      "textureWidth": 64,
+      "textureHeight": 64
+    }
+  ],
+  "actionButtonConfigs": [
+    {
+      "x": "@screenwidth-100",
+      "y": "@screenheight/3*2-(@index+1)*30",
+      "width": 100,
+      "height": 20
+    }
+  ],
+  "flipButton": {
+    "widgetSpritesConfig": {
+      "enabled": "widget/cross_button",
+      "enabledFocused": "widget/cross_button_highlighted"
+    },
+    "x": "@screenwidth-40",
+    "y": "@screenheight-40",
+    "width": 20,
+    "height": 20
+  }
+}

@@ -17,6 +17,6 @@ public class GameEvent {
     @SubscribeEvent
     public static void dataListener(AddReloadListenerEvent event){
         event.addListener(new DialogLoader());
-//        event.addListener(new DialogConfigLoader());
+        event.addListener(new DialogConfigLoader());
     }
 }

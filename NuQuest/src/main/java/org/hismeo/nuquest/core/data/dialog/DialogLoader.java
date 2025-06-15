@@ -32,6 +32,10 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         super(GSON, "nu_quest/dialog");
     }
 
+    protected DialogLoader(Gson gson, String directory) {
+        super(gson, directory);
+    }
+
     @Override
     protected void apply(@NotNull Map<ResourceLocation, JsonElement> object, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         DialogManager.clearDataRegister();
@@ -70,7 +74,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         NuQuest.LOGGER.debug("[DialogReloadListener] Loaded {} dialogs.", DialogManager.getDialogMapView().size());
     }
 
-    private static @NotNull DialogText getDialogText(JsonElement textElement) {
+    protected static @NotNull DialogText getDialogText(JsonElement textElement) {
         JsonObject textObject = textElement.getAsJsonObject();
         String title = tryGetString(textObject, "title");
         JsonElement imageGroupElement = tryGet(textObject, "imageGroup");
@@ -94,7 +98,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new DialogText(title, imageGroups, text, soundGroup, textEffect);
     }
 
-    private static DialogActionData getDialogActionData(JsonElement actionDataElement) {
+    protected static DialogActionData getDialogActionData(JsonElement actionDataElement) {
         JsonObject actionDataObject = actionDataElement.getAsJsonObject();
         String message = tryGetString(actionDataObject, "message");
 
@@ -111,9 +115,9 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new DialogActionData(message, actions);
     }
 
-    static DialogConfig getDialogConfig(JsonElement configElement) {
+    protected static DialogConfig getDialogConfig(JsonElement configElement) {
         JsonObject configObject = configElement.getAsJsonObject();
-        boolean pauseScreen = tryGetBoolean(configObject, "pauseScreen", false);
+        Boolean pauseScreen = tryGetBoolean(configObject, "pauseScreen");
         BackgroundConfig backgroundConfig = getBackgroundConfig(tryGet(configObject, "backgroundConfig"));
         TitleConfig titleConfig = getTitleConfig(tryGet(configObject, "titleConfig"));
         TextConfig textConfig = getTextConfig(tryGet(configObject, "textConfig"));
@@ -131,7 +135,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, flipButtonConfig);
     }
 
-    private static BackgroundConfig getBackgroundConfig(JsonElement backgroundElement) {
+    protected static BackgroundConfig getBackgroundConfig(JsonElement backgroundElement) {
         EvalInt x = new EvalInt(0), y = new EvalInt("@screenheight / 3 * 2"), width = new EvalInt("@screenwidth"), height = new EvalInt("@screenheight");
         int colorFrom = -1073741824, colorTo = -1073741824;
         if (backgroundElement != null) {
@@ -146,7 +150,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new BackgroundConfig(x, y, width, height, colorFrom, colorTo);
     }
 
-    private static TitleConfig getTitleConfig(JsonElement titleElement) {
+    protected static TitleConfig getTitleConfig(JsonElement titleElement) {
         EvalInt x = new EvalInt(10), y = new EvalInt("@screenheight / 3 * 2 + 4");
         int color = 0xFFFFFFFF;
         boolean useUnderline = true;
@@ -162,7 +166,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new TitleConfig(x, y, color, useUnderline, underlineConfig);
     }
 
-    private static TitleConfig.UnderlineConfig getUnderlineConfig(JsonElement underlineElement) {
+    protected static TitleConfig.UnderlineConfig getUnderlineConfig(JsonElement underlineElement) {
         EvalInt minX = new EvalInt(8), minY = new EvalInt("@screenheight / 3 * 2 + 14"),
                 maxX = new EvalInt("@textwidth + 12"), maxY = new EvalInt("@screenheight / 3 * 2 + 15");
         int color = 0xFFFFFFFF;
@@ -177,7 +181,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new TitleConfig.UnderlineConfig(minX, minY, maxX, maxY, color);
     }
 
-    private static TextConfig getTextConfig(JsonElement textElement) {
+    protected static TextConfig getTextConfig(JsonElement textElement) {
         EvalInt x = new EvalInt(20), y = new EvalInt("@screenheight + 29 + @index * 9");
         int color = 0xFFFFFFFF;
         if (textElement != null) {
@@ -189,7 +193,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new TextConfig(x, y, color);
     }
 
-    private static ActionButtonConfig getActionButtonConfig(JsonElement actionElement) {
+    protected static ActionButtonConfig getActionButtonConfig(JsonElement actionElement) {
         EvalInt x = new EvalInt("@screenwidth-100"), y = new EvalInt("@screenheight / 3 * 2 - (@index + 1) * 30"),
                 width = new EvalInt(100), height = new EvalInt(20);
         if (actionElement != null) {
@@ -202,7 +206,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new ActionButtonConfig(x, y, width, height);
     }
 
-    private static FlipButtonConfig getFlipButtonConfig(JsonElement flipElement) {
+    protected static FlipButtonConfig getFlipButtonConfig(JsonElement flipElement) {
         WidgetSpritesConfig widgetSpritesConfig = new WidgetSpritesConfig("widget/cross_button", "widget/cross_button_highlighted");
         EvalInt x = new EvalInt("@screenwidth-40"), y = new EvalInt("@screenheight-40"),
                 width = new EvalInt(20), height = new EvalInt(20);
@@ -217,7 +221,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new FlipButtonConfig(widgetSpritesConfig, x, y, width, height);
     }
 
-    private static WidgetSpritesConfig getWidgetSpritesConfig(JsonElement spritesElement) {
+    protected static WidgetSpritesConfig getWidgetSpritesConfig(JsonElement spritesElement) {
         String enabled = null, disabled = null, enabledFocused = null, disabledFocused = null;
         if (spritesElement != null) {
             JsonObject spritesObject = spritesElement.getAsJsonObject();
@@ -231,7 +235,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return new WidgetSpritesConfig(enabled, disabled, enabledFocused, disabledFocused);
     }
 
-    private static SoundGroup getSoundGroup(JsonElement soundElement) {
+    protected static SoundGroup getSoundGroup(JsonElement soundElement) {
         String soundId = null;
         float volume = 1.0f;
         float pitch = 1.0f;
@@ -249,7 +253,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return null;
     }
 
-    private static ITextEffect getTextEffect(JsonElement jsonElement) {
+    protected static ITextEffect getTextEffect(JsonElement jsonElement) {
         ITextEffect effect = new NoneEffect();
         if (jsonElement != null) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -262,7 +266,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return effect;
     }
 
-    private static ImageGroup getImageGroup(JsonElement imageElement) {
+    protected static ImageGroup getImageGroup(JsonElement imageElement) {
         ResourceLocation atlasLocation = null;
         ImageConfig imageConfig = null;
         String imagePlaceType = "NONE";
@@ -283,7 +287,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         return null;
     }
 
-    private static ImageConfig getImageConfig(JsonElement imageConfigElement) {
+    protected static ImageConfig getImageConfig(JsonElement imageConfigElement) {
         EvalInt x, y = new EvalInt("(screenheight / 3 * 2) - 64");
         int width = 64, height = 64;
         float uOffset, vOffset;

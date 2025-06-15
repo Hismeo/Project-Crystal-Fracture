@@ -10,7 +10,7 @@ public record TitleConfig(EvalInt x, EvalInt y, int color, boolean useUnderline,
     public void drawTitle(String title, Font font, GuiGraphics guiGraphics, Map<String, Number> varMap) {
         varMap.put("@textwidth", font.width(title));
         guiGraphics.drawString(font, title, x.eval(varMap), y.eval(varMap), color);
-        if (useUnderline || underlineConfig != null) underlineConfig.drawLine(guiGraphics, varMap);
+        if (useUnderline && underlineConfig != null) underlineConfig.drawLine(guiGraphics, varMap);
     }
 
     public record UnderlineConfig(EvalInt minX, EvalInt minY, EvalInt maxX, EvalInt maxY, int color) {
