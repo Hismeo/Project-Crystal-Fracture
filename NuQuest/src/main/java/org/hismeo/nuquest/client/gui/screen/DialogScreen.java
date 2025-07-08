@@ -132,6 +132,7 @@ public class DialogScreen extends Screen {
 
     @Override
     protected void init() {
+        this.initPage();
         this.flipButton = this.addWidget(this.flipButtonConfig.getFlipButton(this::tryFlip, numberVarMap));
 
         if (dialogActionDatas != null) {
@@ -143,8 +144,6 @@ public class DialogScreen extends Screen {
                 this.actionButtons.add(actionButton);
             }
         }
-
-        this.initPage();
     }
 
     @Override

@@ -4,16 +4,20 @@ import java.util.*;
 
 /**
  * 表达式浮点数运算
+ * 支持变量命名：@var、$var.name、a_b、foo.bar
  */
 public class ExpressionParserDouble {
     public static OptionalDouble evalDouble(String expr, Map<String, Number> ctx) {
         if (expr == null || expr.isBlank()) return OptionalDouble.empty();
+
         char[] cs = expr.toCharArray();
         Deque<Double> nums = new ArrayDeque<>();
         Deque<Character> ops = new ArrayDeque<>();
         int i = 0, n = cs.length;
+
         while (i < n) {
             char c = cs[i];
+
             if (Character.isWhitespace(c)) {
                 i++;
                 continue;
@@ -26,9 +30,9 @@ public class ExpressionParserDouble {
                 continue;
             }
 
-            if (Character.isLetter(c) || c == '_') {
+            if (isVariableStartChar(c)) {
                 int start = i;
-                while (i < n && (Character.isLetterOrDigit(cs[i]) || cs[i] == '_')) i++;
+                while (i < n && isVariableChar(cs[i])) i++;
                 String var = expr.substring(start, i);
                 nums.push(ctx.getOrDefault(var, 0).doubleValue());
                 continue;
@@ -45,15 +49,25 @@ public class ExpressionParserDouble {
                 }
                 ops.push(c);
             } else {
-                return OptionalDouble.empty();
+                return OptionalDouble.empty(); // 非法字符
             }
             i++;
         }
+
         while (!ops.isEmpty()) {
             if (ops.peek() == '(') return OptionalDouble.empty();
             computeDouble(nums, ops);
         }
+
         return nums.size() == 1 ? OptionalDouble.of(nums.pop()) : OptionalDouble.empty();
+    }
+
+    private static boolean isVariableStartChar(char c) {
+        return Character.isLetter(c) || c == '_' || c == '@' || c == '$';
+    }
+
+    private static boolean isVariableChar(char c) {
+        return Character.isLetterOrDigit(c) || c == '_' || c == '.' || c == '@' || c == '$';
     }
 
     private static boolean isOp(char c) {

@@ -10,7 +10,7 @@
   },
   "titleConfig": {
     "x": 10,
-    "y": "@screenheight/3*2+4",
+    "y": "(@screenheight/3*2)+4",
     "color": -1,
     "useUnderline": true,
     "underlineConfig": {
@@ -23,13 +23,13 @@
   },
   "textConfig": {
     "x": 20,
-    "y": "@screenheight+29+@index*9",
+    "y": "(@screenheight/3*2)+29+@index*9",
     "color": -1
   },
   "imageConfigs": [
     {
-      "x": "0",
-      "y": "(@screenheight / 3 * 2) - 64",
+      "x": 0,
+      "y": "(@screenheight/3*2)-64",
       "width": 64,
       "height": 64,
       "uOffset": 0,

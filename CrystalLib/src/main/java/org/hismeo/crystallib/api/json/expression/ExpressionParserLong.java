@@ -1,21 +1,23 @@
 package org.hismeo.crystallib.api.json.expression;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.*;
 
 /**
  * 表达式整数运算
+ * 支持变量命名：@var、$var.name、a_b、foo.bar
  */
 public class ExpressionParserLong {
     public static OptionalLong evalLong(String expr, Map<String, Number> ctx) {
         if (expr == null || expr.isBlank()) return OptionalLong.empty();
+
         char[] cs = expr.toCharArray();
         Deque<Long> nums = new ArrayDeque<>();
         Deque<Character> ops = new ArrayDeque<>();
         int i = 0, n = cs.length;
+
         while (i < n) {
             char c = cs[i];
+
             if (Character.isWhitespace(c)) {
                 i++;
                 continue;
@@ -28,34 +30,46 @@ public class ExpressionParserLong {
                 continue;
             }
 
-            if (Character.isLetter(c) || c == '_') {
+            if (isVariableStartChar(c)) {
                 int start = i;
-                while (i < n && (Character.isLetterOrDigit(cs[i]) || cs[i] == '_')) i++;
+                while (i < n && isVariableChar(cs[i])) i++;
                 String var = expr.substring(start, i);
-                nums.push(ctx.getOrDefault(var, 0).longValue());
+                long val = ctx.getOrDefault(var, 0).longValue();
+                nums.push(val);
                 continue;
             }
 
             if (c == '(') ops.push(c);
             else if (c == ')') {
-                while (!ops.isEmpty() && ops.peek() != '(') computeInt(nums, ops);
+                while (!ops.isEmpty() && ops.peek() != '(') compute(nums, ops);
                 if (ops.isEmpty()) return OptionalLong.empty();
                 ops.pop();
             } else if (isOp(c)) {
                 while (!ops.isEmpty() && ops.peek() != '(' && prec(ops.peek()) >= prec(c)) {
-                    computeInt(nums, ops);
+                    compute(nums, ops);
                 }
                 ops.push(c);
             } else {
-                return OptionalLong.empty();
+                return OptionalLong.empty(); // 非法字符
             }
+
             i++;
         }
+
         while (!ops.isEmpty()) {
             if (ops.peek() == '(') return OptionalLong.empty();
-            computeInt(nums, ops);
+            compute(nums, ops);
         }
+
         return nums.size() == 1 ? OptionalLong.of(nums.pop()) : OptionalLong.empty();
+    }
+
+    private static boolean isVariableStartChar(char c) {
+        return Character.isLetter(c) || c == '_' || c == '@' || c == '$';
+    }
+
+    private static boolean isVariableChar(char c) {
+        return Character.isLetterOrDigit(c) || c == '_' || c == '.' || c == '@' || c == '$';
     }
 
     private static boolean isOp(char c) {
@@ -66,7 +80,7 @@ public class ExpressionParserLong {
         return (op == '+' || op == '-') ? 1 : 2;
     }
 
-    private static void computeInt(Deque<Long> nums, Deque<Character> ops) {
+    private static void compute(Deque<Long> nums, Deque<Character> ops) {
         long b = nums.pop(), a = nums.pop();
         char op = ops.pop();
         nums.push(switch (op) {

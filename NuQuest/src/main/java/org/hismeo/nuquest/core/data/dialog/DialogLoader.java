@@ -62,7 +62,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
                 }
                 JsonElement configElement = tryGet(jsonObject, "dialogConfig");
                 DialogConfig dialogConfig = null;
-                if (configElement != null){
+                if (configElement != null) {
                     dialogConfig = getDialogConfig(configElement);
                 }
                 DialogDefinition definition = new DialogDefinition(dialogId, texts, actionDatas, dialogConfig);
@@ -121,16 +121,25 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
         BackgroundConfig backgroundConfig = getBackgroundConfig(tryGet(configObject, "backgroundConfig"));
         TitleConfig titleConfig = getTitleConfig(tryGet(configObject, "titleConfig"));
         TextConfig textConfig = getTextConfig(tryGet(configObject, "textConfig"));
+
         JsonArray imageConfigArray = configObject.getAsJsonArray("imageConfigs");
-        ImageConfig[] imageConfigs = new ImageConfig[imageConfigArray.size()];
-        for (int i = 0; i < imageConfigs.length; i++) {
-            imageConfigs[i] = getImageConfig(imageConfigArray.get(i));
+        ImageConfig[] imageConfigs = new ImageConfig[0];
+        if (imageConfigArray != null) {
+            imageConfigs = new ImageConfig[imageConfigArray.size()];
+            for (int i = 0; i < imageConfigs.length; i++) {
+                imageConfigs[i] = getImageConfig(imageConfigArray.get(i));
+            }
         }
+
         JsonArray actionButtonConfigArray = configObject.getAsJsonArray("actionButtonConfigs");
-        ActionButtonConfig[] actionButtonConfigs = new ActionButtonConfig[actionButtonConfigArray.size()];
-        for (int i = 0; i < actionButtonConfigs.length; i++) {
-            actionButtonConfigs[i] = getActionButtonConfig(actionButtonConfigArray.get(i));
+        ActionButtonConfig[] actionButtonConfigs = new ActionButtonConfig[0];
+        if (actionButtonConfigArray != null) {
+            actionButtonConfigs = new ActionButtonConfig[actionButtonConfigArray.size()];
+            for (int i = 0; i < actionButtonConfigs.length; i++) {
+                actionButtonConfigs[i] = getActionButtonConfig(actionButtonConfigArray.get(i));
+            }
         }
+
         FlipButtonConfig flipButtonConfig = getFlipButtonConfig(tryGet(configObject, "flipButtonConfig"));
         return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, flipButtonConfig);
     }

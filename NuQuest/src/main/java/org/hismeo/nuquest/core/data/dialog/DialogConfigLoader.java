@@ -21,6 +21,7 @@ public class DialogConfigLoader extends DialogLoader {
 
     @Override
     protected void apply(@NotNull Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        // TODO: 倒过来加载
         for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
             if (entry.getKey().getPath().equals("dialog_config")) {
                 JsonElement configElement = entry.getValue();

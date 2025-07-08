@@ -29,6 +29,7 @@ public class ActionButton extends AbstractWidget {
         Minecraft minecraft = Minecraft.getInstance();
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, this.alpha);
         RenderSystem.enableBlend();
+        //TODO
         guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(NuQuest.MODID, "textures/gui/dialog.png"), this.getX(), this.getY(), 0, 0, this.getWidth(), this.getHeight());
         RenderSystem.disableBlend();
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
