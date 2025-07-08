@@ -33,5 +33,6 @@ public class DialogConfigLoader extends DialogLoader {
                 }
             }
         }
+        NuQuest.LOGGER.info("[DialogReloadListener] Loaded dialog config.");
     }
 }

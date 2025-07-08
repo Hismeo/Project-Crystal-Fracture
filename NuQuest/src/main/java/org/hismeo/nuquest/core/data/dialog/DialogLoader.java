@@ -71,7 +71,7 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
                 NuQuest.LOGGER.error("[DialogReloadListener] Failed to load dialog: {} - {}", key, e.getMessage(), e);
             }
         }
-        NuQuest.LOGGER.debug("[DialogReloadListener] Loaded {} dialogs.", DialogManager.getDialogMapView().size());
+        NuQuest.LOGGER.info("[DialogReloadListener] Loaded {} dialogs.", DialogManager.getDialogMapView().size());
     }
 
     protected static @NotNull DialogText getDialogText(JsonElement textElement) {

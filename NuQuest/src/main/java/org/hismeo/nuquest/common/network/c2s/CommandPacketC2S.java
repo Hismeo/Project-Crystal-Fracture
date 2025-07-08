@@ -24,7 +24,7 @@ public record CommandPacketC2S(String command) implements CustomPacketPayload {
     public void handle(IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer && serverPlayer != null) {
-                String finalCommand = this.command.replace("playername", serverPlayer.getScoreboardName());
+                String finalCommand = this.command.replace("@playername", serverPlayer.getScoreboardName());
                 MinecraftServer server = serverPlayer.server;
                 CommandSourceStack commandSourceStack = server.createCommandSourceStack().withSuppressedOutput();
 

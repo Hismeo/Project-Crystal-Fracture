@@ -15,6 +15,7 @@ public interface ITextEffect {
 
     void effectApply(GuiGraphics guiGraphics, Component text, float partialTick, int textHeight, int textWeight);
 
+    //TODO
     String getEffect();
 
     void parseJson(JsonObject jsonObject);
