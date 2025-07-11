@@ -52,7 +52,7 @@
         {
           "name": "command",
           "params": {
-            "command": "/give playername minecraft:netherite_sword"
+            "command": "/give @playername minecraft:netherite_sword"
           }
         },
         {

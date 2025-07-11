@@ -32,7 +32,7 @@ public class DialogConfig {
         this.flipButtonConfig = flipButtonConfig;
     }
 
-    public DialogConfig replace(DialogConfig dialogConfig) {
+    public DialogConfig merge(DialogConfig dialogConfig) {
         Boolean newPause = dialogConfig.pauseScreen;
         BackgroundConfig newBackground = dialogConfig.backgroundConfig;
         TitleConfig newTitle = dialogConfig.titleConfig;
@@ -44,8 +44,8 @@ public class DialogConfig {
         if (newBackground != null) backgroundConfig = newBackground;
         if (newTitle != null) titleConfig = newTitle;
         if (newText != null) textConfig = newText;
-        if (newImage != null) imageConfigs = newImage;
-        if (newAction != null) actionButtonConfigs = newAction;
+        if (newImage != null && newImage.length > 0) imageConfigs = newImage;
+        if (newAction != null && newAction.length > 0) actionButtonConfigs = newAction;
         if (newFlip != null) flipButtonConfig = newFlip;
         return this;
     }

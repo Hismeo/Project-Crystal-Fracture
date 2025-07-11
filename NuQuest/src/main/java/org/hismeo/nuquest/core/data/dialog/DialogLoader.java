@@ -155,8 +155,9 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             height = EvalInt.fromJson(tryGet(backgroundObject, "height"), height);
             colorFrom = tryGetInt(backgroundObject, "colorFrom", colorFrom);
             colorTo = tryGetInt(backgroundObject, "colorTo", colorTo);
+            return new BackgroundConfig(x, y, width, height, colorFrom, colorTo);
         }
-        return new BackgroundConfig(x, y, width, height, colorFrom, colorTo);
+        return null;
     }
 
     protected static TitleConfig getTitleConfig(JsonElement titleElement) {
@@ -171,8 +172,9 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             color = tryGetInt(titleObject, "color", color);
             useUnderline = tryGetBoolean(titleObject, "useUnderline", useUnderline);
             underlineConfig = getUnderlineConfig(tryGet(titleObject, "underlineConfig"));
+            return new TitleConfig(x, y, color, useUnderline, underlineConfig);
         }
-        return new TitleConfig(x, y, color, useUnderline, underlineConfig);
+        return null;
     }
 
     protected static TitleConfig.UnderlineConfig getUnderlineConfig(JsonElement underlineElement) {
@@ -198,8 +200,9 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             x = EvalInt.fromJson(tryGet(textObject, "x"), x);
             y = EvalInt.fromJson(tryGet(textObject, "y"), y);
             color = tryGetInt(textObject, "color", color);
+            return new TextConfig(x, y, color);
         }
-        return new TextConfig(x, y, color);
+        return null;
     }
 
     protected static ActionButtonConfig getActionButtonConfig(JsonElement actionElement) {
@@ -226,8 +229,9 @@ public class DialogLoader extends SimpleJsonResourceReloadListener {
             y = EvalInt.fromJson(tryGet(flipObject, "y"), y);
             width = EvalInt.fromJson(tryGet(flipObject, "width"), width);
             height = EvalInt.fromJson(tryGet(flipObject, "height"), height);
+            return new FlipButtonConfig(widgetSpritesConfig, x, y, width, height);
         }
-        return new FlipButtonConfig(widgetSpritesConfig, x, y, width, height);
+        return null;
     }
 
     protected static WidgetSpritesConfig getWidgetSpritesConfig(JsonElement spritesElement) {

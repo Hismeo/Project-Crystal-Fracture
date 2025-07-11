@@ -4,21 +4,26 @@
     {
       "title": "dialog.nuquest.intro.title",
       "text": "dialog.nuquest.intro.text",
-      "imageGroup": {
-        "image": "foo:textures/gui/npc.png",
-        "imageConfig": {
-          "x": "0",
-          "y": "(screenheight / 3 * 2) - 64",
-          "width": 64,
-          "height": 64,
-          "uOffset": 0,
-          "vOffset": 0,
-          "uWidth": 64,
-          "vHeight": 64,
-          "textureWidth": 64,
-          "textureHeight": 64
+      "imageGroup": [
+        {
+          "image": "textures/item/diamond.png",
+          "imageConfig": {
+            "x": "0",
+            "y": "(@screenheight / 3 * 2) - 64",
+            "width": 64,
+            "height": 64,
+            "uOffset": 0,
+            "vOffset": 0,
+            "uWidth": 64,
+            "vHeight": 64,
+            "textureWidth": 64,
+            "textureHeight": 64
+          }
+        },
+        {
+          "image": "textures/item/iron_ingot.png"
         }
-      },
+      ],
       "soundGroup": {
         "sound": "minecraft:entity.villager.yes",
         "volume": 1.0,

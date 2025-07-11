@@ -1,0 +1,28 @@
+{
+  "imageConfigs": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 64,
+      "height": 64,
+      "uOffset": 0,
+      "vOffset": 0,
+      "uWidth": 64,
+      "vHeight": 64,
+      "textureWidth": 64,
+      "textureHeight": 64
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "width": 64,
+      "height": 64,
+      "uOffset": 0,
+      "vOffset": 0,
+      "uWidth": 64,
+      "vHeight": 64,
+      "textureWidth": 64,
+      "textureHeight": 64
+    }
+  ]
+}

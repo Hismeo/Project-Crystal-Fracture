@@ -204,7 +204,8 @@ public class DialogScreen extends Screen {
         MutableComponent translatable = Component.translatable(this.dialogActionDatas[index].message());
         ActionButtonConfig actionConfig;
         if (this.actionButtonConfigs.length <= index) {
-            actionConfig = actionButtonConfigs[actionButtonConfigs.length - 1];
+            //FIXME ArrayIndexOutOfBoundsException
+            actionConfig = actionButtonConfigs[dialogActionDatas.length - 1];
         } else {
             actionConfig = actionButtonConfigs[index];
         }
