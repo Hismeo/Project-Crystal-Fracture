@@ -5,26 +5,26 @@ import com.google.gson.JsonObject;
 
 public class JsonUtil {
     public static Boolean tryGetBoolean(JsonObject jsonObject, String name) {
-        return tryGetBoolean(jsonObject, name, false);
+        return tryGetBoolean(jsonObject, name, null);
     }
 
     public static Boolean tryGetBoolean(JsonObject jsonObject, String name, Boolean defaultValue) {
         return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsBoolean();
     }
 
-    public static int tryGetInt(JsonObject jsonObject, String name) {
-        return tryGetInt(jsonObject, name, 0);
+    public static Integer tryGetInt(JsonObject jsonObject, String name) {
+        return tryGetInt(jsonObject, name, null);
     }
 
-    public static int tryGetInt(JsonObject jsonObject, String name, int defaultValue) {
+    public static Integer tryGetInt(JsonObject jsonObject, String name, Integer defaultValue) {
         return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsInt();
     }
 
-    public static float tryGetFloat(JsonObject jsonObject, String name) {
-        return tryGetFloat(jsonObject, name, 0);
+    public static Float tryGetFloat(JsonObject jsonObject, String name) {
+        return tryGetFloat(jsonObject, name, null);
     }
 
-    public static float tryGetFloat(JsonObject jsonObject, String name, float defaultValue) {
+    public static Float tryGetFloat(JsonObject jsonObject, String name, Float defaultValue) {
         return jsonObject.get(name) == null ? defaultValue : jsonObject.get(name).getAsFloat();
     }
 

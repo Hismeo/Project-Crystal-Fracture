@@ -19,7 +19,7 @@ public class EvalInt implements IEval<Integer> {
     }
 
     public static EvalInt fromJson(JsonElement jsonElement) {
-        return fromJson(jsonElement, new EvalInt(0));
+        return fromJson(jsonElement, null);
     }
 
     public static EvalInt fromJson(JsonElement jsonElement, EvalInt defaultValue) {

@@ -29,7 +29,7 @@ public class DialogManager {
     }
 
     static void replaceConfig(DialogConfig dialogConfig) {
-        globalDialogConfig.merge(dialogConfig);
+        globalDialogConfig.mergeData(dialogConfig);
     }
 
     public static DialogConfig getGlobalDialogConfig() {

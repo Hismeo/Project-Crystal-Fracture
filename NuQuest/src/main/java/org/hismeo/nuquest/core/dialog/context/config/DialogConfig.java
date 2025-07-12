@@ -1,9 +1,17 @@
 package org.hismeo.nuquest.core.dialog.context.config;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.hismeo.crystallib.api.IEmpty;
+import org.hismeo.crystallib.api.IMerge;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ActionButtonConfig;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.FlipButtonConfig;
 
-public class DialogConfig {
+import static org.hismeo.crystallib.util.JsonUtil.tryGet;
+import static org.hismeo.crystallib.util.JsonUtil.tryGetBoolean;
+
+public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> {
     Boolean pauseScreen;
     BackgroundConfig backgroundConfig;
     TitleConfig titleConfig;
@@ -13,7 +21,7 @@ public class DialogConfig {
     FlipButtonConfig flipButtonConfig;
 
     public DialogConfig() {
-        this.pauseScreen = false;
+        this.pauseScreen = null;
         this.backgroundConfig = null;
         this.titleConfig = null;
         this.textConfig = null;
@@ -32,14 +40,47 @@ public class DialogConfig {
         this.flipButtonConfig = flipButtonConfig;
     }
 
-    public DialogConfig merge(DialogConfig dialogConfig) {
-        Boolean newPause = dialogConfig.pauseScreen;
-        BackgroundConfig newBackground = dialogConfig.backgroundConfig;
-        TitleConfig newTitle = dialogConfig.titleConfig;
-        TextConfig newText = dialogConfig.textConfig;
-        ImageConfig[] newImage = dialogConfig.imageConfigs;
-        ActionButtonConfig[] newAction = dialogConfig.actionButtonConfigs;
-        FlipButtonConfig newFlip = dialogConfig.flipButtonConfig;
+    public static DialogConfig fromJson(JsonElement configElement) {
+        if (configElement != null) {
+            JsonObject configObject = configElement.getAsJsonObject();
+            Boolean pauseScreen = tryGetBoolean(configObject, "pauseScreen");
+            BackgroundConfig backgroundConfig = BackgroundConfig.fromJson(tryGet(configObject, "backgroundConfig"));
+            TitleConfig titleConfig = TitleConfig.fromJson(tryGet(configObject, "titleConfig"));
+            TextConfig textConfig = TextConfig.fromJson(tryGet(configObject, "textConfig"));
+
+            JsonArray imageConfigArray = configObject.getAsJsonArray("imageConfigs");
+            ImageConfig[] imageConfigs = new ImageConfig[0];
+            if (imageConfigArray != null) {
+                imageConfigs = new ImageConfig[imageConfigArray.size()];
+                for (int i = 0; i < imageConfigs.length; i++) {
+                    imageConfigs[i] = ImageConfig.fromJson(imageConfigArray.get(i));
+                }
+            }
+
+            JsonArray actionButtonConfigArray = configObject.getAsJsonArray("actionButtonConfigs");
+            ActionButtonConfig[] actionButtonConfigs = new ActionButtonConfig[0];
+            if (actionButtonConfigArray != null) {
+                actionButtonConfigs = new ActionButtonConfig[actionButtonConfigArray.size()];
+                for (int i = 0; i < actionButtonConfigs.length; i++) {
+                    actionButtonConfigs[i] = ActionButtonConfig.fromJson(actionButtonConfigArray.get(i));
+                }
+            }
+
+            FlipButtonConfig flipButtonConfig = FlipButtonConfig.fromJson(tryGet(configObject, "flipButtonConfig"));
+            return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, flipButtonConfig);
+        }
+        return null;
+    }
+
+    @Override
+    public DialogConfig mergeData(DialogConfig newData) {
+        Boolean newPause = newData.pauseScreen;
+        BackgroundConfig newBackground = newData.backgroundConfig;
+        TitleConfig newTitle = newData.titleConfig;
+        TextConfig newText = newData.textConfig;
+        ImageConfig[] newImage = newData.imageConfigs;
+        ActionButtonConfig[] newAction = newData.actionButtonConfigs;
+        FlipButtonConfig newFlip = newData.flipButtonConfig;
         pauseScreen = newPause;
         if (newBackground != null) backgroundConfig = newBackground;
         if (newTitle != null) titleConfig = newTitle;
@@ -48,6 +89,16 @@ public class DialogConfig {
         if (newAction != null && newAction.length > 0) actionButtonConfigs = newAction;
         if (newFlip != null) flipButtonConfig = newFlip;
         return this;
+    }
+
+    @Override
+    public boolean anyEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean allEmpty() {
+        return false;
     }
 
     public Boolean isPauseScreen() {
