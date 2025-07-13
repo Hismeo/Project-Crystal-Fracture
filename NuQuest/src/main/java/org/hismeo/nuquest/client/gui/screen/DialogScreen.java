@@ -19,7 +19,7 @@ import org.hismeo.nuquest.client.gui.component.ActionButton;
 import org.hismeo.nuquest.core.data.dialog.DialogManager;
 import org.hismeo.nuquest.core.dialog.context.config.*;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ActionButtonConfig;
-import org.hismeo.nuquest.core.dialog.context.config.components.button.FlipButtonConfig;
+import org.hismeo.nuquest.core.dialog.context.config.components.button.ImageButtonConfig;
 import org.hismeo.nuquest.core.dialog.context.config.group.ImageGroup;
 import org.hismeo.nuquest.core.dialog.context.config.group.SoundGroup;
 import org.hismeo.nuquest.core.dialog.context.DialogActionData;
@@ -53,7 +53,7 @@ public class DialogScreen extends Screen {
     private TextConfig textConfig;
     private ImageConfig[] imageConfigs;
     private ActionButtonConfig[] actionButtonConfigs;
-    private FlipButtonConfig flipButtonConfig;
+    private ImageButtonConfig imageButtonConfig;
     private final DialogActionData[] dialogActionDatas;
     private final DialogText[] dialogTexts;
     private String title;
@@ -101,14 +101,14 @@ public class DialogScreen extends Screen {
         this.textConfig = dialogConfig.getTextConfig();
         this.imageConfigs = dialogConfig.getImageConfigs();
         this.actionButtonConfigs = dialogConfig.getActionButtonConfigs();
-        this.flipButtonConfig = dialogConfig.getFlipButtonConfig();
+        this.imageButtonConfig = dialogConfig.getFlipButtonConfig();
 
         if (definitionConfig != null) {
             if (pauseScreen) pauseScreen = globalConfig.isPauseScreen();
             if (backgroundConfig == null) backgroundConfig = globalConfig.getBackgroundConfig();
             if (titleConfig == null) titleConfig = globalConfig.getTitleConfig();
             if (textConfig == null) textConfig = globalConfig.getTextConfig();
-            if (flipButtonConfig == null) flipButtonConfig = globalConfig.getFlipButtonConfig();
+            if (imageButtonConfig == null) imageButtonConfig = globalConfig.getFlipButtonConfig();
             if (imageConfigs == null) imageConfigs = globalImage;
             else if (imageConfigs.length < globalImage.length) {
                 imageConfigs = mergeArrayConfig(imageConfigs, globalImage, ImageConfig.class);
@@ -133,7 +133,7 @@ public class DialogScreen extends Screen {
     @Override
     protected void init() {
         this.initPage();
-        this.flipButton = this.addWidget(this.flipButtonConfig.getFlipButton(this::tryFlip, numberVarMap));
+        this.flipButton = this.addWidget(this.imageButtonConfig.getImageButton(this::tryFlip, numberVarMap));
 
         if (dialogActionDatas != null) {
             this.actionButtons.clear();

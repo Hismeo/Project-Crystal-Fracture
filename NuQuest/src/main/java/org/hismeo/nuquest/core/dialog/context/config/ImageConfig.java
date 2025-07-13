@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.hismeo.crystallib.api.IEmpty;
-import org.hismeo.crystallib.api.IMerge;
 import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
 
 import java.util.Map;

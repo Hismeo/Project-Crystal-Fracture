@@ -3,17 +3,17 @@ package org.hismeo.nuquest.core.dialog.context.config;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiGraphics;
-import org.hismeo.crystallib.api.IEmpty;
-import org.hismeo.crystallib.api.IMerge;
 import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
+import org.hismeo.nuquest.core.IData;
 
 import java.util.Map;
 
 import static org.hismeo.crystallib.util.JsonUtil.tryGet;
 import static org.hismeo.crystallib.util.JsonUtil.tryGetInt;
+import static org.hismeo.crystallib.util.MergeUtil.choose;
 
 public record BackgroundConfig(EvalInt x, EvalInt y, EvalInt width, EvalInt height,
-                               Integer colorFrom, Integer colorTo) implements IMerge<BackgroundConfig>, IEmpty<BackgroundConfig> {
+                               Integer colorFrom, Integer colorTo) implements IData<BackgroundConfig> {
     public static BackgroundConfig fromJson(JsonElement backgroundElement) {
         EvalInt x, y, width, height;
         Integer colorFrom = null, colorTo = null;
@@ -36,26 +36,25 @@ public record BackgroundConfig(EvalInt x, EvalInt y, EvalInt width, EvalInt heig
 
     @Override
     public BackgroundConfig mergeData(BackgroundConfig newData) {
-        return null;
+        if (newData == null || newData.allEmpty()) return this;
+
+        return new BackgroundConfig(
+                choose(newData.x,         x),
+                choose(newData.y,         y),
+                choose(newData.width,     width),
+                choose(newData.height,    height),
+                choose(newData.colorFrom, colorFrom),
+                choose(newData.colorTo,   colorTo)
+        );
     }
 
     @Override
     public boolean anyEmpty() {
-        return fieldEmpty(x) ||
-                fieldEmpty(y) ||
-                fieldEmpty(width) ||
-                fieldEmpty(height) ||
-                fieldEmpty(colorFrom) ||
-                fieldEmpty(colorTo);
+        return anyEmpty(x, y, width, height, colorFrom, colorTo);
     }
 
     @Override
     public boolean allEmpty() {
-        return fieldEmpty(x) &&
-                fieldEmpty(y) &&
-                fieldEmpty(width) &&
-                fieldEmpty(height) &&
-                fieldEmpty(colorFrom) &&
-                fieldEmpty(colorTo);
+        return allEmpty(x, y, width, height, colorFrom, colorTo);
     }
 }

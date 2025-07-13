@@ -4,9 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.hismeo.crystallib.api.IEmpty;
-import org.hismeo.crystallib.api.IMerge;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ActionButtonConfig;
-import org.hismeo.nuquest.core.dialog.context.config.components.button.FlipButtonConfig;
+import org.hismeo.nuquest.core.dialog.context.config.components.button.ImageButtonConfig;
 
 import static org.hismeo.crystallib.util.JsonUtil.tryGet;
 import static org.hismeo.crystallib.util.JsonUtil.tryGetBoolean;
@@ -18,7 +17,7 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
     TextConfig textConfig;
     ImageConfig[] imageConfigs;
     ActionButtonConfig[] actionButtonConfigs;
-    FlipButtonConfig flipButtonConfig;
+    ImageButtonConfig imageButtonConfig;
 
     public DialogConfig() {
         this.pauseScreen = null;
@@ -27,17 +26,17 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
         this.textConfig = null;
         this.imageConfigs = null;
         this.actionButtonConfigs = null;
-        this.flipButtonConfig = null;
+        this.imageButtonConfig = null;
     }
 
-    public DialogConfig(Boolean pauseScreen, BackgroundConfig backgroundConfig, TitleConfig titleConfig, TextConfig textConfig, ImageConfig[] imageConfigs, ActionButtonConfig[] actionButtonConfigs, FlipButtonConfig flipButtonConfig) {
+    public DialogConfig(Boolean pauseScreen, BackgroundConfig backgroundConfig, TitleConfig titleConfig, TextConfig textConfig, ImageConfig[] imageConfigs, ActionButtonConfig[] actionButtonConfigs, ImageButtonConfig imageButtonConfig) {
         this.pauseScreen = pauseScreen;
         this.backgroundConfig = backgroundConfig;
         this.titleConfig = titleConfig;
         this.textConfig = textConfig;
         this.imageConfigs = imageConfigs;
         this.actionButtonConfigs = actionButtonConfigs;
-        this.flipButtonConfig = flipButtonConfig;
+        this.imageButtonConfig = imageButtonConfig;
     }
 
     public static DialogConfig fromJson(JsonElement configElement) {
@@ -66,8 +65,8 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
                 }
             }
 
-            FlipButtonConfig flipButtonConfig = FlipButtonConfig.fromJson(tryGet(configObject, "flipButtonConfig"));
-            return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, flipButtonConfig);
+            ImageButtonConfig imageButtonConfig = ImageButtonConfig.fromJson(tryGet(configObject, "flipButtonConfig"));
+            return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, imageButtonConfig);
         }
         return null;
     }
@@ -80,14 +79,14 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
         TextConfig newText = newData.textConfig;
         ImageConfig[] newImage = newData.imageConfigs;
         ActionButtonConfig[] newAction = newData.actionButtonConfigs;
-        FlipButtonConfig newFlip = newData.flipButtonConfig;
+        ImageButtonConfig newFlip = newData.imageButtonConfig;
         pauseScreen = newPause;
         if (newBackground != null) backgroundConfig = newBackground;
         if (newTitle != null) titleConfig = newTitle;
         if (newText != null) textConfig = newText;
         if (newImage != null && newImage.length > 0) imageConfigs = newImage;
         if (newAction != null && newAction.length > 0) actionButtonConfigs = newAction;
-        if (newFlip != null) flipButtonConfig = newFlip;
+        if (newFlip != null) imageButtonConfig = newFlip;
         return this;
     }
 
@@ -125,7 +124,7 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
         return actionButtonConfigs;
     }
 
-    public FlipButtonConfig getFlipButtonConfig() {
-        return flipButtonConfig;
+    public ImageButtonConfig getFlipButtonConfig() {
+        return imageButtonConfig;
     }
 }
