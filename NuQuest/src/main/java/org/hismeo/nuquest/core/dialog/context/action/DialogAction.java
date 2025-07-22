@@ -31,8 +31,8 @@ public class DialogAction implements IAction {
 
     @Override
     public void parseJson(JsonObject jsonObject) {
-        if (jsonObject.has("dialogId")) {
-            this.dialogId = jsonObject.get("dialogId").getAsString();
+        if (jsonObject.has("dialog_id")) {
+            this.dialogId = jsonObject.get("dialog_id").getAsString();
         }
     }
 }

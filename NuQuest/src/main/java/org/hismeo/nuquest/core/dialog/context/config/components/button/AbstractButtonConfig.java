@@ -1,8 +1,9 @@
 package org.hismeo.nuquest.core.dialog.context.config.components.button;
 
 import org.hismeo.crystallib.api.json.expression.evalnumber.EvalInt;
+import org.hismeo.nuquest.core.IData;
 
-public abstract class AbstractButtonConfig {
+public abstract class AbstractButtonConfig<T extends IData> implements IData<T> {
     EvalInt x;
     EvalInt y;
     EvalInt width;

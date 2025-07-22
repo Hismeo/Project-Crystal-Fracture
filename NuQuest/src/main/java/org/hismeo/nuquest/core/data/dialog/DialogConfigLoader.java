@@ -20,6 +20,7 @@ public class DialogConfigLoader extends DialogLoader {
 
     @Override
     protected void apply(@NotNull Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager resourceManager, ProfilerFiller profilerFiller) {
+        //TODO 更优解 apply所提供的map为无序
         var entries = new Object2ObjectRBTreeMap<>(map).reversed().entrySet();
         for (var entry : entries) {
             if (entry.getKey().getPath().equals("dialog_config")) {

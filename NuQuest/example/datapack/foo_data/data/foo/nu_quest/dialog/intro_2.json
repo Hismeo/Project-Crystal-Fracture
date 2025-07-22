@@ -1,21 +1,22 @@
 {
-  "dialogId": "intro_2",
-  "dialogTexts": [
+  "dialog_id": "intro_2",
+  "dialog_texts": [
     {
       "title": "dialog.nuquest.intro2.title",
-      "text": "dialog.nuquest.intro2.text",
-      "imageGroup": {
+      "text_group": "dialog.nuquest.intro2.text",
+      "image_group": {
         "image": "nuquest:textures/gui/quest_icon.png",
-        "imageConfig": {
-          "x": "screenwidth-64"
-        }
+        "image_config": {
+          "x": "@screenwidth-64"
+        },
+        "image_place_type": "NONE"
       },
-      "soundGroup": {
+      "sound_group": {
         "sound": "minecraft:entity.villager.celebrate",
         "volume": 1.0,
         "pitch": 1.2
       },
-      "textEffect": {
+      "text_effect": {
         "name": "rainbow",
         "params": {
           "speed": 1.0
@@ -23,10 +24,10 @@
       }
     },
     {
-      "text": "当然了，你也可以选择不用翻译键"
+      "text_group": "当然了，你也可以选择不用翻译键"
     }
   ],
-  "dialogActionDatas": [
+  "dialog_action_datas": [
     {
       "message": "dialog.nuquest.intro2.accept",
       "actions": [

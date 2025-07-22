@@ -12,4 +12,4 @@
 6. [x] DialogConfig的补全，将对话框屏幕的Magic Number为数据驱动
 7. [x] DialogConfig的全局设置，可局部对话框文件设置顶掉全局
 8. [ ] Network发包数据，同步客户端的对话框数据
-9. [ ] DialogConfigManger从后往前加载，使其可以正常顺序覆盖config
+9. [x] DialogConfigManger从后往前加载，使其可以正常顺序覆盖config

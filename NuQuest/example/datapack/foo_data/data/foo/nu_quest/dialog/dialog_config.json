@@ -1,28 +1,27 @@
 {
-  "imageConfigs": [
+  "image_configs": [
     {
-      "x": 0,
+      "x": 100,
       "y": 0,
       "width": 64,
       "height": 64,
-      "uOffset": 0,
-      "vOffset": 0,
-      "uWidth": 64,
-      "vHeight": 64,
-      "textureWidth": 64,
-      "textureHeight": 64
+      "u_offset": 0,
+      "v_offset": 0,
+      "u_width": 64,
+      "v_height": 64,
+      "texture_width": 64,
+      "texture_height": 64
     },
     {
       "x": 0,
-      "y": 0,
       "width": 64,
-      "height": 64,
-      "uOffset": 0,
-      "vOffset": 0,
-      "uWidth": 64,
-      "vHeight": 64,
-      "textureWidth": 64,
-      "textureHeight": 64
+      "v_offset": 0,
+      "v_height": 64
+    }
+  ],
+  "text_configs": [
+    {
+      "x": 200
     }
   ]
 }

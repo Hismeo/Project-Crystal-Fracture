@@ -1,9 +1,37 @@
 {
-  "dialogId": "long",
-  "dialogTexts": [
+  "dialog_id": "long",
+  "dialog_texts": [
     {
-      "text": "你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁\n呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢。"
+      "text_group": [
+        {
+          "text": "你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁\n呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢，你在网上骂谁呢。",
+          "text_config": {
+            "line_width": 200,
+            "y": "@screenheight/2"
+          }
+        },
+        {
+          "text": "wsasdhasdhsadsasdaukwnbd",
+          "text_config": {
+            "x": 10,
+            "y": 20,
+            "line_width": 100
+          }
+        },
+        {
+          "text": "我喜欢你我喜欢你我喜欢你",
+          "text_config": {
+            "x": 100,
+            "y": "@screenheight-19"
+          }
+        }
+      ]
     }
   ],
-  "dialogActionDatas": []
+  "dialog_action_datas": [],
+  "dialog_config": {
+    "background_config": {
+      "y": "@screenheight/3"
+    }
+  }
 }

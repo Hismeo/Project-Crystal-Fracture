@@ -4,17 +4,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.hismeo.crystallib.api.IEmpty;
+import org.hismeo.nuquest.core.IData;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ActionButtonConfig;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ImageButtonConfig;
 
-import static org.hismeo.crystallib.util.JsonUtil.tryGet;
-import static org.hismeo.crystallib.util.JsonUtil.tryGetBoolean;
+import static org.hismeo.crystallib.util.JsonUtil.*;
 
-public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> {
+public class DialogConfig implements IData<DialogConfig> {
     Boolean pauseScreen;
     BackgroundConfig backgroundConfig;
     TitleConfig titleConfig;
-    TextConfig textConfig;
+    TextConfig[] textConfig;
     ImageConfig[] imageConfigs;
     ActionButtonConfig[] actionButtonConfigs;
     ImageButtonConfig imageButtonConfig;
@@ -29,7 +29,7 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
         this.imageButtonConfig = null;
     }
 
-    public DialogConfig(Boolean pauseScreen, BackgroundConfig backgroundConfig, TitleConfig titleConfig, TextConfig textConfig, ImageConfig[] imageConfigs, ActionButtonConfig[] actionButtonConfigs, ImageButtonConfig imageButtonConfig) {
+    public DialogConfig(Boolean pauseScreen, BackgroundConfig backgroundConfig, TitleConfig titleConfig, TextConfig[] textConfig, ImageConfig[] imageConfigs, ActionButtonConfig[] actionButtonConfigs, ImageButtonConfig imageButtonConfig) {
         this.pauseScreen = pauseScreen;
         this.backgroundConfig = backgroundConfig;
         this.titleConfig = titleConfig;
@@ -42,62 +42,60 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
     public static DialogConfig fromJson(JsonElement configElement) {
         if (configElement != null) {
             JsonObject configObject = configElement.getAsJsonObject();
-            Boolean pauseScreen = tryGetBoolean(configObject, "pauseScreen");
-            BackgroundConfig backgroundConfig = BackgroundConfig.fromJson(tryGet(configObject, "backgroundConfig"));
-            TitleConfig titleConfig = TitleConfig.fromJson(tryGet(configObject, "titleConfig"));
-            TextConfig textConfig = TextConfig.fromJson(tryGet(configObject, "textConfig"));
+            Boolean pauseScreen = tryGetBoolean(configObject, "pause_screen");
+            BackgroundConfig backgroundConfig = BackgroundConfig.fromJson(tryGet(configObject, "background_config"));
+            TitleConfig titleConfig = TitleConfig.fromJson(tryGet(configObject, "title_config"));
 
-            JsonArray imageConfigArray = configObject.getAsJsonArray("imageConfigs");
-            ImageConfig[] imageConfigs = new ImageConfig[0];
-            if (imageConfigArray != null) {
-                imageConfigs = new ImageConfig[imageConfigArray.size()];
-                for (int i = 0; i < imageConfigs.length; i++) {
-                    imageConfigs[i] = ImageConfig.fromJson(imageConfigArray.get(i));
-                }
-            }
+            TextConfig[] textConfigs = readConfigArray(configObject, "text_configs", TextConfig::fromJson, TextConfig[]::new);
+            ImageConfig[] imageConfigs = readConfigArray(configObject, "image_configs", ImageConfig::fromJson, ImageConfig[]::new);
+            ActionButtonConfig[] actionButtonConfigs = readConfigArray(configObject, "action_button_configs", ActionButtonConfig::fromJson, ActionButtonConfig[]::new);
 
-            JsonArray actionButtonConfigArray = configObject.getAsJsonArray("actionButtonConfigs");
-            ActionButtonConfig[] actionButtonConfigs = new ActionButtonConfig[0];
-            if (actionButtonConfigArray != null) {
-                actionButtonConfigs = new ActionButtonConfig[actionButtonConfigArray.size()];
-                for (int i = 0; i < actionButtonConfigs.length; i++) {
-                    actionButtonConfigs[i] = ActionButtonConfig.fromJson(actionButtonConfigArray.get(i));
-                }
-            }
 
-            ImageButtonConfig imageButtonConfig = ImageButtonConfig.fromJson(tryGet(configObject, "flipButtonConfig"));
-            return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, imageButtonConfig);
+            ImageButtonConfig imageButtonConfig = ImageButtonConfig.fromJson(tryGet(configObject, "flip_button_config"));
+            return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfigs, imageConfigs, actionButtonConfigs, imageButtonConfig);
         }
         return null;
     }
 
+    public DialogConfig copy() {
+        return new DialogConfig(pauseScreen, backgroundConfig, titleConfig, textConfig, imageConfigs, actionButtonConfigs, imageButtonConfig);
+    }
+
     @Override
     public DialogConfig mergeData(DialogConfig newData) {
-        Boolean newPause = newData.pauseScreen;
-        BackgroundConfig newBackground = newData.backgroundConfig;
-        TitleConfig newTitle = newData.titleConfig;
-        TextConfig newText = newData.textConfig;
-        ImageConfig[] newImage = newData.imageConfigs;
-        ActionButtonConfig[] newAction = newData.actionButtonConfigs;
-        ImageButtonConfig newFlip = newData.imageButtonConfig;
-        pauseScreen = newPause;
-        if (newBackground != null) backgroundConfig = newBackground;
-        if (newTitle != null) titleConfig = newTitle;
-        if (newText != null) textConfig = newText;
-        if (newImage != null && newImage.length > 0) imageConfigs = newImage;
-        if (newAction != null && newAction.length > 0) actionButtonConfigs = newAction;
-        if (newFlip != null) imageButtonConfig = newFlip;
+        if (newData == null || newData.allEmpty()) return this;
+        pauseScreen = choose(newData.pauseScreen, pauseScreen);
+        backgroundConfig = mergeWithStrategy(backgroundConfig, newData.backgroundConfig, BackgroundConfig::mergeData);
+        titleConfig = mergeWithStrategy(titleConfig, newData.titleConfig, TitleConfig::mergeData);
+        textConfig = mergeArray(textConfig, newData.textConfig);
+        imageConfigs = mergeArray(imageConfigs, newData.imageConfigs);
+        actionButtonConfigs = mergeArray(actionButtonConfigs, newData.actionButtonConfigs);
+        imageButtonConfig = mergeWithStrategy(imageButtonConfig, newData.imageButtonConfig, ImageButtonConfig::mergeData);
         return this;
     }
 
     @Override
     public boolean anyEmpty() {
-        return false;
+        return anyEmpty(
+                pauseScreen,
+                backgroundConfig,
+                titleConfig,
+                textConfig,
+                imageButtonConfig)
+                || !arrayEmpty(imageConfigs)
+                || !arrayEmpty(actionButtonConfigs);
     }
 
     @Override
     public boolean allEmpty() {
-        return false;
+        return allEmpty(
+                pauseScreen,
+                backgroundConfig,
+                titleConfig,
+                textConfig,
+                imageButtonConfig)
+                && arrayEmpty(imageConfigs)
+                && arrayEmpty(actionButtonConfigs);
     }
 
     public Boolean isPauseScreen() {
@@ -112,7 +110,7 @@ public class DialogConfig implements IMerge<DialogConfig>, IEmpty<DialogConfig> 
         return titleConfig;
     }
 
-    public TextConfig getTextConfig() {
+    public TextConfig[] getTextConfigs() {
         return textConfig;
     }
 

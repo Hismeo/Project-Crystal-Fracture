@@ -1,46 +1,49 @@
 {
-  "pauseScreen": false,
-  "backgroundConfig": {
+  "pause_screen": false,
+  "background_config": {
     "x": 0,
     "y": "@screenheight/3*2",
     "width": "@screenwidth",
     "height": "@screenheight",
-    "colorFrom": -1073741824,
-    "colorTo": -1073741824
+    "color_from": -1073741824,
+    "color_to": -1073741824
   },
-  "titleConfig": {
+  "title_config": {
     "x": 10,
     "y": "(@screenheight/3*2)+4",
     "color": -1,
-    "useUnderline": true,
-    "underlineConfig": {
-      "minX": 8,
-      "minY": "@screenheight/3*2+14",
-      "maxX": "@textwidth+12",
-      "maxY": "@screenheight/3*2+15",
+    "use_underline": true,
+    "underline_config": {
+      "min_x": 8,
+      "min_y": "@screenheight/3*2+14",
+      "max_x": "@textwidth+12",
+      "max_y": "@screenheight/3*2+15",
       "color": -1
     }
   },
-  "textConfig": {
-    "x": 20,
-    "y": "(@screenheight/3*2)+29+@index*9",
-    "color": -1
-  },
-  "imageConfigs": [
+  "text_configs": [
+    {
+      "x": 20,
+      "y": "(@screenheight/3*2)+29+@index*9",
+      "line_width": "@screenwidth-40",
+      "color": -1
+    }
+  ],
+  "image_configs": [
     {
       "x": 0,
       "y": "(@screenheight/3*2)-64",
       "width": 64,
       "height": 64,
-      "uOffset": 0,
-      "vOffset": 0,
-      "uWidth": 64,
-      "vHeight": 64,
-      "textureWidth": 64,
-      "textureHeight": 64
+      "u_offset": 0,
+      "v_offset": 0,
+      "u_width": 64,
+      "v_height": 64,
+      "texture_width": 64,
+      "texture_height": 64
     }
   ],
-  "actionButtonConfigs": [
+  "action_button_configs": [
     {
       "x": "@screenwidth-100",
       "y": "@screenheight/3*2-(@index+1)*30",
@@ -48,10 +51,10 @@
       "height": 20
     }
   ],
-  "flipButton": {
-    "widgetSpritesConfig": {
+  "flip_button_config": {
+    "sprites_config": {
       "enabled": "widget/cross_button",
-      "enabledFocused": "widget/cross_button_highlighted"
+      "enabled_focused": "widget/cross_button_highlighted"
     },
     "x": "@screenwidth-40",
     "y": "@screenheight-40",

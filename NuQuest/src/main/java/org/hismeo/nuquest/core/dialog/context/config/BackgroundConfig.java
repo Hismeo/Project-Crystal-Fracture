@@ -10,7 +10,6 @@ import java.util.Map;
 
 import static org.hismeo.crystallib.util.JsonUtil.tryGet;
 import static org.hismeo.crystallib.util.JsonUtil.tryGetInt;
-import static org.hismeo.crystallib.util.MergeUtil.choose;
 
 public record BackgroundConfig(EvalInt x, EvalInt y, EvalInt width, EvalInt height,
                                Integer colorFrom, Integer colorTo) implements IData<BackgroundConfig> {
@@ -23,8 +22,8 @@ public record BackgroundConfig(EvalInt x, EvalInt y, EvalInt width, EvalInt heig
             y = EvalInt.fromJson(tryGet(backgroundObject, "y"));
             width = EvalInt.fromJson(tryGet(backgroundObject, "width"));
             height = EvalInt.fromJson(tryGet(backgroundObject, "height"));
-            colorFrom = tryGetInt(backgroundObject, "colorFrom");
-            colorTo = tryGetInt(backgroundObject, "colorTo");
+            colorFrom = tryGetInt(backgroundObject, "color_from");
+            colorTo = tryGetInt(backgroundObject, "color_to");
             return new BackgroundConfig(x, y, width, height, colorFrom, colorTo);
         }
         return null;
@@ -37,7 +36,6 @@ public record BackgroundConfig(EvalInt x, EvalInt y, EvalInt width, EvalInt heig
     @Override
     public BackgroundConfig mergeData(BackgroundConfig newData) {
         if (newData == null || newData.allEmpty()) return this;
-
         return new BackgroundConfig(
                 choose(newData.x,         x),
                 choose(newData.y,         y),

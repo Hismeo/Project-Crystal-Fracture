@@ -1,35 +1,31 @@
 {
-  "dialogId": "intro",
-  "dialogTexts": [
+  "dialog_id": "intro",
+  "dialog_texts": [
     {
       "title": "dialog.nuquest.intro.title",
-      "text": "dialog.nuquest.intro.text",
-      "imageGroup": [
+      "text_group": "dialog.nuquest.intro.text",
+      "image_group": [
         {
           "image": "textures/item/diamond.png",
-          "imageConfig": {
-            "x": "0",
-            "y": "(@screenheight / 3 * 2) - 64",
-            "width": 64,
-            "height": 64,
-            "uOffset": 0,
-            "vOffset": 0,
-            "uWidth": 64,
-            "vHeight": 64,
-            "textureWidth": 64,
-            "textureHeight": 64
-          }
+          "image_place_type": "LAST"
         },
         {
           "image": "textures/item/iron_ingot.png"
+        },
+        {
+          "image": "textures/item/acacia_boat.png",
+          "image_config": {
+            "y": "200"
+          },
+          "image_place_type": "FRONT"
         }
       ],
-      "soundGroup": {
+      "sound_group": {
         "sound": "minecraft:entity.villager.yes",
         "volume": 1.0,
         "pitch": 1.0
       },
-      "textEffect": {
+      "text_effect": {
         "name": "typewriter"
       },
       "params": {
@@ -37,14 +33,14 @@
       }
     }
   ],
-  "dialogActionDatas": [
+  "dialog_action_datas": [
     {
       "message": "dialog.nuquest.intro.continue",
       "actions": [
         {
           "name": "dialog",
           "params": {
-            "dialogId": "foo:intro_2"
+            "dialog_id": "foo:intro_2"
           }
         }
       ]
@@ -57,5 +53,8 @@
         }
       ]
     }
-  ]
+  ],
+  "dialog_config": {
+
+  }
 }

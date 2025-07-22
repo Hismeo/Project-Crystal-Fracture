@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static org.hismeo.crystallib.util.JsonUtil.tryGet;
 
-public class ActionButtonConfig extends AbstractButtonConfig{
+public class ActionButtonConfig extends AbstractButtonConfig<ActionButtonConfig> {
     public ActionButtonConfig(EvalInt x, EvalInt y, EvalInt width, EvalInt height) {
         super(x, y, width, height);
     }
@@ -21,10 +21,10 @@ public class ActionButtonConfig extends AbstractButtonConfig{
                 width = new EvalInt(100), height = new EvalInt(20);
         if (actionElement != null) {
             JsonObject actionButtonObject = actionElement.getAsJsonObject();
-            x = EvalInt.fromJson(tryGet(actionButtonObject, "x"), x);
-            y = EvalInt.fromJson(tryGet(actionButtonObject, "y"), y);
-            width = EvalInt.fromJson(tryGet(actionButtonObject, "width"), width);
-            height = EvalInt.fromJson(tryGet(actionButtonObject, "height"), height);
+            x = EvalInt.fromJson(tryGet(actionButtonObject, "x"));
+            y = EvalInt.fromJson(tryGet(actionButtonObject, "y"));
+            width = EvalInt.fromJson(tryGet(actionButtonObject, "width"));
+            height = EvalInt.fromJson(tryGet(actionButtonObject, "height"));
             return new ActionButtonConfig(x, y, width, height);
         }
         return null;
@@ -34,5 +34,26 @@ public class ActionButtonConfig extends AbstractButtonConfig{
         HashMap<String, Number> indexVarMap = new HashMap<>(varMap);
         indexVarMap.put("@index", index);
         return new ActionButton(x.eval(indexVarMap), y.eval(indexVarMap), width.eval(indexVarMap), height.eval(indexVarMap), message, press);
+    }
+
+    @Override
+    public ActionButtonConfig mergeData(ActionButtonConfig newData) {
+        if (newData == null || newData.allEmpty()) return this;
+        return new ActionButtonConfig(
+                choose(newData.x, x),
+                choose(newData.y, y),
+                choose(newData.width, width),
+                choose(newData.height, height)
+        );
+    }
+
+    @Override
+    public boolean anyEmpty() {
+        return anyEmpty(x, y, width, height);
+    }
+
+    @Override
+    public boolean allEmpty() {
+        return allEmpty(x, y, width, height);
     }
 }

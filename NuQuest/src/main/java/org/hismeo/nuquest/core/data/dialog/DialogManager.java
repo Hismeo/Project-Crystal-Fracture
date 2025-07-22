@@ -33,7 +33,7 @@ public class DialogManager {
     }
 
     public static DialogConfig getGlobalDialogConfig() {
-        return globalDialogConfig;
+        return globalDialogConfig.copy();
     }
 
     public static Set<String> getDialogMapView() {

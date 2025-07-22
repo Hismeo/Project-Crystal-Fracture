@@ -1,15 +1,11 @@
 package org.hismeo.nuquest.client.gui.screen;
 
-import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.hismeo.crystallib.util.client.MinecraftUtil;
@@ -17,17 +13,17 @@ import org.hismeo.nuquest.api.dialog.IAction;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
 import org.hismeo.nuquest.core.data.dialog.DialogManager;
+import org.hismeo.nuquest.core.dialog.context.DialogActionData;
+import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
 import org.hismeo.nuquest.core.dialog.context.config.*;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ActionButtonConfig;
 import org.hismeo.nuquest.core.dialog.context.config.components.button.ImageButtonConfig;
 import org.hismeo.nuquest.core.dialog.context.config.group.ImageGroup;
 import org.hismeo.nuquest.core.dialog.context.config.group.SoundGroup;
-import org.hismeo.nuquest.core.dialog.context.DialogActionData;
-import org.hismeo.nuquest.core.dialog.context.DialogDefinition;
+import org.hismeo.nuquest.core.dialog.context.config.group.TextGroup;
 import org.hismeo.nuquest.core.dialog.context.text.DialogText;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,42 +32,32 @@ import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
 public class DialogScreen extends Screen {
-    // TODO: filp按钮纹理替换
-    private static final WidgetSprites CROSS_BUTTON_SPRITES = new WidgetSprites(
-            ResourceLocation.withDefaultNamespace("widget/cross_button"), ResourceLocation.withDefaultNamespace("widget/cross_button_highlighted")
-    );
+    protected final EnumMap<ImagePlaceType, List<ImageGroup>> imageGroupsMap = new EnumMap<>(ImagePlaceType.class);
+    protected final List<ActionButton> actionButtons = new ArrayList<>();
+    //TODO 将变量的map进行封装
     private final Map<String, Number> numberVarMap = new HashMap<>();
     private final Map<String, String> stringVarMap = new HashMap<>();
-    protected Button flipButton;
-    protected final List<ActionButton> actionButtons = new ArrayList<>();
     private final String dialogId;
     private final DialogDefinition dialogDefinition;
+    private final DialogActionData[] dialogActionDatas;
+    private final DialogText[] dialogTexts;
+    private final int maxPage;
+    protected Button flipButton;
     private DialogConfig dialogConfig;
     private Boolean pauseScreen;
     private BackgroundConfig backgroundConfig;
     private TitleConfig titleConfig;
-    private TextConfig textConfig;
+    private TextConfig[] textConfigs;
     private ImageConfig[] imageConfigs;
     private ActionButtonConfig[] actionButtonConfigs;
     private ImageButtonConfig imageButtonConfig;
-    private final DialogActionData[] dialogActionDatas;
-    private final DialogText[] dialogTexts;
     private String title;
-    private ImageGroup[] imageGroups;
-    private ImageGroup[] imageFront;
-    private ImageGroup[] imageAfterBackground;
-    private ImageGroup[] imageNone;
-    private ImageGroup[] imageAfterTitle;
-    private ImageGroup[] imageAfterText;
-    private ImageGroup[] imageAfterButton;
-    private ImageGroup[] imageLast;
-    private String originText;
-    private List<String> splitText;
+    private TextGroup[] originText;
     private SoundGroup soundGroup;
     private ITextEffect textEffect;
-    private final int maxPage;
     private int page;
     private int initPage = -1;
+    private int imageCount = 0;
 
     public DialogScreen(DialogDefinition dialogDefinition) {
         this(dialogDefinition, 0);
@@ -80,54 +66,26 @@ public class DialogScreen extends Screen {
     public DialogScreen(DialogDefinition dialogDefinition, int page) {
         super(CommonComponents.EMPTY);
         this.page = page;
-        this.maxPage = dialogDefinition.dialogTexts().length;
-        this.dialogDefinition = dialogDefinition;
+        this.dialogDefinition = dialogDefinition.copy();
+        this.maxPage = this.dialogDefinition.dialogTexts().length;
+        this.dialogActionDatas = this.dialogDefinition.dialogActionDatas();
+        this.dialogId = this.dialogDefinition.dialogId();
+        this.dialogTexts = this.dialogDefinition.dialogTexts();
         this.initConfig();
-        this.dialogActionDatas = dialogDefinition.dialogActionDatas();
-        this.dialogId = dialogDefinition.dialogId();
-        this.dialogTexts = dialogDefinition.dialogTexts();
     }
 
     private void initConfig() {
-        DialogConfig globalConfig = DialogManager.getGlobalDialogConfig();
-        DialogConfig definitionConfig = dialogDefinition.dialogConfig();
-        ActionButtonConfig[] globalAction = globalConfig.getActionButtonConfigs();
-        ImageConfig[] globalImage = globalConfig.getImageConfigs();
+        final DialogConfig globalConfig = DialogManager.getGlobalDialogConfig();
+        final DialogConfig definitionConfig = dialogDefinition.dialogConfig();
 
-        this.dialogConfig = definitionConfig != null ? definitionConfig : globalConfig;
+        this.dialogConfig = globalConfig.mergeData(definitionConfig);
         this.pauseScreen = dialogConfig.isPauseScreen();
         this.backgroundConfig = dialogConfig.getBackgroundConfig();
         this.titleConfig = dialogConfig.getTitleConfig();
-        this.textConfig = dialogConfig.getTextConfig();
+        this.textConfigs = dialogConfig.getTextConfigs();
         this.imageConfigs = dialogConfig.getImageConfigs();
         this.actionButtonConfigs = dialogConfig.getActionButtonConfigs();
         this.imageButtonConfig = dialogConfig.getFlipButtonConfig();
-
-        if (definitionConfig != null) {
-            if (pauseScreen) pauseScreen = globalConfig.isPauseScreen();
-            if (backgroundConfig == null) backgroundConfig = globalConfig.getBackgroundConfig();
-            if (titleConfig == null) titleConfig = globalConfig.getTitleConfig();
-            if (textConfig == null) textConfig = globalConfig.getTextConfig();
-            if (imageButtonConfig == null) imageButtonConfig = globalConfig.getFlipButtonConfig();
-            if (imageConfigs == null) imageConfigs = globalImage;
-            else if (imageConfigs.length < globalImage.length) {
-                imageConfigs = mergeArrayConfig(imageConfigs, globalImage, ImageConfig.class);
-            }
-            if (actionButtonConfigs == null) actionButtonConfigs = globalAction;
-            else if (actionButtonConfigs.length < globalAction.length) {
-                actionButtonConfigs = mergeArrayConfig(actionButtonConfigs, globalAction, ActionButtonConfig.class);
-            }
-        }
-    }
-
-    private <T> T[] mergeArrayConfig(T[] originalConfig, T[] globalConfig, Class<T> clazz) {
-        @SuppressWarnings("unchecked")
-        T[] mergeConfigs = (T[]) Array.newInstance(clazz, globalConfig.length);
-        for (int i = 0; i < mergeConfigs.length; i++) {
-            if (originalConfig.length > i) mergeConfigs[i] = originalConfig[i];
-            else mergeConfigs[i] = globalConfig[i];
-        }
-        return mergeConfigs;
     }
 
     @Override
@@ -156,41 +114,49 @@ public class DialogScreen extends Screen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        arrayBlitImage(this.imageFront, guiGraphics);
+        imageCount = 0;
+        blitByType(ImagePlaceType.FRONT, guiGraphics);
         this.backgroundConfig.drawBackground(guiGraphics, numberVarMap);
-        arrayBlitImage(this.imageAfterBackground, guiGraphics);
+        blitByType(ImagePlaceType.AFTER_BACKGROUND, guiGraphics);
 
-        arrayBlitImage(this.imageNone, guiGraphics);
+        blitByType(ImagePlaceType.NONE, guiGraphics);
 
         if (title != null) {
-            String title = this.evalStringVar(Component.translatable(this.title));
+            Component title = this.evalStringVar(Component.translatable(this.title));
             this.titleConfig.drawTitle(title, this.font, guiGraphics, numberVarMap);
         }
-        arrayBlitImage(this.imageAfterTitle, guiGraphics);
+        blitByType(ImagePlaceType.AFTER_TITLE, guiGraphics);
 
-        for (int i = 0; i < this.splitText.size(); i++) {
-            String text = this.evalStringVar(Component.translatable(this.splitText.get(i)));
-            this.textConfig.drawString(i, text, this.font, guiGraphics, numberVarMap);
+        for (int index = 0; index < originText.length; index++) {
+            TextGroup textGroup = originText[index];
+            Component text = this.evalStringVar(Component.translatable(textGroup.text()));
+            TextConfig textConfig = textConfigs[Math.min(index, textConfigs.length - 1)];
+            textGroup.draw(textConfig, index, text, font, guiGraphics, numberVarMap);
         }
-        arrayBlitImage(this.imageAfterText, guiGraphics);
+
+
+        blitByType(ImagePlaceType.AFTER_TEXT, guiGraphics);
 
         this.flipButton.render(guiGraphics, mouseX, mouseY, partialTick);
         this.actionButtons.forEach(actionButton -> actionButton.render(guiGraphics, mouseX, mouseY, partialTick));
-        arrayBlitImage(this.imageAfterButton, guiGraphics);
+        blitByType(ImagePlaceType.AFTER_BACKGROUND, guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        arrayBlitImage(this.imageLast, guiGraphics);
+        blitByType(ImagePlaceType.LAST, guiGraphics);
     }
 
-    private void arrayBlitImage(ImageGroup[] imageGroups, GuiGraphics guiGraphics) {
-        if (imageGroups == null) return;
-        for (int i = 0; i < imageGroups.length; i++) {
-            ImageConfig imageConfig;
-            if (this.imageConfigs.length <= i) {
-                imageConfig = imageConfigs[imageConfigs.length - 1];
-            } else {
-                imageConfig = imageConfigs[i];
-            }
-            imageGroups[i].blitImage(imageConfig, guiGraphics, this.numberVarMap);
+    private void blitByType(ImagePlaceType type, GuiGraphics guiGraphics) {
+        List<ImageGroup> groups = imageGroupsMap.get(type);
+        if (groups == null || groups.isEmpty()) return;
+        for (ImageGroup group : groups) {
+            ImageConfig cfg = imageConfigs[Math.min(imageCount, imageConfigs.length - 1)];
+            imageCount++;
+            group.blitImage(cfg, guiGraphics, numberVarMap);
+        }
+    }
+
+    protected void initImage() {
+        for (ImageGroup img : dialogTexts[page].imageGroup()) {
+            imageGroupsMap.computeIfAbsent(img.imagePlaceType(), k -> new ArrayList<>()).add(img);
         }
     }
 
@@ -202,13 +168,7 @@ public class DialogScreen extends Screen {
     @NotNull
     private ActionButton getActionButton(int index) {
         MutableComponent translatable = Component.translatable(this.dialogActionDatas[index].message());
-        ActionButtonConfig actionConfig;
-        if (this.actionButtonConfigs.length <= index) {
-            //FIXME ArrayIndexOutOfBoundsException
-            actionConfig = actionButtonConfigs[dialogActionDatas.length - 1];
-        } else {
-            actionConfig = actionButtonConfigs[index];
-        }
+        ActionButtonConfig actionConfig = actionButtonConfigs[Math.min(index, actionButtonConfigs.length - 1)];
         return actionConfig.getActionButton(index,
                 translatable,
                 () -> {
@@ -238,55 +198,18 @@ public class DialogScreen extends Screen {
         if (initPage != page) {
             this.title = dialogTexts[page].title();
             this.initImage();
-            this.originText = dialogTexts[page].text();
+            this.originText = dialogTexts[page].textGroup();
             this.soundGroup = dialogTexts[page].soundGroup();
             this.textEffect = dialogTexts[page].textEffect();
             if (soundGroup != null) soundGroup.playSound(getLevel());
             initPage = page;
         }
-        this.splitText = this.splitString(originText);
     }
 
-    protected void initImage() {
-        List<ImageGroup> frontList = new ArrayList<>(), backgroundList = new ArrayList<>(), noneList = new ArrayList<>(),
-                titleList = new ArrayList<>(), textList = new ArrayList<>(), buttonList = new ArrayList<>(), lastList = new ArrayList<>();
-        this.imageGroups = dialogTexts[page].imageGroup();
-        for (ImageGroup imageGroup : imageGroups) {
-            switch (imageGroup.imagePlaceType()) {
-                case FRONT -> frontList.add(imageGroup);
-                case AFTER_BACKGROUND -> backgroundList.add(imageGroup);
-                case NONE -> noneList.add(imageGroup);
-                case AFTER_TITLE -> titleList.add(imageGroup);
-                case AFTER_TEXT -> textList.add(imageGroup);
-                case AFTER_BUTTON -> buttonList.add(imageGroup);
-                case LAST -> lastList.add(imageGroup);
-            }
-        }
-        this.imageFront = frontList.toArray(ImageGroup[]::new);
-        this.imageAfterBackground = backgroundList.toArray(ImageGroup[]::new);
-        this.imageNone = noneList.toArray(ImageGroup[]::new);
-        this.imageAfterTitle = titleList.toArray(ImageGroup[]::new);
-        this.imageAfterText = textList.toArray(ImageGroup[]::new);
-        this.imageAfterButton = buttonList.toArray(ImageGroup[]::new);
-        this.imageLast = lastList.toArray(ImageGroup[]::new);
-    }
-
-    private List<String> splitString(String string) {
-        List<String> splits = new ArrayList<>();
-        List<String> lineBreaksSplits = List.of(string.split("\n"));
-        StringSplitter fontSplitter = this.font.getSplitter();
-        for (String split : lineBreaksSplits) {
-            fontSplitter.splitLines(split, this.width - 40, Style.EMPTY).forEach(
-                    formattedText -> splits.add(formattedText.getString())
-            );
-        }
-        return splits;
-    }
-
-    private String evalStringVar(Component translateKey) {
+    private Component evalStringVar(Component translateKey) {
         AtomicReference<String> replaceKey = new AtomicReference<>();
         stringVarMap.forEach((name, var) -> replaceKey.set(translateKey.getString().replace(name, var)));
-        return replaceKey.get();
+        return Component.literal(replaceKey.get());
     }
 
     @Override
