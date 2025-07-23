@@ -22,7 +22,7 @@ public record DialogText(String title, ImageGroup[] imageGroup, TextGroup[] text
         JsonElement imageGroupElement = tryGet(textObject, "image_group");
         List<ImageGroup> imageGroups = new ArrayList<>();
         if (imageGroupElement != null) {
-            if (imageGroupElement.isJsonObject()) {
+            if (!imageGroupElement.isJsonArray()) {
                 imageGroups.add(ImageGroup.fromJson(imageGroupElement));
             } else {
                 JsonArray imageGroupArray = imageGroupElement.getAsJsonArray();
@@ -46,7 +46,7 @@ public record DialogText(String title, ImageGroup[] imageGroup, TextGroup[] text
         }
 
         SoundGroup soundGroup = SoundGroup.fromJson(tryGet(textObject, "sound_group"));
-        JsonElement effectElement = tryGet(textObject, "textEffect");
+        JsonElement effectElement = tryGet(textObject, "text_effect");
         ITextEffect textEffect = ITextEffect.fromJson(effectElement);
         return new DialogText(title, imageGroups.toArray(ImageGroup[]::new), textGroups.toArray(TextGroup[]::new), soundGroup, textEffect);
     }
