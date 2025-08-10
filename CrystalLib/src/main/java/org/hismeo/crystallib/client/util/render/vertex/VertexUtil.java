@@ -1,8 +1,7 @@
-package org.hismeo.crystallib.util.client.render.vertex;
+package org.hismeo.crystallib.client.util.render.vertex;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 

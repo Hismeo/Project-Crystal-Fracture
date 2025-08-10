@@ -1,4 +1,4 @@
-package org.hismeo.crystallib.util.client;
+package org.hismeo.crystallib.client.util;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Minecraft;

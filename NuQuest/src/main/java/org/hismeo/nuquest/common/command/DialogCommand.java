@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
-import org.hismeo.crystallib.util.client.MinecraftUtil;
+import org.hismeo.crystallib.client.util.MinecraftUtil;
 import org.hismeo.nuquest.client.gui.screen.DialogScreen;
 import org.hismeo.nuquest.core.dialog.DialogArgument;
 import org.hismeo.nuquest.core.data.dialog.DialogManager;

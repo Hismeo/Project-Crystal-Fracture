@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.hismeo.crystallib.util.client.MinecraftUtil;
+import org.hismeo.crystallib.client.util.MinecraftUtil;
 import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.client.gui.screen.DialogScreen;
 import org.hismeo.nuquest.core.data.dialog.DialogManager;

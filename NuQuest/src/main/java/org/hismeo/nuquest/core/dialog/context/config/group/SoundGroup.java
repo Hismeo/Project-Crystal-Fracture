@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
-import org.hismeo.crystallib.util.client.MinecraftUtil;
+import org.hismeo.crystallib.client.util.MinecraftUtil;
 import org.hismeo.nuquest.core.IData;
 
 import static org.hismeo.crystallib.util.JsonUtil.tryGetFloat;

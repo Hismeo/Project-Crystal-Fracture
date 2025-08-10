@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.hismeo.crystallib.util.client.MinecraftUtil;
+import org.hismeo.crystallib.client.util.MinecraftUtil;
 import org.hismeo.nuquest.api.dialog.IAction;
 import org.hismeo.nuquest.api.dialog.ITextEffect;
 import org.hismeo.nuquest.client.gui.component.ActionButton;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hismeo.crystallib.util.client.MinecraftUtil.getLevel;
+import static org.hismeo.crystallib.client.util.MinecraftUtil.getLevel;
 
 @SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
