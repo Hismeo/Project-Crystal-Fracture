@@ -12,7 +12,7 @@
 | CrystalLib      | 提供基础的开发轮子      |
 | BendsAnimator   | 动画轮子，弯曲肢体      |
 | ActionGuide     | 状态机逻辑与攻击类型注册   |
-| MapShow         | 可查看的三维地图       |
+| MapShow（已独立）    | 可查看的三维地图       |
 | HazeDungeon     | 地牢生成逻辑         |
 | NuQuest         | 任务功能，对话框       |
 | FractureClient  | 客户端修改，视角、背包、界面 |

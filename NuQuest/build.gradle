@@ -6,15 +6,8 @@ base {
 }
 
 neoForge {
-    version = neo_version
-
     if (Boolean.getBoolean(enableAccessTransformers)) {
         accessTransformers = file('src/main/resources/META-INF/accesstransformer.cfg')
-    }
-
-    parchment {
-        minecraftVersion = minecraft_version
-        mappingsVersion = parchment_mappings
     }
 
     runs {
