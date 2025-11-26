@@ -11,7 +11,7 @@ import org.hismeo.bendsanimator.client.BendsAnimator;
 import org.hismeo.bendsanimator.client.util.ModelUtil;
 import org.joml.Vector3f;
 
-@EventBusSubscriber(modid = BendsAnimator.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = BendsAnimator.MODID, value = Dist.CLIENT)
 public class ForgeEvent {
     @SubscribeEvent
     public static void testAnimator(ClientChatEvent event) {

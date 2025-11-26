@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(CameraType.class)
 public class CamaraTypeMixin {
-    //=====================================ORTHO CAMERA=====================================
+    //=====================================OVERLOOK CAMERA=====================================
     @Inject(method = "isFirstPerson", at = @At("HEAD"), cancellable = true)
     public void noFirst(CallbackInfoReturnable<Boolean> cir) {cir.setReturnValue(false);}
     @Inject(method = "isMirrored", at = @At("HEAD"), cancellable = true)

@@ -8,7 +8,7 @@ import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.common.network.c2s.CommandPacketC2S;
 import org.hismeo.nuquest.common.network.s2c.DialogShowPacketS2C;
 
-@EventBusSubscriber(modid = NuQuest.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = NuQuest.MODID)
 public class ModEvent {
     @SubscribeEvent
     public static void registerNetwork(RegisterPayloadHandlersEvent event){

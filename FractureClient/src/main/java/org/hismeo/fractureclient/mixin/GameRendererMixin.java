@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public abstract class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
-    //=====================================ORTHO CAMERA=====================================
+    //=====================================OVERLOOK CAMERA=====================================
     @ModifyArg(
             method = "renderLevel",
             at = @At(value = "INVOKE",

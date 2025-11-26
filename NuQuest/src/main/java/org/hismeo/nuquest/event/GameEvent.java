@@ -8,7 +8,7 @@ import org.hismeo.nuquest.NuQuest;
 import org.hismeo.nuquest.core.data.dialog.DialogConfigLoader;
 import org.hismeo.nuquest.core.data.dialog.DialogLoader;
 
-@EventBusSubscriber(modid = NuQuest.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = NuQuest.MODID)
 public class GameEvent {
     @SubscribeEvent
     public static void registerCommand(RegisterCommandsEvent event){
