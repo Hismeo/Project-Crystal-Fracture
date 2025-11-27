@@ -4,11 +4,13 @@
   "package": "org.hismeo.fractureclient.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "CamaraTypeMixin"
+    "remove_stuff.TutorialMixin"
   ],
   "client": [
+    "CamaraTypeMixin",
     "CameraMixin",
-    "GameRendererMixin"
+    "GameRendererMixin",
+    "MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -42,6 +42,4 @@ public abstract class GameRendererMixin {
         RenderSystem.setProjectionMatrix(orthoMatrix, VertexSorting.ORTHOGRAPHIC_Z);
         return orthoMatrix;
     }
-
-
 }

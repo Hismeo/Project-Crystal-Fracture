@@ -8,7 +8,7 @@ public class MatrixUtil {
         int width = minecraft.getWindow().getWidth();
         int height = minecraft.getWindow().getHeight();
 
-        float size = 12.0f;
+        float size = 10.0f;
         float aspect = (float) width / height;
         float rightLeft = Math.max(minScale, size * aspect);
         float minSize = Math.max(minScale, size);
