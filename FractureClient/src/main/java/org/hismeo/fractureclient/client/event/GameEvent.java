@@ -14,8 +14,8 @@ public class GameEvent {
     //TODO 交互分离
     @SubscribeEvent
     public static void angle(ViewportEvent.ComputeCameraAngles event) {
-        event.setPitch(35);
-        event.setYaw(0);
+        event.setPitch(25);
+        event.setYaw(25);
     }
 
     @SubscribeEvent
@@ -25,5 +25,10 @@ public class GameEvent {
             guiGraphics.drawString(Minecraft.getInstance().font, CustomDebugMessage.list.get(i), 0, i * 10, 0xFFFFFFFF);
         }
         CustomDebugMessage.list.clear();
+    }
+
+    @SubscribeEvent
+    public static void keyRegister(RegisterKeyMappingsEvent event) {
+        event.register();
     }
 }

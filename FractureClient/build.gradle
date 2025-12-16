@@ -34,6 +34,7 @@ neoForge {
 
 dependencies {
     implementation(project(':CrystalLib'))
+    implementation(project(':CrystalFracture'))
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

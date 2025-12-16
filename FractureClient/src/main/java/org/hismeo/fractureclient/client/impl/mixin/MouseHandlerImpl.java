@@ -35,7 +35,7 @@ public interface MouseHandlerImpl {
 //        CustomDebugMessage.list.add("M yRot: %.3f".formatted(yRot));
 //        CustomDebugMessage.list.add("P yRot: %.3f".formatted(minecraft.player.getYRot()));
 //        CustomDebugMessage.list.add("dx: %.3f".formatted(dx));
-//        CustomDebugMessage.list.add("dz: %.3f".formatted(dz));
+//        CustlmDebugMessage.list.add("dz: %.3f".formatted(dz));
 //        CustomDebugMessage.list.add("len: %.3f".formatted(len));
 //        CustomDebugMessage.list.add("mouseWorld: %s".formatted(mouseWorld.toString()));
 //        CustomDebugMessage.list.add("vx: %.3f".formatted(vx));
