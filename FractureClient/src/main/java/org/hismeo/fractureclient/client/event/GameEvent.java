@@ -7,6 +7,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import org.hismeo.fractureclient.FractureClient;
+import org.hismeo.fractureclient.client.init.KeyInit;
 import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
 
 @EventBusSubscriber(modid = FractureClient.MODID, value = Dist.CLIENT)
@@ -29,6 +30,6 @@ public class GameEvent {
 
     @SubscribeEvent
     public static void keyRegister(RegisterKeyMappingsEvent event) {
-        event.register();
+        event.register(KeyInit.ROTATE_CAMERA);
     }
 }

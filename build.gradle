@@ -13,6 +13,44 @@ subprojects {
             minecraftVersion = minecraft_version
             mappingsVersion = parchment_mappings
         }
+
+        runs {
+            client {
+                client()
+                systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            }
+
+            server {
+                server()
+                programArgument '--nogui'
+                setGameDirectory(file("server"))
+                systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            }
+
+            gameTestServer {
+                type = "gameTestServer"
+                systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            }
+
+            data {
+                data()
+
+                programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            }
+
+            configureEach {
+                systemProperty 'forge.logging.markers', 'REGISTRIES'
+                logLevel = org.slf4j.event.Level.DEBUG
+
+                jvmArgument "-XX:+IgnoreUnrecognizedVMOptions"
+                jvmArgument "-XX:+AllowEnhancedClassRedefinition"
+                jvmArgument "-XX:HotswapAgent=fatjar"
+
+                if (isRunningInIdea()) {
+                    systemProperty "terminal.jline", "true"
+                }
+            }
+        }
     }
 
     repositories {
@@ -44,4 +82,8 @@ idea {
         downloadSources = true
         downloadJavadoc = true
     }
+}
+
+def isRunningInIdea() {
+    return System.getProperty("idea.active") == "true"
 }
