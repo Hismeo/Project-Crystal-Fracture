@@ -7,21 +7,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import org.hismeo.crystallib.util.MatrixUtil;
+import org.hismeo.fractureclient.client.impl.mixin.GlobalRender;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//thanks for https://github.com/DimasKama/OrthoCamera
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
     //=====================================OVERLOOK CAMERA=====================================
+    //thanks for https://github.com/DimasKama/OrthoCamera
     @ModifyArg(
             method = "renderLevel",
             at = @At(value = "INVOKE",
@@ -41,5 +45,18 @@ public abstract class GameRendererMixin {
         Matrix4f orthoMatrix = MatrixUtil.orthoMatrix4f(minecraft, 0.0F);
         RenderSystem.setProjectionMatrix(orthoMatrix, VertexSorting.ORTHOGRAPHIC_Z);
         return orthoMatrix;
+    }
+
+    //=====================================NORMAL RENDER=====================================
+    @Inject(
+            method = "render",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    public void globalRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local(type = GuiGraphics.class)GuiGraphics guiGraphics) {
+        GlobalRender.mouseRender(minecraft, guiGraphics);
     }
 }

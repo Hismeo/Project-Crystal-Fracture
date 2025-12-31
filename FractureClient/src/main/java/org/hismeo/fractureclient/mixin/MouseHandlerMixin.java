@@ -22,19 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin implements MouseHandlerImpl {
-    @Shadow private boolean mouseGrabbed;
-
-    @Shadow @Final private Minecraft minecraft;
-
-    @Shadow private boolean ignoreFirstMove;
-
-    @Shadow private double xpos;
-
-    @Shadow private double ypos;
-
     @WrapOperation(method = "grabMouse", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
     public void showMouse(long window, int cursorValue, double xPos, double yPos, Operation<Void> original) {
-        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     }
 
     @WrapMethod(method = "turnPlayer")

@@ -10,10 +10,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Camera.class)
 public abstract class CameraMixin {
-    @Shadow protected abstract void setPosition(double x, double y, double z);
-
-    @Shadow private float eyeHeight;
-
     //=====================================OVERLOOK CAMERA=====================================
     @ModifyVariable(method = "setup", at = @At(value = "HEAD"), ordinal = 1, argsOnly = true)
     public boolean noReverse(boolean original) {return false;}
