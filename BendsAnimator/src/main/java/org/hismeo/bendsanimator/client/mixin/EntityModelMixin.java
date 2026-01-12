@@ -16,6 +16,6 @@ public class EntityModelMixin<T extends LivingEntity> {
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "HEAD"), cancellable = true)
     public void cancelAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci){
-        ci.cancel();
+//        ci.cancel();
     }
 }
