@@ -15,6 +15,8 @@ var projectName = [
         "CrystalLib",
         "FractureClient",
         "HazeDungeon",
-        "NuQuest"
+        "NuQuest",
+        "FractureLoader"
 ]
 projectName.forEach { name -> include ":" + name }
+

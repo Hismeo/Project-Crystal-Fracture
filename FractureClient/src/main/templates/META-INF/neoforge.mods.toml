@@ -9,8 +9,8 @@ authors="${mod_authors}"
 description='''${mod_description}'''
 [[mixins]]
 config="mixins.${mod_id}.json"
-#[[accessTransformers]]
-#file="META-INF/accesstransformer.cfg"
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
 [[dependencies."${mod_id}"]]
    modId="neoforge"
    type="required"

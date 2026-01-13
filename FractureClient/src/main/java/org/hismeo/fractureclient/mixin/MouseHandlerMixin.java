@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class MouseHandlerMixin implements MouseHandlerImpl {
     @WrapOperation(method = "grabMouse", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
     public void showMouse(long window, int cursorValue, double xPos, double yPos, Operation<Void> original) {
-        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+        GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
     }
 
     @ModifyExpressionValue(method = "releaseMouse", at = @At(value = "CONSTANT", args = "intValue=212993"))
