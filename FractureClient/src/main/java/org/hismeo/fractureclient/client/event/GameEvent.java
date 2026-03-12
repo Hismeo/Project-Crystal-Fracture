@@ -5,7 +5,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.hismeo.fractureclient.FractureClient;
 import org.hismeo.fractureclient.client.init.KeyInit;
 import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
@@ -15,6 +17,7 @@ public class GameEvent {
     //TODO 交互分离
     @SubscribeEvent
     public static void angle(ViewportEvent.ComputeCameraAngles event) {
+        //TODO 可控
         event.setPitch(25);
         event.setYaw(25);
     }

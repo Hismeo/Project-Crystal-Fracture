@@ -2,7 +2,6 @@ package org.hismeo.fractureclient.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.fml.earlydisplay.DisplayWindow;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;

@@ -4,14 +4,16 @@
   "package": "org.hismeo.fractureclient.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "NeoForgeLoadingOverlayMixin",
-    "remove_stuff.TutorialMixin"
+    "LocalPlayerMixin",
+    "PlayerMixin"
   ],
   "client": [
     "CamaraTypeMixin",
     "CameraMixin",
     "GameRendererMixin",
-    "MouseHandlerMixin"
+    "MouseHandlerMixin",
+    "NeoForgeLoadingOverlayMixin",
+    "remove_stuff.TutorialMixin"
   ],
   "injectors": {
     "defaultRequire": 1

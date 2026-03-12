@@ -1,9 +1,10 @@
 var projectName = [
-        "ActionGuide",
-        "BendsAnimator",
+        //TODO
+//        "ActionGuide",
+//        "BendsAnimator",
         "CrystalLib",
-        "HazeDungeon",
-        "NuQuest"
+//        "HazeDungeon",
+//        "NuQuest"
 ]
 
 group = mod_group_id
