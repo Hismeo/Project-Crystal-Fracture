@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -19,7 +20,7 @@ public class GameEvent {
     public static void angle(ViewportEvent.ComputeCameraAngles event) {
         //TODO 可控
         event.setPitch(25);
-        event.setYaw(25);
+        event.setYaw(0);
     }
 
     @SubscribeEvent
@@ -34,5 +35,10 @@ public class GameEvent {
     @SubscribeEvent
     public static void keyRegister(RegisterKeyMappingsEvent event) {
         event.register(KeyInit.ROTATE_CAMERA);
+    }
+
+    @SubscribeEvent
+    public static void keyTrigger(ClientTickEvent.Pre event) {
+
     }
 }

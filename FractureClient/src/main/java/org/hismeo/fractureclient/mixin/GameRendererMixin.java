@@ -1,6 +1,7 @@
 package org.hismeo.fractureclient.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.DeltaTracker;
@@ -23,7 +24,6 @@ public abstract class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
     //=====================================OVERLOOK CAMERA=====================================
-    //thanks for https://github.com/DimasKama/OrthoCamera
     @ModifyArg(
             method = "renderLevel",
             at = @At(value = "INVOKE",
@@ -54,7 +54,7 @@ public abstract class GameRendererMixin {
                     shift = At.Shift.AFTER
             )
     )
-    public void globalRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local(type = GuiGraphics.class)GuiGraphics guiGraphics) {
-        GlobalRender.mouseRender(minecraft, guiGraphics);
+    public void globalRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local(type = GuiGraphics.class)GuiGraphics guiGraphics, @Local Window window) {
+        GlobalRender.globalRender(minecraft, deltaTracker, renderLevel, guiGraphics, window);
     }
 }

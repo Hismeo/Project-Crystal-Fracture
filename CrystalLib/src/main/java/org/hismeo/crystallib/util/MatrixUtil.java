@@ -1,12 +1,14 @@
 package org.hismeo.crystallib.util;
 
+import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import org.joml.Matrix4f;
 
 public class MatrixUtil {
     public static Matrix4f orthoMatrix4f(Minecraft minecraft, float minScale) {
-        int width = minecraft.getWindow().getWidth();
-        int height = minecraft.getWindow().getHeight();
+        Window window = minecraft.getWindow();
+        int width = window.getWidth();
+        int height = window.getHeight();
 
         float size = 10.0f;
         float aspect = (float) width / height;
