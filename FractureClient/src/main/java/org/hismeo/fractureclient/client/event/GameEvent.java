@@ -20,7 +20,7 @@ public class GameEvent {
     public static void angle(ViewportEvent.ComputeCameraAngles event) {
         //TODO 可控
         event.setPitch(25);
-        event.setYaw(0);
+        event.setYaw(25);
     }
 
     @SubscribeEvent

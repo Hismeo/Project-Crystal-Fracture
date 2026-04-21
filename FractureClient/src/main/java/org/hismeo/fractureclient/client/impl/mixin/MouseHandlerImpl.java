@@ -2,36 +2,40 @@ package org.hismeo.fractureclient.client.impl.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
 
 public interface MouseHandlerImpl {
     default void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
+        if (minecraft.player == null || minecraft.gameRenderer == null) return;
+
+        double screenWidth = minecraft.getWindow().getScreenWidth();
+        double screenHeight = minecraft.getWindow().getScreenHeight();
+        if (screenWidth <= 0 || screenHeight <= 0) return;
+
         Vec3 camPos = minecraft.gameRenderer.getMainCamera().getPosition();
-        double dx = mouseHandler.xpos - minecraft.getWindow().getScreenWidth() * 0.5;
-        double dz = mouseHandler.ypos - minecraft.getWindow().getScreenHeight() * 0.5;
+        double ndcX = mouseHandler.xpos / screenWidth * 2.0 - 1.0; // right positive
+        double ndcY = 1.0 - mouseHandler.ypos / screenHeight * 2.0; // up positive
 
-        double len = Math.sqrt(dx*dx + dz*dz);
-        if (len < 1e-6) return;
+        Vec3 nearPoint = minecraft.gameRenderer.getMainCamera().getNearPlane().getPointOnPlane((float) ndcX, (float) ndcY);
+        Vec3 rayDir = nearPoint.normalize();
 
-        dx /= len;
-        dz /= len;
-        dz = -dz;
+        double targetY = minecraft.player.getEyeY();
+        if (Math.abs(rayDir.y) < 1e-6) return;
 
-        float camYaw = minecraft.gameRenderer.getMainCamera().getYRot();
-        double rad = Math.toRadians(-camYaw);
+        double t = (targetY - camPos.y) / rayDir.y;
+        if (t <= 0.0) return;
 
-        double cos = Math.cos(rad);
-        double sin = Math.sin(rad);
+        Vec3 hit = camPos.add(rayDir.scale(t));
+        double dx = hit.x - minecraft.player.getX();
+        double dz = hit.z - minecraft.player.getZ();
+        if (dx * dx + dz * dz < 1e-8) return;
 
-        double worldDx = dx * cos - dz * sin;
-        double worldDz = dx * sin + dz * cos;
-
-        Vec3 mouseWorld = camPos.add(worldDx * 10, 0, worldDz * 10);
-        double vx = mouseWorld.x - minecraft.player.getX();
-        double vz = mouseWorld.z - minecraft.player.getZ();
-        float yRot = (float) (Math.atan2(vx, vz) * 180 / Math.PI);
-
+        float yRot = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(-dx, dz)));
         minecraft.player.setYRot(yRot);
         minecraft.player.setXRot(0);
+
+//        CustomDebugMessage.list.add("yRot %.2f hit(%.2f, %.2f)".formatted(yRot, hit.x, hit.z));
     }
 }
