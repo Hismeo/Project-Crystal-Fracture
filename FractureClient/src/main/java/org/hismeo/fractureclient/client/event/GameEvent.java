@@ -10,17 +10,16 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import org.hismeo.fractureclient.FractureClient;
+import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
 import org.hismeo.fractureclient.client.init.KeyInit;
 import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
 
 @EventBusSubscriber(modid = FractureClient.MODID, value = Dist.CLIENT)
 public class GameEvent {
-    //TODO 交互分离
     @SubscribeEvent
     public static void angle(ViewportEvent.ComputeCameraAngles event) {
-        //TODO 可控
-        event.setPitch(25);
-        event.setYaw(25);
+        event.setPitch(OrthographicCameraConfig.pitch);
+        event.setYaw(OrthographicCameraConfig.yaw);
     }
 
     @SubscribeEvent

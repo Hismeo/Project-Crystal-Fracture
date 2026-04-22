@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import org.hismeo.crystallib.util.MatrixUtil;
+import org.hismeo.fractureclient.client.impl.mixin.CameraImpl;
 import org.hismeo.fractureclient.client.impl.mixin.GlobalRender;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
+public abstract class GameRendererMixin implements CameraImpl {
     @Shadow @Final private Minecraft minecraft;
 
     //=====================================OVERLOOK CAMERA=====================================
@@ -31,7 +32,7 @@ public abstract class GameRendererMixin {
             index = 2
     )
     public Matrix4f frustumProjection(Matrix4f projectionMatrix) {
-        return MatrixUtil.orthoMatrix4f(minecraft, 20.0F);
+        return orthoMatrix4f(minecraft, 20.0F);
     }
     @ModifyArg(
             method = "renderLevel",
@@ -40,7 +41,7 @@ public abstract class GameRendererMixin {
             index = 6
     )
     public Matrix4f renderProjection(Matrix4f projectionMatrix, @Local(argsOnly = true) DeltaTracker tickCounter) {
-        Matrix4f orthoMatrix = MatrixUtil.orthoMatrix4f(minecraft, 0.0F);
+        Matrix4f orthoMatrix = orthoMatrix4f(minecraft, 0.0F);
         RenderSystem.setProjectionMatrix(orthoMatrix, VertexSorting.ORTHOGRAPHIC_Z);
         return orthoMatrix;
     }
