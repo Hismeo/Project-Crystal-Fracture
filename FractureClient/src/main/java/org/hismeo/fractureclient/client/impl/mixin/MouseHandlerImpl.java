@@ -2,9 +2,8 @@ package org.hismeo.fractureclient.client.impl.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
+import org.hismeo.crystallib.util.YawAimUtil;
 
 public interface MouseHandlerImpl {
     default void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
@@ -19,23 +18,20 @@ public interface MouseHandlerImpl {
         double ndcY = 1.0 - mouseHandler.ypos / screenHeight * 2.0; // up positive
 
         Vec3 nearPoint = minecraft.gameRenderer.getMainCamera().getNearPlane().getPointOnPlane((float) ndcX, (float) ndcY);
-        Vec3 rayDir = nearPoint.normalize();
+        double rayLen = Math.sqrt(nearPoint.x * nearPoint.x + nearPoint.y * nearPoint.y + nearPoint.z * nearPoint.z);
+        if (rayLen < 1e-12) return;
+        double rayX = nearPoint.x / rayLen;
+        double rayY = nearPoint.y / rayLen;
+        double rayZ = nearPoint.z / rayLen;
 
-        double targetY = minecraft.player.getEyeY();
-        if (Math.abs(rayDir.y) < 1e-6) return;
+        float yRot = YawAimUtil.computeAimYaw(
+                camPos.x, camPos.y, camPos.z,
+                minecraft.player.getX(), minecraft.player.getEyeY(), minecraft.player.getZ(),
+                rayX, rayY, rayZ
+        );
+        if (Float.isNaN(yRot)) return;
 
-        double t = (targetY - camPos.y) / rayDir.y;
-        if (t <= 0.0) return;
-
-        Vec3 hit = camPos.add(rayDir.scale(t));
-        double dx = hit.x - minecraft.player.getX();
-        double dz = hit.z - minecraft.player.getZ();
-        if (dx * dx + dz * dz < 1e-8) return;
-
-        float yRot = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(-dx, dz)));
         minecraft.player.setYRot(yRot);
         minecraft.player.setXRot(0);
-
-//        CustomDebugMessage.list.add("yRot %.2f hit(%.2f, %.2f)".formatted(yRot, hit.x, hit.z));
     }
 }
