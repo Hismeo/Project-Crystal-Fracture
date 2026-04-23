@@ -26,12 +26,9 @@ public class GameEvent {
     @SubscribeEvent
     public static void debugMessage(RenderGuiLayerEvent.Post event) {
         GuiGraphics guiGraphics = event.getGuiGraphics();
-        CameraRotateController.render(guiGraphics, Minecraft.getInstance());
-
-        for (int i = 0; i < CustomDebugMessage.list.size(); i++) {
-            guiGraphics.drawString(Minecraft.getInstance().font, CustomDebugMessage.list.get(i), 0, i * 10, 0xFFFFFFFF);
-        }
-        CustomDebugMessage.list.clear();
+        Minecraft minecraft = Minecraft.getInstance();
+        CameraRotateController.render(guiGraphics, minecraft);
+        CustomDebugMessage.render(guiGraphics, minecraft);
     }
 
     @SubscribeEvent

@@ -5,10 +5,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
 
+//TODO UGLY CODE
 public final class CameraRotateController {
     private static final float YAW_LERP_ALPHA = 0.5F;
     private static final double MIN_DRAG_LENGTH2 = 9.0;
-    private static final int RENDER_RADIUS = 36;
+    private static final int RENDER_RADIUS = 12;
     private static final int RING_COLOR = 0xAA33CCFF;
     private static final int CENTER_COLOR = 0xFFFFFFFF;
     private static final int LINE_COLOR = 0xAAFFFFFF;
