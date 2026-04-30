@@ -22,4 +22,7 @@ public class OrthographicCameraConfig {
 
     @ConfigValue(comment = "Orthographic camera size")
     public static float size = 10.0F;
+
+    @ConfigValue
+    public static boolean isCull = true;
 }

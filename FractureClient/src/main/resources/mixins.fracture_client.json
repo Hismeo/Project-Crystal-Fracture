@@ -8,6 +8,7 @@
     "PlayerMixin"
   ],
   "client": [
+    "BlockRenderDispatcherMixin",
     "CamaraTypeMixin",
     "CameraMixin",
     "GameRendererMixin",
