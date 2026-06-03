@@ -62,10 +62,11 @@ public final class BlockCullController {
         Vec3 lookAxis = new Vec3(minecraft.gameRenderer.getMainCamera().getLookVector()).normalize();
         AxisSegment segment = resolveCullSegment(cameraPos, playerFeetPos, lookAxis);
 
+        int minCullY = ceilToInt(playerFeetPos.y);
         if (CULL_SHAPE == CullShape.BOX) {
-            addBoxCulling(segment.origin, segment.target, nextCullSet);
+            addBoxCulling(segment.origin, segment.target, minCullY, nextCullSet);
         } else {
-            addConeCulling(segment.origin, segment.target, nextCullSet);
+            addConeCulling(segment.origin, segment.target, minCullY, nextCullSet);
         }
 
         if (!sameSet(CULLED_BLOCKS, nextCullSet)) {
@@ -177,7 +178,7 @@ public final class BlockCullController {
         }
     }
 
-    private static void addConeCulling(Vec3 origin, Vec3 target, LongOpenHashSet out) {
+    private static void addConeCulling(Vec3 origin, Vec3 target, int minCullY, LongOpenHashSet out) {
         Vec3 axis = target.subtract(origin); // camera -> player, cone base at player side
         double height = axis.length();
         if (height < MIN_DISTANCE) return;
@@ -187,7 +188,7 @@ public final class BlockCullController {
 
         int minX = floorToInt(Math.min(origin.x, target.x) - baseRadius);
         int maxX = floorToInt(Math.max(origin.x, target.x) + baseRadius);
-        int minY = floorToInt(Math.min(origin.y, target.y) - baseRadius);
+        int minY = Math.max(floorToInt(Math.min(origin.y, target.y) - baseRadius), minCullY);
         int maxY = floorToInt(Math.max(origin.y, target.y) + baseRadius);
         int minZ = floorToInt(Math.min(origin.z, target.z) - baseRadius);
         int maxZ = floorToInt(Math.max(origin.z, target.z) + baseRadius);
@@ -203,7 +204,7 @@ public final class BlockCullController {
         }
     }
 
-    private static void addBoxCulling(Vec3 origin, Vec3 target, LongOpenHashSet out) {
+    private static void addBoxCulling(Vec3 origin, Vec3 target, int minCullY, LongOpenHashSet out) {
         Vec3 axis = target.subtract(origin); // camera -> player-feet
         double height = axis.length();
         if (height < MIN_DISTANCE) return;
@@ -222,7 +223,7 @@ public final class BlockCullController {
         double maxR = Math.max(nearR, farR) + BLOCK_EPS;
         int minX = floorToInt(Math.min(shiftedOrigin.x, shiftedTarget.x) - maxR);
         int maxX = floorToInt(Math.max(shiftedOrigin.x, shiftedTarget.x) + maxR);
-        int minY = floorToInt(Math.min(shiftedOrigin.y, shiftedTarget.y) - maxR);
+        int minY = Math.max(floorToInt(Math.min(shiftedOrigin.y, shiftedTarget.y) - maxR), minCullY);
         int maxY = floorToInt(Math.max(shiftedOrigin.y, shiftedTarget.y) + maxR);
         int minZ = floorToInt(Math.min(shiftedOrigin.z, shiftedTarget.z) - maxR);
         int maxZ = floorToInt(Math.max(shiftedOrigin.z, shiftedTarget.z) + maxR);
@@ -365,5 +366,10 @@ public final class BlockCullController {
     private static int floorToInt(double value) {
         int i = (int) value;
         return value < (double) i ? i - 1 : i;
+    }
+
+    private static int ceilToInt(double value) {
+        int i = (int) value;
+        return value > (double) i ? i + 1 : i;
     }
 }
