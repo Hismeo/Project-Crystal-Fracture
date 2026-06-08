@@ -38,7 +38,7 @@ public class GameEvent {
     public static void renderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return;
         Minecraft minecraft = Minecraft.getInstance();
-        BlockCullController.renderDebugConeWorld(
+        BlockCullController.renderDebugCullBoxWorld(
                 event.getPoseStack(),
                 event.getCamera().getPosition(),
                 minecraft.renderBuffers().bufferSource(),

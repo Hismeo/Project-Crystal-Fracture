@@ -1,9 +1,9 @@
 package org.hismeo.fractureclient.client.control;
 
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,32 +15,18 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public final class BlockCullController {
-    private enum CullShape {
-        CONE,
-        BOX
-    }
-
     private static final LongOpenHashSet CULLED_BLOCKS = new LongOpenHashSet();
     private static final double MIN_DISTANCE = 1.0e-4;
-    private static final boolean DEBUG_RENDER_CONE = true;
-    private static final int CONE_COLOR = 0xAA33CCFF;
-    private static final int BOX_COLOR = 0xAA66FF66;
-    private static final CullShape CULL_SHAPE = CullShape.BOX;
-    // 正交模式下剔除长度按 size 缩放：length = size * CULL_LENGTH_BY_SIZE
-    private static final double CULL_LENGTH_BY_SIZE = 5;
-    // 允许剔除体越过玩家一点点，避免边界抖动
-    private static final double LENGTH_EXTRA_PAST_PLAYER = 1.0;
-    // 固定底面半径（世界坐标）
-    private static final double BASE_RADIUS = 20.0;
-    // 梯形体参数：摄像机面尺寸、玩家面尺寸（世界坐标）
+    private static final boolean DEBUG_RENDER_BOX = true;
+    private static final int CAMERA_FACE_COLOR = 0xAA33CCFF;
+    private static final int BOX_EDGE_COLOR = 0xAA66FF66;
+    private static final double CULL_LENGTH_BY_SIZE = 5.0;
     private static final double CAMERA_FACE_WIDTH = 14.0;
     private static final double CAMERA_FACE_HEIGHT = 8.0;
     private static final double PLAYER_FACE_WIDTH = 5.0;
     private static final double PLAYER_FACE_HEIGHT = 3.0;
-    // 梯形体整体偏移（沿相机局部 left/up/look）
-    private static final Vec3 FRUSTUM_OFFSET = new Vec3(0.0, 0.0, 0.0);
-    // 方块中心判定时给一点容差，避免底面/边缘“差一格”漏剔除
     private static final double BLOCK_EPS = 1.0;
+    private static final Vec3 FRUSTUM_OFFSET = new Vec3(0.0, 0.0, 0.0);
 
     private BlockCullController() {}
 
@@ -62,12 +48,7 @@ public final class BlockCullController {
         Vec3 lookAxis = new Vec3(minecraft.gameRenderer.getMainCamera().getLookVector()).normalize();
         AxisSegment segment = resolveCullSegment(cameraPos, playerFeetPos, lookAxis);
 
-        int minCullY = ceilToInt(playerFeetPos.y);
-        if (CULL_SHAPE == CullShape.BOX) {
-            addBoxCulling(segment.origin, segment.target, minCullY, nextCullSet);
-        } else {
-            addConeCulling(segment.origin, segment.target, minCullY, nextCullSet);
-        }
+        addBoxCulling(segment.origin, segment.target, ceilToInt(playerFeetPos.y), nextCullSet);
 
         if (!sameSet(CULLED_BLOCKS, nextCullSet)) {
             markDirtyByDiff(minecraft, CULLED_BLOCKS, nextCullSet);
@@ -81,131 +62,79 @@ public final class BlockCullController {
         return CULLED_BLOCKS.contains(pos.asLong());
     }
 
-    public static void renderDebugConeWorld(PoseStack poseStack, Vec3 cameraRenderPos, MultiBufferSource.BufferSource buffer, Minecraft minecraft) {
-        if (!DEBUG_RENDER_CONE || !OrthographicCameraConfig.isCull) return;
+    public static void renderDebugCullBoxWorld(PoseStack poseStack, Vec3 cameraRenderPos, MultiBufferSource.BufferSource buffer, Minecraft minecraft) {
+        if (!DEBUG_RENDER_BOX || !OrthographicCameraConfig.isCull) return;
         if (minecraft.player == null || minecraft.gameRenderer == null) return;
 
-        Vec3 apex = minecraft.gameRenderer.getMainCamera().getPosition();
-        Vec3 baseCenter = new Vec3(
+        Vec3 cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
+        Vec3 playerFeetPos = new Vec3(
                 minecraft.player.getX(),
                 minecraft.player.getBoundingBox().minY,
                 minecraft.player.getZ()
         );
         Vec3 lookAxis = new Vec3(minecraft.gameRenderer.getMainCamera().getLookVector()).normalize();
-        AxisSegment segment = resolveCullSegment(apex, baseCenter, lookAxis);
-        apex = segment.origin;
-        baseCenter = segment.target;
-        Vec3 axis = baseCenter.subtract(apex);
+        AxisSegment segment = resolveCullSegment(cameraPos, playerFeetPos, lookAxis);
+
+        Vec3 axis = segment.target.subtract(segment.origin);
         double height = axis.length();
         if (height < MIN_DISTANCE) return;
 
         Vec3 axisN = axis.scale(1.0 / height);
-        double baseRadius = BASE_RADIUS;
-
         Vector3f left = minecraft.gameRenderer.getMainCamera().getLeftVector();
         Vector3f up = minecraft.gameRenderer.getMainCamera().getUpVector();
         Vec3 tangentU = new Vec3(left).normalize();
         Vec3 tangentV = new Vec3(up).normalize();
         Vec3 offset = tangentU.scale(FRUSTUM_OFFSET.x).add(tangentV.scale(FRUSTUM_OFFSET.y)).add(axisN.scale(FRUSTUM_OFFSET.z));
-        Vec3 shiftedApex = apex.add(offset);
-        Vec3 shiftedBaseCenter = baseCenter.add(offset);
 
         VertexConsumer consumer = buffer.getBuffer(RenderType.lines());
-        if (CULL_SHAPE == CullShape.BOX) {
-            renderDebugFrustumBox(poseStack, consumer, cameraRenderPos, shiftedApex, shiftedBaseCenter, axisN, tangentU, tangentV);
-        } else {
-            renderDebugCone(poseStack, consumer, cameraRenderPos, shiftedApex, shiftedBaseCenter, baseRadius, tangentU, tangentV);
-        }
-    }
-
-    private static void renderDebugCone(
-            PoseStack poseStack,
-            VertexConsumer consumer,
-            Vec3 cameraRenderPos,
-            Vec3 apex,
-            Vec3 baseCenter,
-            double baseRadius,
-            Vec3 tangentU,
-            Vec3 tangentV
-    ) {
-        int segments = 28;
-        Vec3 apexRel = apex.subtract(cameraRenderPos);
-        Vec3 first = null;
-        Vec3 prev = null;
-        for (int i = 0; i < segments; i++) {
-            double rad = Math.toRadians((360.0 * i) / segments);
-            double cx = Math.cos(rad) * baseRadius;
-            double cy = Math.sin(rad) * baseRadius;
-            Vec3 p = baseCenter.add(tangentU.scale(cx)).add(tangentV.scale(cy));
-            Vec3 now = p.subtract(cameraRenderPos);
-            if (first == null) first = now;
-            if (prev != null) drawLine3D(poseStack, consumer, prev, now, CONE_COLOR);
-            if (i % 4 == 0) drawLine3D(poseStack, consumer, apexRel, now, CONE_COLOR);
-            prev = now;
-        }
-        if (first != null && prev != null) drawLine3D(poseStack, consumer, prev, first, CONE_COLOR);
+        renderDebugFrustumBox(
+                poseStack,
+                consumer,
+                cameraRenderPos,
+                segment.origin.add(offset),
+                segment.target.add(offset),
+                tangentU,
+                tangentV
+        );
     }
 
     private static void renderDebugFrustumBox(
             PoseStack poseStack,
             VertexConsumer consumer,
             Vec3 cameraRenderPos,
-            Vec3 apex,
-            Vec3 baseCenter,
-            Vec3 axisN,
+            Vec3 origin,
+            Vec3 target,
             Vec3 tangentU,
             Vec3 tangentV
     ) {
-        Vec3 c0 = apex;
-        Vec3 c1 = baseCenter;
-        Vec3 uNear = tangentU.scale(CAMERA_FACE_WIDTH * 0.5);
-        Vec3 vNear = tangentV.scale(CAMERA_FACE_HEIGHT * 0.5);
-        Vec3 uFar = tangentU.scale(PLAYER_FACE_WIDTH * 0.5);
-        Vec3 vFar = tangentV.scale(PLAYER_FACE_HEIGHT * 0.5);
+        Vec3 nearU = tangentU.scale(CAMERA_FACE_WIDTH * 0.5);
+        Vec3 nearV = tangentV.scale(CAMERA_FACE_HEIGHT * 0.5);
+        Vec3 farU = tangentU.scale(PLAYER_FACE_WIDTH * 0.5);
+        Vec3 farV = tangentV.scale(PLAYER_FACE_HEIGHT * 0.5);
 
         Vec3[] near = new Vec3[]{
-                c0.add(uNear).add(vNear), c0.add(uNear).subtract(vNear), c0.subtract(uNear).subtract(vNear), c0.subtract(uNear).add(vNear)
+                origin.add(nearU).add(nearV),
+                origin.add(nearU).subtract(nearV),
+                origin.subtract(nearU).subtract(nearV),
+                origin.subtract(nearU).add(nearV)
         };
         Vec3[] far = new Vec3[]{
-                c1.add(uFar).add(vFar), c1.add(uFar).subtract(vFar), c1.subtract(uFar).subtract(vFar), c1.subtract(uFar).add(vFar)
+                target.add(farU).add(farV),
+                target.add(farU).subtract(farV),
+                target.subtract(farU).subtract(farV),
+                target.subtract(farU).add(farV)
         };
 
         for (int i = 0; i < 4; i++) {
-            int j = (i + 1) & 3;
-            drawLine3D(poseStack, consumer, near[i].subtract(cameraRenderPos), near[j].subtract(cameraRenderPos), CONE_COLOR);
-            drawLine3D(poseStack, consumer, far[i].subtract(cameraRenderPos), far[j].subtract(cameraRenderPos), BOX_COLOR);
-            drawLine3D(poseStack, consumer, near[i].subtract(cameraRenderPos), far[i].subtract(cameraRenderPos), BOX_COLOR);
-        }
-    }
-
-    private static void addConeCulling(Vec3 origin, Vec3 target, int minCullY, LongOpenHashSet out) {
-        Vec3 axis = target.subtract(origin); // camera -> player, cone base at player side
-        double height = axis.length();
-        if (height < MIN_DISTANCE) return;
-
-        Vec3 axisN = axis.scale(1.0 / height);
-        double baseRadius = BASE_RADIUS;
-
-        int minX = floorToInt(Math.min(origin.x, target.x) - baseRadius);
-        int maxX = floorToInt(Math.max(origin.x, target.x) + baseRadius);
-        int minY = Math.max(floorToInt(Math.min(origin.y, target.y) - baseRadius), minCullY);
-        int maxY = floorToInt(Math.max(origin.y, target.y) + baseRadius);
-        int minZ = floorToInt(Math.min(origin.z, target.z) - baseRadius);
-        int maxZ = floorToInt(Math.max(origin.z, target.z) + baseRadius);
-
-        for (int x = minX; x <= maxX; x++) {
-            for (int y = minY; y <= maxY; y++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    if (isInsideCone(x, y, z, origin, axisN, height, baseRadius)) {
-                        out.add(BlockPos.asLong(x, y, z));
-                    }
-                }
-            }
+            int next = (i + 1) & 3;
+            drawLine3D(poseStack, consumer, near[i].subtract(cameraRenderPos), near[next].subtract(cameraRenderPos), CAMERA_FACE_COLOR);
+            drawLine3D(poseStack, consumer, far[i].subtract(cameraRenderPos), far[next].subtract(cameraRenderPos), BOX_EDGE_COLOR);
+            drawLine3D(poseStack, consumer, near[i].subtract(cameraRenderPos), far[i].subtract(cameraRenderPos), BOX_EDGE_COLOR);
         }
     }
 
     private static void addBoxCulling(Vec3 origin, Vec3 target, int minCullY, LongOpenHashSet out) {
-        Vec3 axis = target.subtract(origin); // camera -> player-feet
+        Vec3 axis = target.subtract(origin);
         double height = axis.length();
         if (height < MIN_DISTANCE) return;
 
@@ -266,24 +195,6 @@ public final class BlockCullController {
                 && Math.abs(v) <= halfH + BLOCK_EPS;
     }
 
-    private static boolean isInsideCone(int x, int y, int z, Vec3 origin, Vec3 axisN, double height, double baseRadius) {
-        double px = x + 0.5 - origin.x;
-        double py = y + 0.5 - origin.y;
-        double pz = z + 0.5 - origin.z;
-
-        double t = px * axisN.x + py * axisN.y + pz * axisN.z;
-        if (t <= -BLOCK_EPS || t >= height + BLOCK_EPS) return false;
-
-        double rel2 = px * px + py * py + pz * pz;
-        double radial2 = rel2 - t * t;
-        if (radial2 < 0.0) radial2 = 0.0;
-
-        double tClamped = Math.max(0.0, Math.min(height, t));
-        double radiusAtT = (tClamped / height) * baseRadius;
-        radiusAtT += BLOCK_EPS;
-        return radial2 <= radiusAtT * radiusAtT;
-    }
-
     private static AxisSegment resolveCullSegment(Vec3 cameraPos, Vec3 playerFeetPos, Vec3 lookAxis) {
         Vec3 toPlayer = playerFeetPos.subtract(cameraPos);
         Vec3 axis = lookAxis;
@@ -292,8 +203,6 @@ public final class BlockCullController {
         }
         double projectedToPlayer = Math.max(MIN_DISTANCE, axis.dot(toPlayer));
         Vec3 playerSideTarget = cameraPos.add(axis.scale(projectedToPlayer));
-
-        // 保持玩家侧长度不变，只向摄像机反方向延长
         double cameraBackLength = Math.max(MIN_DISTANCE, OrthographicCameraConfig.size * CULL_LENGTH_BY_SIZE);
         Vec3 cameraSideOrigin = cameraPos.subtract(axis.scale(cameraBackLength));
         return new AxisSegment(cameraSideOrigin, playerSideTarget);
@@ -303,9 +212,9 @@ public final class BlockCullController {
 
     private static boolean sameSet(LongOpenHashSet a, LongOpenHashSet b) {
         if (a.size() != b.size()) return false;
-        LongIterator it = a.iterator();
-        while (it.hasNext()) {
-            if (!b.contains(it.nextLong())) return false;
+        LongIterator iterator = a.iterator();
+        while (iterator.hasNext()) {
+            if (!b.contains(iterator.nextLong())) return false;
         }
         return true;
     }
@@ -318,17 +227,17 @@ public final class BlockCullController {
     }
 
     private static void markDirtyByDiff(Minecraft minecraft, LongOpenHashSet oldSet, LongOpenHashSet newSet) {
-        LongIterator itOld = oldSet.iterator();
-        while (itOld.hasNext()) {
-            long packed = itOld.nextLong();
+        LongIterator oldIterator = oldSet.iterator();
+        while (oldIterator.hasNext()) {
+            long packed = oldIterator.nextLong();
             if (!newSet.contains(packed)) {
                 markBlockDirty(minecraft, packed);
             }
         }
 
-        LongIterator itNew = newSet.iterator();
-        while (itNew.hasNext()) {
-            long packed = itNew.nextLong();
+        LongIterator newIterator = newSet.iterator();
+        while (newIterator.hasNext()) {
+            long packed = newIterator.nextLong();
             if (!oldSet.contains(packed)) {
                 markBlockDirty(minecraft, packed);
             }
@@ -353,7 +262,6 @@ public final class BlockCullController {
         poseStack.pushPose();
         PoseStack.Pose last = poseStack.last();
         Matrix4f matrix4f = last.pose();
-//        matrix4f.rotateX(0.1f);
         consumer.addVertex(matrix4f, (float) a.x, (float) a.y, (float) a.z)
                 .setColor(color)
                 .setNormal(last, nx, ny, nz);
