@@ -58,6 +58,7 @@ subprojects {
         maven { url "https://maven.theillusivec4.top/" }
         maven { url "https://maven.shedaniel.me/" }
         maven { url "https://jitpack.io" }
+        flatDir{ dirs 'libs' }
     }
 
     dependencies {
