@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin implements CameraImpl {
+public abstract class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
     //=====================================OVERLOOK CAMERA=====================================
@@ -32,7 +32,7 @@ public abstract class GameRendererMixin implements CameraImpl {
             index = 2
     )
     public Matrix4f frustumProjection(Matrix4f projectionMatrix) {
-        return orthoMatrix4f(minecraft, 20.0F);
+        return  CameraImpl.orthoMatrix4f(minecraft, 20.0F);
     }
     @ModifyArg(
             method = "renderLevel",
@@ -41,7 +41,7 @@ public abstract class GameRendererMixin implements CameraImpl {
             index = 6
     )
     public Matrix4f renderProjection(Matrix4f projectionMatrix, @Local(argsOnly = true) DeltaTracker tickCounter) {
-        Matrix4f orthoMatrix = orthoMatrix4f(minecraft, 0.0F);
+        Matrix4f orthoMatrix =  CameraImpl.orthoMatrix4f(minecraft, 0.0F);
         RenderSystem.setProjectionMatrix(orthoMatrix, VertexSorting.ORTHOGRAPHIC_Z);
         return orthoMatrix;
     }

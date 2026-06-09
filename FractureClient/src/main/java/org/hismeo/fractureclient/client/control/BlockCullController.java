@@ -17,7 +17,7 @@ import org.joml.Vector3f;
 public final class BlockCullController {
     private static final LongOpenHashSet CULLED_BLOCKS = new LongOpenHashSet();
     private static final double MIN_DISTANCE = 1.0e-4;
-    private static final boolean DEBUG_RENDER_BOX = true;
+    private static final boolean DEBUG_RENDER_BOX = false;
     private static final int CAMERA_FACE_COLOR = 0xAA33CCFF;
     private static final int BOX_EDGE_COLOR = 0xAA66FF66;
     private static final double CULL_LENGTH_BY_SIZE = 5.0;

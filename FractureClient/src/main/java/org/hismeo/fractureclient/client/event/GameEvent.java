@@ -44,7 +44,6 @@ public class GameEvent {
                 minecraft.renderBuffers().bufferSource(),
                 minecraft
         );
-        minecraft.renderBuffers().bufferSource().endBatch(RenderType.lines());
     }
 
     @SubscribeEvent

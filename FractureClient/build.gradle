@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     compileOnly "org.embeddedt.celeritas:celeritas-common:2.4.0-dev.5"
-    runtimeOnly jarJar("org.embeddedt.celeritas:Celeritas-neoforge-mc21.1-2.4.0-dev")
+//    runtimeOnly jarJar("org.embeddedt.celeritas:Celeritas-neoforge-mc21.1-2.4.0-dev")
     implementation(project(':CrystalLib'))
     implementation(project(':CrystalFracture'))
 }
