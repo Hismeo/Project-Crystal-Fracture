@@ -9,7 +9,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReflectionUtil {
+public final class ReflectionUtil {
     @SuppressWarnings("unchecked")
     public static <R> List<R> getImplClass(Class<R> interfaceClazz){
         List<R> implClasses = new ArrayList<>();

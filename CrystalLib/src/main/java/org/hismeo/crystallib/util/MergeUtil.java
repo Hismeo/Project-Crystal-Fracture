@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * 提供 null 安全及空值判断，并可合并多种集合和数组类型。
  */
 @SuppressWarnings("unused")
-public class MergeUtil {
+public final class MergeUtil {
 
     /**
      * 返回 newVal，如果 newVal 不为 null 且不是 empty；否则返回 oldVal。

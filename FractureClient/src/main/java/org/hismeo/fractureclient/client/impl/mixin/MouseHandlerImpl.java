@@ -34,4 +34,20 @@ public interface MouseHandlerImpl {
         minecraft.player.setYRot(yRot);
         minecraft.player.setXRot(0);
     }
+
+//            if (minecraft.player == null) return;
+//
+//    double screenWidth = minecraft.getWindow().getScreenWidth();
+//    double screenHeight = minecraft.getWindow().getScreenHeight();
+//    Vec3 camPos = minecraft.gameRenderer.getMainCamera().getPosition();
+//    Vec3 playerPos = minecraft.player.position();
+//    double playerScreenX = screenWidth * 0.5 + (playerPos.x - camPos.x);
+//    double playerScreenY = screenHeight * 0.5 + (playerPos.z - camPos.z);
+//    double dx = mouseHandler.xpos - playerScreenX;
+//    double dz = mouseHandler.ypos - playerScreenY;
+//
+//        if (dx * dx + dz * dz < 1.0) return;
+//    float yaw = (float) Math.toDegrees(Math.atan2(dx, -dz));
+//        minecraft.player.setYRot(yaw);
+//        minecraft.player.setXRot(0);
 }

@@ -3,7 +3,7 @@ package org.hismeo.crystallib.util;
 
 import net.neoforged.fml.loading.FMLEnvironment;
 
-public class DevelopUtil {
+public final class DevelopUtil {
     public static boolean isDev() {
         return !FMLEnvironment.production;
     }

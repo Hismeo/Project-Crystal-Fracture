@@ -4,6 +4,6 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
 import org.joml.Matrix4f;
 
-public class MatrixUtil {
+public final class MatrixUtil {
 
 }

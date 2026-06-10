@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-public class JsonUtil {
+public final class JsonUtil {
     public static <T> T[] readConfigArray(JsonObject configObject, String key, Function<JsonElement, T> parser, IntFunction<T[]> arraySupplier) {
         JsonArray array = configObject.getAsJsonArray(key);
         if (array == null) return arraySupplier.apply(0);

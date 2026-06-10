@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
 
-public class HitResultUtil {
+public final class HitResultUtil {
     public static EntityHitResult lookAtEntity(Player player){
         HitResult hitResult = getPlayerLookAtResult(player.level(), player);
         if (hitResult instanceof EntityHitResult entityHitResult) {

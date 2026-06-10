@@ -2,21 +2,20 @@ package org.hismeo.fractureclient.client.event;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.*;
 import org.hismeo.fractureclient.FractureClient;
 import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
 import org.hismeo.fractureclient.client.control.BlockCullController;
 import org.hismeo.fractureclient.client.control.CameraRotateController;
 import org.hismeo.fractureclient.client.init.KeyInit;
 import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
+import org.hismeo.fractureclient.client.render.screen.ThemeScreen;
 
 @EventBusSubscriber(modid = FractureClient.MODID, value = Dist.CLIENT)
 public class GameEvent {
@@ -24,6 +23,13 @@ public class GameEvent {
     public static void angle(ViewportEvent.ComputeCameraAngles event) {
         event.setPitch(OrthographicCameraConfig.pitch);
         event.setYaw(CameraRotateController.getRenderYaw());
+    }
+
+    @SubscribeEvent
+    public static void title(ScreenEvent.Init.Post event) {
+        if (event.getScreen() instanceof TitleScreen) {
+            event.addListener(Button.builder(Component.empty(), b->Minecraft.getInstance().setScreen(new ThemeScreen())).size(20, 20).pos(0, 0).build());
+        }
     }
 
     @SubscribeEvent

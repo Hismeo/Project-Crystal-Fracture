@@ -133,6 +133,7 @@ public final class BlockCullController {
         }
     }
 
+    //TODO 更好的算法
     private static void addBoxCulling(Vec3 origin, Vec3 target, int minCullY, LongOpenHashSet out) {
         Vec3 axis = target.subtract(origin);
         double height = axis.length();

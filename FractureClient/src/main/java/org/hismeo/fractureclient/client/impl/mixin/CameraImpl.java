@@ -27,55 +27,55 @@ public final class CameraImpl {
         int height = window.getHeight();
 
         float size = OrthographicCameraConfig.size;
-        float aspect = (float) width / height;
-        float rightLeft = Math.max(minScale, size * aspect);
+        float rightLeft = Math.max(minScale, size * width / height);
         float minSize = Math.max(minScale, size);
         return new Matrix4f().setOrtho(
                 -rightLeft, rightLeft,
                 -minSize, minSize,
-                -1000, 1000
+                -100, 100
         );
     }
 
     static boolean followingX = false;
     static boolean followingZ = false;
-    static final double ENTER_X = 0.1;
+    static boolean followingY = false;
+    static final double ENTER_X = 6;
     static final double EXIT_X = 11.5;
-    static final double ENTER_Z = 0.1;
-    static final double EXIT_Z = 8.4;
+    static final double ENTER_Z = 4;
+    static final double EXIT_Z = 7.4;
+    static final double ENTER_Y = 0.1;
+    static final double EXIT_Y = 6;
 
     public static void deadZone(Camera camera, double playerX, double playerY, double playerZ) {
         Vec3 camPos = camera.getPosition();
         double dx = playerX - camPos.x;
         double dz = playerZ - camPos.z;
+        double dy = playerY - camPos.y;
 
         // 瞬移保护
-        if (Mth.length(dx, dz) > 20) {
+        if (Mth.length(dx, dz, dy) > 20) {
             camera.setPosition(playerX, playerY, playerZ);
             followingX = false;
             followingZ = false;
+            followingY = false;
             return;
         }
 
         double absX = Math.abs(dx);
-
-        if (!followingX && absX > ENTER_X) {
-            followingX = true;
-        } else if (followingX && absX < EXIT_X) {
-            followingX = false;
-        }
+        if (!followingX && absX > ENTER_X) followingX = true;
+        else if (followingX && absX < EXIT_X) followingX = false;
 
         double absZ = Math.abs(dz);
+        if (!followingZ && absZ > ENTER_Z) followingZ = true;
+        else if (followingZ && absZ < EXIT_Z) followingZ = false;
 
-        if (!followingZ && absZ > ENTER_Z) {
-            followingZ = true;
-        } else if (followingZ && absZ < EXIT_Z) {
-            followingZ = false;
-        }
+        double absY = Math.abs(dy);
+        if (!followingY && absY > ENTER_Y) followingY = true;
+        else if (followingY && absY < EXIT_Y) followingY = false;
 
         double newX = camPos.x;
         double newZ = camPos.z;
-
+        double newY = camPos.y;
         if (followingX) {
             double targetX = playerX - Math.signum(dx) * ENTER_X * 0.5;
             double moveX = Mth.lerp(0.005, camPos.x, targetX) - camPos.x;
@@ -84,7 +84,6 @@ public final class CameraImpl {
                 newX = camPos.x + moveX;
             }
         }
-
         if (followingZ) {
             double targetZ = playerZ - Math.signum(dz) * ENTER_Z * 0.5;
             double moveZ = Mth.lerp(0.005, camPos.z, targetZ) - camPos.z;
@@ -93,7 +92,15 @@ public final class CameraImpl {
                 newZ = camPos.z + moveZ;
             }
         }
+        if (followingY) {
+            double targetY = playerY - Math.signum(dy) * ENTER_Y * 0.5;
+            double moveY = Mth.lerp(0.005, camPos.y, targetY) - camPos.y;
 
-        camera.setPosition(newX, playerY, newZ);
+            if (Math.abs(moveY) > 0.01) {
+                newY = camPos.y + moveY;
+            }
+        }
+
+        camera.setPosition(newX, newY, newZ);
     }
 }
