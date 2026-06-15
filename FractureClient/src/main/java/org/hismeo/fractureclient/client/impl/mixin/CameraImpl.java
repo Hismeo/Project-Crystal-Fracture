@@ -61,46 +61,46 @@ public final class CameraImpl {
             return;
         }
 
-        double absX = Math.abs(dx);
-        if (!followingX && absX > ENTER_X) followingX = true;
-        else if (followingX && absX < EXIT_X) followingX = false;
+//        double absX = Math.abs(dx);
+//        if (!followingX && absX > ENTER_X) followingX = true;
+//        else if (followingX && absX < EXIT_X) followingX = false;
+//
+//        double absZ = Math.abs(dz);
+//        if (!followingZ && absZ > ENTER_Z) followingZ = true;
+//        else if (followingZ && absZ < EXIT_Z) followingZ = false;
+//
+//        double absY = Math.abs(dy);
+//        if (!followingY && absY > ENTER_Y) followingY = true;
+//        else if (followingY && absY < EXIT_Y) followingY = false;
+//
+//        double newX = camPos.x;
+//        double newZ = camPos.z;
+//        double newY = camPos.y;
+//        if (followingX) {
+//            double targetX = playerX - Math.signum(dx) * ENTER_X * 0.5;
+//            double moveX = Mth.lerp(0.005, camPos.x, targetX) - camPos.x;
+//
+//            if (Math.abs(moveX) > 0.01) {
+//                newX = camPos.x + moveX;
+//            }
+//        }
+//        if (followingZ) {
+//            double targetZ = playerZ - Math.signum(dz) * ENTER_Z * 0.5;
+//            double moveZ = Mth.lerp(0.005, camPos.z, targetZ) - camPos.z;
+//
+//            if (Math.abs(moveZ) > 0.01) {
+//                newZ = camPos.z + moveZ;
+//            }
+//        }
+//        if (followingY) {
+//            double targetY = playerY - Math.signum(dy) * ENTER_Y * 0.5;
+//            double moveY = Mth.lerp(0.005, camPos.y, targetY) - camPos.y;
+//
+//            if (Math.abs(moveY) > 0.01) {
+//                newY = camPos.y + moveY;
+//            }
+//        }
 
-        double absZ = Math.abs(dz);
-        if (!followingZ && absZ > ENTER_Z) followingZ = true;
-        else if (followingZ && absZ < EXIT_Z) followingZ = false;
-
-        double absY = Math.abs(dy);
-        if (!followingY && absY > ENTER_Y) followingY = true;
-        else if (followingY && absY < EXIT_Y) followingY = false;
-
-        double newX = camPos.x;
-        double newZ = camPos.z;
-        double newY = camPos.y;
-        if (followingX) {
-            double targetX = playerX - Math.signum(dx) * ENTER_X * 0.5;
-            double moveX = Mth.lerp(0.005, camPos.x, targetX) - camPos.x;
-
-            if (Math.abs(moveX) > 0.01) {
-                newX = camPos.x + moveX;
-            }
-        }
-        if (followingZ) {
-            double targetZ = playerZ - Math.signum(dz) * ENTER_Z * 0.5;
-            double moveZ = Mth.lerp(0.005, camPos.z, targetZ) - camPos.z;
-
-            if (Math.abs(moveZ) > 0.01) {
-                newZ = camPos.z + moveZ;
-            }
-        }
-        if (followingY) {
-            double targetY = playerY - Math.signum(dy) * ENTER_Y * 0.5;
-            double moveY = Mth.lerp(0.005, camPos.y, targetY) - camPos.y;
-
-            if (Math.abs(moveY) > 0.01) {
-                newY = camPos.y + moveY;
-            }
-        }
-
-        camera.setPosition(newX, newY, newZ);
+//        camera.setPosition(newX, newY, newZ);
     }
 }

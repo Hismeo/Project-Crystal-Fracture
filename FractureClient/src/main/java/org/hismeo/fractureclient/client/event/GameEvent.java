@@ -14,7 +14,7 @@ import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
 import org.hismeo.fractureclient.client.control.BlockCullController;
 import org.hismeo.fractureclient.client.control.CameraRotateController;
 import org.hismeo.fractureclient.client.init.KeyInit;
-import org.hismeo.fractureclient.client.render.gui.CustomDebugMessage;
+import org.hismeo.fractureclient.client.render.gui.DebugMessage;
 import org.hismeo.fractureclient.client.render.screen.ThemeScreen;
 
 @EventBusSubscriber(modid = FractureClient.MODID, value = Dist.CLIENT)
@@ -37,7 +37,7 @@ public class GameEvent {
         GuiGraphics guiGraphics = event.getGuiGraphics();
         Minecraft minecraft = Minecraft.getInstance();
         CameraRotateController.render(guiGraphics, minecraft);
-        CustomDebugMessage.render(guiGraphics, minecraft);
+        DebugMessage.render(guiGraphics, minecraft);
     }
 
     @SubscribeEvent
