@@ -17,31 +17,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public interface MouseHandlerImpl {
-    //    default void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
-//        LocalPlayer player = minecraft.player;
-//        if (player == null || minecraft.gameRenderer == null) return;
-//
-//        double screenWidth = minecraft.getWindow().getScreenWidth();
-//        double screenHeight = minecraft.getWindow().getScreenHeight();
-//        if (screenWidth <= 0 || screenHeight <= 0) return;
-//
-//        Camera mainCamera = minecraft.gameRenderer.getMainCamera();
-//        Vec3 camPos = mainCamera.getPosition();
-//        double ndcX = mouseHandler.xpos / screenWidth * 2.0 - 1.0; // right positive
-//        double ndcY = 1.0 - mouseHandler.ypos / screenHeight * 2.0; // up positive
-//
-//        Vec3 nearPoint = mainCamera.getNearPlane().getPointOnPlane((float) ndcX, (float) ndcY);
-//        Vec3 planeWorld = camPos.add(nearPoint.x, nearPoint.y, nearPoint.z);
-//        Vec3 aim = planeWorld.subtract(player.getX(), player.getEyeY(), player.getZ());
-//
-//        double rayLen = aim.length();
-//        if (rayLen < 1e-12) return;
-//        float yRot = Mth.wrapDegrees((float)Math.toDegrees(Math.atan2(-aim.x, aim.z)));
-//
-//        if (Float.isNaN(yRot)) return;
-//        player.setYRot(yRot);
-//        player.setXRot(0);
-//    }
+    //TODO WORLD2SCREEN UTIL
     default void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
         LocalPlayer player = minecraft.player;
         if (player == null) return;

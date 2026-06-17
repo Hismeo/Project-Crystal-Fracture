@@ -19,12 +19,12 @@ neoForge {
 
 repositories {
     maven { url "https://maven.taumc.org/releases" }
-    maven { url 'https://www.jitpack.io' }
+    flatDir { dirs "libs" }
 }
 
 dependencies {
 //    compileOnly "org.embeddedt.celeritas:celeritas-common:2.4.0-dev.5"
-    compileOnly jarJar("org.embeddedt.celeritas:Celeritas-neoforge-mc21.1-2.4.0-dev")
+    compileOnly jarJar(group:"org.embeddedt.celeritas", name:"Celeritas", version: "neoforge-mc21.1-2.4.0-dev")
     implementation(project(':CrystalLib'))
     implementation(project(':CrystalFracture'))
 }
