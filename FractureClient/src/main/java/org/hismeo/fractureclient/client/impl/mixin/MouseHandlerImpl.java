@@ -1,6 +1,7 @@
 package org.hismeo.fractureclient.client.impl.mixin;
 
 import com.mojang.blaze3d.platform.Window;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.player.LocalPlayer;
@@ -8,7 +9,12 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
+import org.hismeo.fractureclient.client.control.CameraRotateController;
 import org.hismeo.fractureclient.client.render.gui.DebugMessage;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public interface MouseHandlerImpl {
     //    default void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
@@ -40,34 +46,35 @@ public interface MouseHandlerImpl {
         LocalPlayer player = minecraft.player;
         if (player == null) return;
 
-        GameRenderer gameRenderer = minecraft.gameRenderer;
+        GameRenderer renderer = minecraft.gameRenderer;
         Window window = minecraft.getWindow();
-        Vec3 camPos = gameRenderer.getMainCamera().getPosition();
+        Camera camera = renderer.getMainCamera();
+        Vec3 camPos = camera.getPosition();
 
         int width = window.getGuiScaledWidth();
         int height = window.getGuiScaledHeight();
+        double mouseX = mouseHandler.xpos * width / window.getScreenWidth();
+        double mouseY = mouseHandler.ypos * height / window.getScreenHeight();
 
-        double mouseX = mouseHandler.xpos * (double) window.getGuiScaledWidth() / (double) window.getScreenWidth();
-        double mouseY = mouseHandler.ypos * (double) window.getGuiScaledHeight() / (double) window.getScreenHeight();
+        Matrix4f ortho = CameraImpl.orthoMatrix4f(minecraft, 0.0F);
+        Quaternionf invRot = camera.rotation().conjugate(new Quaternionf());
+        Vec3 rel = player.getEyePosition().subtract(camPos);
 
-        float size = OrthographicCameraConfig.size;
-        float rightLeft = Math.max(0.0F, size * width / height);
-        float minSize = Math.max(0.0F, size);
+        Vector3f v = rel.toVector3f();
+        v.rotate(invRot);
+        Vector4f clip = new Vector4f(v.x(), v.y(), v.z(), 1.0f);
+        clip.mul(ortho);
 
-        double scaleX = width / (2.0 * rightLeft);
-        double scaleY = height / (2.0 * minSize);
-
-        double playerScreenX = width / 2f - (player.getX() - camPos.x) * scaleX;
-        double pitchRad = Math.toRadians(OrthographicCameraConfig.pitch);
-        double playerScreenY = height / 2f - (player.getZ() - camPos.z) * scaleY * pitchRad;
-
+        double playerScreenX = (clip.x() * 0.5 + 0.5) * width;
+        double playerScreenY = (1.0 - (clip.y() * 0.5 + 0.5)) * height;
         double dx = mouseX - playerScreenX;
         double dy = mouseY - playerScreenY;
-        float yaw = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dx, -dy)));
-        player.setYRot(yaw);
-        DebugMessage.add("yaw%s, dx%s, dy%s", yaw, dx, dy);
-        DebugMessage.add("mx%s, my%s", mouseX, mouseY);
-        DebugMessage.add("px%s, py%s", playerScreenX, playerScreenY);
-        DebugMessage.add("cx%s, cy%s", camPos.x, camPos.z);
+
+        float yaw = (float) Math.toDegrees(Math.atan2(dx, -dy)) + OrthographicCameraConfig.yaw;
+        player.setYRot(Mth.wrapDegrees(yaw));
+
+        DebugMessage.add("yaw=%s dx=%s dy=%s", yaw, dx, dy);
+        DebugMessage.add("mouse=%s,%s", mouseX, mouseY);
+        DebugMessage.add("playerScreen=%s,%s", playerScreenX, playerScreenY);
     }
 }

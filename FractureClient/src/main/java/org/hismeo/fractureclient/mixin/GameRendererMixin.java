@@ -22,7 +22,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     //=====================================OVERLOOK CAMERA=====================================
     @ModifyArg(
@@ -32,8 +34,9 @@ public abstract class GameRendererMixin {
             index = 2
     )
     public Matrix4f frustumProjection(Matrix4f projectionMatrix) {
-        return  CameraImpl.orthoMatrix4f(minecraft, 20.0F);
+        return CameraImpl.orthoMatrix4f(minecraft, 20.0F);
     }
+
     @ModifyArg(
             method = "renderLevel",
             at = @At(value = "INVOKE",
@@ -41,7 +44,7 @@ public abstract class GameRendererMixin {
             index = 6
     )
     public Matrix4f renderProjection(Matrix4f projectionMatrix, @Local(argsOnly = true) DeltaTracker tickCounter) {
-        Matrix4f orthoMatrix =  CameraImpl.orthoMatrix4f(minecraft, 0.0F);
+        Matrix4f orthoMatrix = CameraImpl.orthoMatrix4f(minecraft, 0.0F);
         RenderSystem.setProjectionMatrix(orthoMatrix, VertexSorting.ORTHOGRAPHIC_Z);
         return orthoMatrix;
     }
@@ -55,7 +58,7 @@ public abstract class GameRendererMixin {
                     shift = At.Shift.AFTER
             )
     )
-    public void globalRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local(type = GuiGraphics.class)GuiGraphics guiGraphics, @Local Window window) {
+    public void globalRender(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci, @Local(type = GuiGraphics.class) GuiGraphics guiGraphics, @Local Window window) {
         GlobalRender.globalRender(minecraft, deltaTracker, renderLevel, guiGraphics, window);
     }
 }
