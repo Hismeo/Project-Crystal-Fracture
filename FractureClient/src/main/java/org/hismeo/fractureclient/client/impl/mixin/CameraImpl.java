@@ -53,7 +53,7 @@ public final class CameraImpl {
         double dy = playerY - camPos.y;
 
         // 瞬移保护
-        if (Mth.length(dx, dz, dy) > 20) {
+        if (Mth.length(dx, dz, dy) > 40) {
             camera.setPosition(playerX, playerY, playerZ);
             followingX = false;
             followingZ = false;
@@ -65,17 +65,17 @@ public final class CameraImpl {
         if (!followingX && absX > ENTER_X) followingX = true;
         else if (followingX && absX < EXIT_X) followingX = false;
 
-        double absZ = Math.abs(dz);
-        if (!followingZ && absZ > ENTER_Z) followingZ = true;
-        else if (followingZ && absZ < EXIT_Z) followingZ = false;
-
         double absY = Math.abs(dy);
         if (!followingY && absY > ENTER_Y) followingY = true;
         else if (followingY && absY < EXIT_Y) followingY = false;
 
+        double absZ = Math.abs(dz);
+        if (!followingZ && absZ > ENTER_Z) followingZ = true;
+        else if (followingZ && absZ < EXIT_Z) followingZ = false;
+
         double newX = followingX ? move(playerX, dx, ENTER_X, camPos.x, 0.005) : camPos.x;
-        double newZ = followingZ ? move(playerX, dx, ENTER_X, camPos.x, 0.005) : camPos.z;
-        double newY = followingY ? move(playerX, dx, ENTER_X, camPos.x, 0.005) : camPos.y;
+        double newY = followingY ? move(playerY, dy, ENTER_Y, camPos.y, 0.005) : camPos.y;
+        double newZ = followingZ ? move(playerZ, dz, ENTER_Z, camPos.z, 0.005) : camPos.z;
 
         camera.setPosition(newX, newY, newZ);
     }
