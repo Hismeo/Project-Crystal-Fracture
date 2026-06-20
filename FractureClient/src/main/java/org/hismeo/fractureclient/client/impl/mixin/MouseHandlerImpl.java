@@ -13,11 +13,11 @@ import org.hismeo.fractureclient.client.render.gui.DebugMessage;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public interface MouseHandlerImpl {
-    double EPS = 1.0E-8;
+public final class MouseHandlerImpl {
+    private static final double EPS = 1.0E-8;
 
     //TODO WORLD2SCREEN UTIL
-    default void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
+    public static void byMouseMove(MouseHandler mouseHandler, Minecraft minecraft, double movementTime) {
         LocalPlayer player = minecraft.player;
         GameRenderer renderer = minecraft.gameRenderer;
         if (player == null || renderer == null) return;

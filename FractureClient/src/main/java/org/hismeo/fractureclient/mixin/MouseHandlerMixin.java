@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(MouseHandler.class)
-public class MouseHandlerMixin implements MouseHandlerImpl {
+public class MouseHandlerMixin {
     @Shadow @Final public Minecraft minecraft;
 
     @WrapOperation(method = "grabMouse", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
@@ -29,6 +29,6 @@ public class MouseHandlerMixin implements MouseHandlerImpl {
 
     @WrapMethod(method = "turnPlayer")
     public void proxyTurnPlayer(double movementTime, Operation<Void> original) {
-        this.byMouseMove((MouseHandler) (Object) this, minecraft, movementTime);
+        MouseHandlerImpl.byMouseMove((MouseHandler) (Object) this, minecraft, movementTime);
     }
 }

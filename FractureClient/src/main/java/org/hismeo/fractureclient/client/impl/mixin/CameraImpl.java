@@ -39,10 +39,10 @@ public final class CameraImpl {
     static boolean followingX = false;
     static boolean followingZ = false;
     static boolean followingY = false;
-    static final double ENTER_X = 6;
+    static final double ENTER_X = 3;
     static final double EXIT_X = 11.5;
-    static final double ENTER_Z = 4;
-    static final double EXIT_Z = 7.4;
+    static final double ENTER_Z = 2;
+    static final double EXIT_Z = 6.4;
     static final double ENTER_Y = 0.1;
     static final double EXIT_Y = 6;
     //TODO 集合函数
@@ -73,9 +73,9 @@ public final class CameraImpl {
         if (!followingZ && absZ > ENTER_Z) followingZ = true;
         else if (followingZ && absZ < EXIT_Z) followingZ = false;
 
-        double newX = followingX ? move(playerX, dx, ENTER_X, camPos.x, 0.005) : camPos.x;
+        double newX = followingX ? move(playerX, dx, ENTER_X, camPos.x, 0.01) : camPos.x;
         double newY = followingY ? move(playerY, dy, ENTER_Y, camPos.y, 0.005) : camPos.y;
-        double newZ = followingZ ? move(playerZ, dz, ENTER_Z, camPos.z, 0.005) : camPos.z;
+        double newZ = followingZ ? move(playerZ, dz, ENTER_Z, camPos.z, 0.01) : camPos.z;
 
         camera.setPosition(newX, newY, newZ);
     }

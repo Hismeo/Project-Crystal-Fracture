@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends Player implements LocalPlayerImpl {
@@ -30,6 +31,11 @@ public abstract class LocalPlayerMixin extends Player implements LocalPlayerImpl
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/Input;hasForwardImpulse()Z"))
     public boolean alwaysForward(Input instance, Operation<Boolean> original) {
         return this.isPlayerMove(input);
+    }
+
+    @Override
+    public float maxUpStep() {
+        return 1.25f;
     }
 
     @Override
