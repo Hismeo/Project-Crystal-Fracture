@@ -14,6 +14,7 @@ var projectName = [
         "BendsAnimator",
         "CrystalLib",
         "FractureClient",
+        "HaikalatHost",
         "HazeDungeon",
         "NuQuest",
         "FractureLoader"

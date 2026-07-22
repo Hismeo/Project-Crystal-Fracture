@@ -23,6 +23,12 @@ file="META-INF/accesstransformer.cfg"
    versionRange="${minecraft_version_range}"
    ordering="NONE"
    side="BOTH"
+[[dependencies."${mod_id}"]]
+   modId="haikalat_host"
+   type="required"
+   versionRange="${haikalat_host_version_range}"
+   ordering="AFTER"
+   side="CLIENT"
 
-#[features.${mod_id}]
-#openGLVersion="[3.2,)"
+[features."${mod_id}"]
+openGLVersion="[4.6,)"

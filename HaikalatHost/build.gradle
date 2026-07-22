@@ -6,36 +6,23 @@ base {
 }
 
 neoForge {
-    if (Boolean.getBoolean(enableAccessTransformers)) {
-        accessTransformers = file('src/main/resources/META-INF/accesstransformer.cfg')
-    }
-
     mods {
         "${mod_id}" {
             sourceSet sourceSets.main
         }
-        // The 4.6 context is created by FractureLoader's early-window service.
-        // Keep it as a separate development coordinate so this mod's metadata is still discovered.
+        // Haikalat is bundled by FractureLoader and must be present in development runs.
         fracture_loader {
             sourceSet project(':FractureLoader').sourceSets.main
         }
     }
 }
 
-repositories {
-    maven { url "https://maven.taumc.org/releases" }
-    flatDir { dirs "libs" }
-}
+def haikalatJar = project(':FractureLoader').file('libs/haikalat-0.17.2.jar')
 
 dependencies {
-//    compileOnly "org.embeddedt.celeritas:celeritas-common:2.4.0-dev.5"
-//    compileOnly jarJar(group:"org.embeddedt.celeritas", name:"Celeritas", version: "neoforge-mc21.1-2.4.0-dev")
-    implementation(project(':HaikalatHost'))
-    implementation(project(':CrystalLib'))
-    implementation(project(':CrystalFracture'))
+    compileOnly(project(':FractureLoader'))
+    compileOnly files(haikalatJar)
 }
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
@@ -49,8 +36,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description,
-            haikalat_host_version_range: haikalat_host_version_range
+            mod_description        : mod_description
     ]
     inputs.properties replaceProperties
     expand replaceProperties
@@ -59,7 +45,3 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 }
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
-
-def isRunningInIdea() {
-    return System.getProperty("idea.active") == "true"
-}

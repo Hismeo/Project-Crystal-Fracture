@@ -12,3 +12,25 @@ neoForge {
         }
     }
 }
+
+repositories {
+    flatDir { dirs "libs" }
+}
+
+def haikalatJar = file("libs/haikalat-0.17.2.jar")
+
+dependencies {
+    compileOnly files(haikalatJar)
+}
+
+// ImmediateWindowProvider is instantiated from ModLauncher's SERVICE layer, before
+// NeoForge exposes nested jar-in-jar dependencies. Merge Haikalat into this service
+// module so its renderer is available during the early-window bootstrap in both the
+// development classpath and the published jar.
+tasks.named("processResources") {
+    from(zipTree(haikalatJar)) {
+        exclude "META-INF/MANIFEST.MF"
+        exclude "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
