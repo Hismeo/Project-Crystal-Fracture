@@ -15,6 +15,15 @@ neoForge {
             sourceSet project(':FractureLoader').sourceSets.main
         }
     }
+
+    runs {
+        client {
+            def quickPlayWorld = providers.gradleProperty('haikalathostQuickPlayWorld').orNull
+            if (quickPlayWorld != null && !quickPlayWorld.isBlank()) {
+                programArguments.addAll '--quickPlaySingleplayer', quickPlayWorld
+            }
+        }
+    }
 }
 
 def haikalatJar = project(':FractureLoader').file('libs/haikalat-0.17.2.jar')
@@ -22,6 +31,15 @@ def haikalatJar = project(':FractureLoader').file('libs/haikalat-0.17.2.jar')
 dependencies {
     compileOnly(project(':FractureLoader'))
     compileOnly files(haikalatJar)
+
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.joml:joml:1.10.5'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

@@ -1,0 +1,12 @@
+package org.hismeo.haikalathost.client.routing;
+
+public enum FallbackReason {
+    DISABLED,
+    UNSUPPORTED_RENDER_TYPE,
+    UNSUPPORTED_VERTEX_ELEMENT,
+    UNSUPPORTED_VERTEX_MODE,
+    MISSING_SHADER,
+    ARENA_OVERFLOW,
+    RUNTIME_NOT_READY,
+    RESOURCE_RELOAD_IN_PROGRESS
+}

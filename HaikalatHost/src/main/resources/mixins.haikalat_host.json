@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.hismeo.haikalathost.client.intercept",
+  "plugin": "org.hismeo.haikalathost.client.intercept.HaikalatHostMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+  ],
+  "client": [
+    "FullTakeoverBufferSourceMixin",
+    "FullTakeoverRenderSystemStateMixin",
+    "CompositeRenderTypeAccessor",
+    "RenderTypeCompositeStateAccessor",
+    "RenderStateBooleanAccessor",
+    "RenderStateTextureInvoker",
+    "FullTakeoverRenderTypeAuditMixin",
+    "FullTakeoverBufferUploaderAuditMixin",
+    "FullTakeoverVertexBufferAuditMixin",
+    "MinecraftMixin",
+    "RenderSectionMixin",
+    "RenderTypeMixin",
+    "ModelPartMixin",
+    "ItemRendererMixin",
+    "SectionRenderDispatcherMixin",
+    "LevelRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "mixins.haikalat_host.refmap.json"
+}

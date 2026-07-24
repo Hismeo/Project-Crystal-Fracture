@@ -30,7 +30,7 @@ repositories {
 dependencies {
 //    compileOnly "org.embeddedt.celeritas:celeritas-common:2.4.0-dev.5"
 //    compileOnly jarJar(group:"org.embeddedt.celeritas", name:"Celeritas", version: "neoforge-mc21.1-2.4.0-dev")
-    implementation(project(':HaikalatHost'))
+//    implementation(project(':HaikalatHost'))
     implementation(project(':CrystalLib'))
     implementation(project(':CrystalFracture'))
 }

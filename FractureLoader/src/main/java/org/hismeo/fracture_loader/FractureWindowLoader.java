@@ -165,7 +165,7 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
             centerWindow(primaryMonitor, videoMode);
         }
 
-        glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+//        glfwSetInputMode(window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
         glfwSetFramebufferSizeCallback(window, this::onFramebufferResize);
         glfwSetWindowSizeCallback(window, this::onWindowResize);
         glfwSetWindowPosCallback(window, this::onWindowMove);
