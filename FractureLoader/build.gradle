@@ -13,24 +13,45 @@ neoForge {
     }
 }
 
-repositories {
-    flatDir { dirs "libs" }
-}
-
-def haikalatJar = file("libs/haikalat-0.17.2.jar")
-
-dependencies {
-    compileOnly files(haikalatJar)
-}
-
-// ImmediateWindowProvider is instantiated from ModLauncher's SERVICE layer, before
-// NeoForge exposes nested jar-in-jar dependencies. Merge Haikalat into this service
-// module so its renderer is available during the early-window bootstrap in both the
-// development classpath and the published jar.
-tasks.named("processResources") {
-    from(zipTree(haikalatJar)) {
-        exclude "META-INF/MANIFEST.MF"
-        exclude "META-INF/*.SF", "META-INF/*.RSA", "META-INF/*.DSA"
+tasks.named("jar", Jar).configure {
+    archiveFileName.set("fracture-loader-${project.version}.jar")
+    manifest {
+        attributes("Automatic-Module-Name": "org.hismeo.fracture_loader")
     }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named("sourcesJar", Jar).configure {
+    archiveFileName.set("fracture-loader-${project.version}-sources.jar")
+}
+
+tasks.register("verifyBootstrapPackaging") {
+    group = "verification"
+    description = "Verifies that the early loader does not contain the Haikalat runtime."
+    dependsOn(tasks.named("jar"))
+
+    doLast {
+        def archive = tasks.named("jar").get().archiveFile.get().asFile
+        def forbiddenPrefixes = [
+                "com/kaleblangley/haikalat/",
+                "org/lwjgl/",
+                "vfx/"
+        ]
+        def forbiddenEntries = []
+        new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            zip.entries().each { entry ->
+                if (forbiddenPrefixes.any { entry.name.startsWith(it) }) {
+                    forbiddenEntries.add(entry.name)
+                }
+            }
+        }
+        if (!forbiddenEntries.isEmpty()) {
+            throw new GradleException(
+                    "FractureLoader must remain bootstrap-only; forbidden entries in "
+                            + archive.name + ": " + forbiddenEntries.take(10))
+        }
+    }
+}
+
+tasks.named("check").configure {
+    dependsOn(tasks.named("verifyBootstrapPackaging"))
 }

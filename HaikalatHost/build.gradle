@@ -1,18 +1,43 @@
 group = mod_group_id
 version = mod_version
 
+apply plugin: "maven-publish"
+
 base {
     archivesName = mod_name
+}
+
+sourceSets {
+    api {
+        // Basic API packages remain renderer-free. Only api.client.advanced is allowed to expose
+        // Haikalat types, so third-party render extensions can compile against the same API JAR.
+        compileClasspath += configurations.compileClasspath
+    }
+    main {
+        compileClasspath += sourceSets.api.output
+        runtimeClasspath += sourceSets.api.output
+    }
+    test {
+        compileClasspath += sourceSets.api.output
+        runtimeClasspath += sourceSets.api.output
+    }
 }
 
 neoForge {
     mods {
         "${mod_id}" {
+            sourceSet sourceSets.api
             sourceSet sourceSets.main
         }
-        // Haikalat is bundled by FractureLoader and must be present in development runs.
+        // Keep the early-window service in client development runs. Host runtime classes do not
+        // link against its SERVICE-layer implementation types.
         fracture_loader {
             sourceSet project(':FractureLoader').sourceSets.main
+        }
+        // The compile-only consumer example is present in Host client runs, but is never packaged
+        // into the Host artifact.
+        haikalathost_example {
+            sourceSet project(':HaikalatHostExample').sourceSets.main
         }
     }
 
@@ -22,15 +47,88 @@ neoForge {
             if (quickPlayWorld != null && !quickPlayWorld.isBlank()) {
                 programArguments.addAll '--quickPlaySingleplayer', quickPlayWorld
             }
+            systemProperty(
+                    'haikalathost.embeddedPipelineProbe',
+                    providers.gradleProperty('haikalathostEmbeddedPipelineProbe')
+                            .getOrElse('false'))
+            systemProperty(
+                    'haikalathost.verifyGlState',
+                    providers.gradleProperty('haikalathostVerifyGlState')
+                            .getOrElse('false'))
         }
+    }
+
+    unitTest {
+        testedMod = mods.named("${mod_id}")
+        enable()
     }
 }
 
-def haikalatJar = project(':FractureLoader').file('libs/haikalat-0.17.2.jar')
+configurations {
+    haikalatHostApiElements {
+        canBeConsumed = true
+        canBeResolved = false
+        description = "The stable base API and opt-in client advanced Haikalat API artifact."
+    }
+    haikalatRuntime {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
+    haikalatWindowsNatives {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
+}
 
 dependencies {
-    compileOnly(project(':FractureLoader'))
-    compileOnly files(haikalatJar)
+    // Compile against the published engine, but do not put it on the ordinary dev/test runtime
+    // classpath. Its classes are expanded into this mod's own output below so Haikalat and the
+    // Host share NeoForge's transforming classloader (and Minecraft's JOML classes).
+    compileOnly(rootProject.ext.haikalatCoordinates) {
+        transitive = false
+    }
+    haikalatRuntime(rootProject.ext.haikalatCoordinates)
+    implementation(jarJar(
+            "com.fasterxml.jackson.core:jackson-core:${haikalat_jackson_version}")) {
+        transitive = false
+    }
+    implementation(jarJar(
+            "org.lwjgl:lwjgl-harfbuzz:${haikalat_lwjgl_version}")) {
+        transitive = false
+    }
+    implementation(jarJar(
+            "org.lwjgl:lwjgl-yoga:${haikalat_lwjgl_version}")) {
+        transitive = false
+    }
+
+    haikalatWindowsNatives(
+            "org.lwjgl:lwjgl-harfbuzz:${haikalat_lwjgl_version}:${haikalat_native_classifier}")
+    haikalatWindowsNatives(
+            "org.lwjgl:lwjgl-yoga:${haikalat_lwjgl_version}:${haikalat_native_classifier}")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
+}
+
+tasks.named("processResources", ProcessResources) {
+    from({ configurations.haikalatRuntime.collect { zipTree(it) } }) {
+        exclude("META-INF/MANIFEST.MF")
+        exclude("META-INF/*.SF")
+        exclude("META-INF/*.RSA")
+        exclude("META-INF/*.DSA")
+        if (!providers.gradleProperty("haikalat_include_sample_assets")
+                .map { it.toBoolean() }
+                .getOrElse(false)) {
+            exclude("vfx/**")
+        }
+    }
+    from({ configurations.haikalatWindowsNatives.collect { zipTree(it) } }) {
+        include "windows/**"
+        include "META-INF/windows/**"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -54,3 +152,210 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 }
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
+
+tasks.named("test", Test).configure {
+    useJUnitPlatform()
+}
+
+var apiJar = tasks.register("apiJar", Jar) {
+    group = "build"
+    description = "Builds the small base and opt-in advanced HaikalatHost API artifact."
+    dependsOn(tasks.named("apiClasses"))
+    from(sourceSets.api.output)
+    archiveFileName.set("haikalathost-api-${project.version}.jar")
+    manifest {
+        attributes("Automatic-Module-Name": "org.hismeo.haikalathost.api")
+    }
+}
+
+var apiSourcesJar = tasks.register("apiSourcesJar", Jar) {
+    group = "build"
+    description = "Builds sources for the base and opt-in advanced HaikalatHost API."
+    dependsOn(tasks.named("apiClasses"))
+    from(sourceSets.api.allSource)
+    archiveFileName.set("haikalathost-api-${project.version}-sources.jar")
+    manifest {
+        attributes("Automatic-Module-Name": "org.hismeo.haikalathost.api")
+    }
+}
+
+configurations.haikalatHostApiElements.outgoing.artifact(apiJar)
+
+tasks.named("jar", Jar).configure {
+    dependsOn(tasks.named("apiClasses"))
+    from(sourceSets.api.output) {
+        exclude("META-INF/MANIFEST.MF")
+    }
+    archiveFileName.set("haikalathost-${project.version}.jar")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes("Automatic-Module-Name": "org.hismeo.haikalathost")
+    }
+}
+
+tasks.named("sourcesJar", Jar).configure {
+    from(sourceSets.api.allSource)
+    archiveFileName.set("haikalathost-${project.version}-sources.jar")
+}
+
+tasks.register("verifyApiPackaging") {
+    group = "verification"
+    description = "Verifies API isolation and that engine classes remain compile-only."
+    dependsOn(apiJar)
+
+    doLast {
+        def archive = apiJar.get().archiveFile.get().asFile
+        def forbiddenPrefixes = [
+                "com/kaleblangley/haikalat/",
+                "org/lwjgl/",
+                "net/minecraft/client/",
+                "org/hismeo/haikalathost/internal/"
+        ]
+        def forbiddenEntries = []
+        def invalidBaseReferences = []
+        def providerEntry =
+                "META-INF/services/org.hismeo.haikalathost.api.HaikalatHostApi"
+        new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            zip.entries().each { entry ->
+                if (entry.name == providerEntry
+                        || forbiddenPrefixes.any { entry.name.startsWith(it) }) {
+                    forbiddenEntries.add(entry.name)
+                }
+                if (entry.name.startsWith("org/hismeo/haikalathost/api/")
+                        && entry.name.endsWith(".class")
+                        && !entry.name.startsWith(
+                                "org/hismeo/haikalathost/api/client/advanced/")) {
+                    def classBytes = zip.getInputStream(entry).bytes
+                    def constantPoolText = new String(
+                            classBytes,
+                            java.nio.charset.StandardCharsets.ISO_8859_1)
+                    if (constantPoolText.contains("com/kaleblangley/haikalat/")
+                            || constantPoolText.contains("net/minecraft/client/")) {
+                        invalidBaseReferences.add(entry.name)
+                    }
+                }
+            }
+        }
+        if (!forbiddenEntries.isEmpty()) {
+            throw new GradleException(
+                    "The API artifact contains runtime-only entries: "
+                            + forbiddenEntries.take(10))
+        }
+        if (!invalidBaseReferences.isEmpty()) {
+            throw new GradleException(
+                    "Dedicated-server-safe base API classes reference client/engine types: "
+                            + invalidBaseReferences)
+        }
+    }
+}
+
+tasks.register("verifyRuntimePackaging") {
+    group = "verification"
+    description = "Verifies the Host runtime libraries and Windows natives."
+    dependsOn(tasks.named("jar"))
+
+    doLast {
+        def archive = tasks.named("jar").get().archiveFile.get().asFile
+        def entries = []
+        new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            zip.entries().each { entries.add(it.name) }
+        }
+
+        def requiredNestedPrefixes = [
+                "META-INF/jarjar/jackson-core-",
+                "META-INF/jarjar/lwjgl-harfbuzz-",
+                "META-INF/jarjar/lwjgl-yoga-"
+        ]
+        def missingNested = requiredNestedPrefixes.findAll { prefix ->
+            !entries.any { it.startsWith(prefix) && it.endsWith(".jar") }
+        }
+        if (!missingNested.isEmpty()) {
+            throw new GradleException(
+                    "HaikalatHost is missing nested runtime artifacts: " + missingNested)
+        }
+
+        def forbiddenNestedPatterns = [
+                ~/META-INF\/jarjar\/lwjgl-[0-9].*\.jar/,
+                ~/META-INF\/jarjar\/lwjgl-(opengl|glfw|stb|freetype)-.*\.jar/,
+                ~/META-INF\/jarjar\/joml-.*\.jar/,
+                ~/META-INF\/jarjar\/jna(-platform)?-.*\.jar/
+        ]
+        def forbiddenNested = entries.findAll { name ->
+            forbiddenNestedPatterns.any { pattern -> name ==~ pattern }
+        }
+        if (!forbiddenNested.isEmpty()) {
+            throw new GradleException(
+                    "Minecraft-owned libraries must not be nested in HaikalatHost: "
+                            + forbiddenNested)
+        }
+
+        def requiredNativeSuffixes = [
+                "/harfbuzz.dll",
+                "/lwjgl_yoga.dll"
+        ]
+        def missingNatives = requiredNativeSuffixes.findAll { suffix ->
+            !entries.any { it.startsWith("windows/") && it.endsWith(suffix) }
+        }
+        if (!missingNatives.isEmpty()) {
+            throw new GradleException(
+                    "HaikalatHost is missing Windows native resources: " + missingNatives)
+        }
+
+        def requiredHaikalatEntries = [
+                "com/kaleblangley/haikalat/core/device/GlRenderDevice.class",
+                "shaders/ui/ui.vert",
+                "ui/fonts/NotoSansSC-VF.ttf",
+                "haikalat-build.properties",
+                "META-INF/LICENSE"
+        ]
+        def missingHaikalatEntries = requiredHaikalatEntries.findAll {
+            !entries.contains(it)
+        }
+        if (!missingHaikalatEntries.isEmpty()) {
+            throw new GradleException(
+                    "HaikalatHost is missing stripped Haikalat runtime entries: "
+                            + missingHaikalatEntries)
+        }
+        if (!providers.gradleProperty("haikalat_include_sample_assets")
+                .map { it.toBoolean() }
+                .getOrElse(false)
+                && entries.any { it.startsWith("vfx/") }) {
+            throw new GradleException(
+                    "Optional Haikalat VFX sample assets leaked into the default Host artifact")
+        }
+
+        def requiredApiEntries = [
+                "org/hismeo/haikalathost/api/HaikalatHostApi.class",
+                "org/hismeo/haikalathost/api/event/RegisterHaikalatContentEvent.class",
+                "org/hismeo/haikalathost/api/client/advanced/HaikalatRenderExtension.class",
+                "org/hismeo/haikalathost/api/client/advanced/HaikalatFrameContext.class",
+                "org/hismeo/haikalathost/api/client/advanced/event/"
+                        + "RegisterHaikalatExtensionsEvent.class",
+                "META-INF/services/org.hismeo.haikalathost.api.HaikalatHostApi"
+        ]
+        def missingApiEntries = requiredApiEntries.findAll { !entries.contains(it) }
+        if (!missingApiEntries.isEmpty()) {
+            throw new GradleException(
+                    "HaikalatHost is missing its embedded public API: " + missingApiEntries)
+        }
+    }
+}
+
+tasks.named("check").configure {
+    dependsOn(tasks.named("verifyApiPackaging"))
+    dependsOn(tasks.named("verifyRuntimePackaging"))
+}
+
+publishing {
+    publications {
+        haikalatHostApi(MavenPublication) {
+            artifact(apiJar)
+            artifact(apiSourcesJar)
+            artifactId = "haikalathost-api"
+            pom {
+                name = "HaikalatHost API"
+                description = "Stable base API and opt-in advanced client extension API."
+            }
+        }
+    }
+}

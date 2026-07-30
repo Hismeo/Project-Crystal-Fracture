@@ -12,9 +12,9 @@ import net.neoforged.fml.loading.progress.StartupNotificationManager;
 import net.neoforged.neoforgespi.earlywindow.ImmediateWindowProvider;
 import org.hismeo.fracture_loader.render.HaikalatLoadingFrameRenderer;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.hismeo.fracture_loader.render.HaikalatLoadingFrameRenderer.FramebufferPolicy.BIND_DEFAULT;
+import static org.hismeo.fracture_loader.render.HaikalatLoadingFrameRenderer.FramebufferPolicy.PRESERVE_CURRENT;
 
 /**
  * Haikalat-backed implementation of NeoForge's early window provider.
@@ -67,6 +68,7 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
     private String glVersion = "4.6";
     private HaikalatLoadingFrameRenderer loadingFrameRenderer;
     private Method loadingOverlay;
+    private boolean loadingOverlayAcceptsFrameRenderer;
 
     @Override
     public String name() {
@@ -178,8 +180,8 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
         nextFrameNanos = System.nanoTime();
 
         LOGGER.info("Haikalat early renderer initialized: {} {}",
-                org.lwjgl.opengl.GL11.glGetString(org.lwjgl.opengl.GL11.GL_RENDERER),
-                org.lwjgl.opengl.GL11.glGetString(org.lwjgl.opengl.GL11.GL_VERSION));
+                GL11.glGetString(GL11.GL_RENDERER),
+                GL11.glGetString(GL11.GL_VERSION));
         glfwShowWindow(window);
         glfwPollEvents();
     }
@@ -307,6 +309,21 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
             throw new IllegalStateException("The Minecraft game layer has not supplied its loading overlay");
         }
         try {
+            if (loadingOverlayAcceptsFrameRenderer) {
+                Consumer<float[]> frameRenderer = frame -> {
+                    if (frame == null || frame.length != 3) {
+                        throw new IllegalArgumentException(
+                                "Loading frame must contain width, height and progress");
+                    }
+                    loadingFrameRenderer.render(
+                            Math.round(frame[0]),
+                            Math.round(frame[1]),
+                            PRESERVE_CURRENT,
+                            frame[2]);
+                };
+                return (Supplier<T>) loadingOverlay.invoke(
+                        null, mc, ri, ex, fade, frameRenderer);
+            }
             return (Supplier<T>) loadingOverlay.invoke(null, mc, ri, ex, fade);
         } catch (ReflectiveOperationException exception) {
             throw new IllegalStateException("Failed to create Minecraft's loading overlay", exception);
@@ -318,7 +335,9 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
         Class<?> haikalatOverlay = findClass(layer, HAIKALAT_OVERLAY_CLASS);
         if (haikalatOverlay != null) {
             getClass().getModule().addReads(haikalatOverlay.getModule());
-            loadingOverlay = findLoadingOverlayBridge(haikalatOverlay);
+            loadingOverlay = findLoadingOverlayBridge(haikalatOverlay, true);
+            loadingOverlayAcceptsFrameRenderer =
+                    loadingOverlay.getParameterCount() == 5;
             LOGGER.info("Using HaikalatHost for the Minecraft loading overlay");
             return;
         }
@@ -331,7 +350,8 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
         if (fallback == null) {
             throw new IllegalStateException("NeoForge NoVizFallback is unavailable");
         }
-        loadingOverlay = findLoadingOverlayBridge(fallback);
+        loadingOverlay = findLoadingOverlayBridge(fallback, false);
+        loadingOverlayAcceptsFrameRenderer = false;
         LOGGER.info("HaikalatHost overlay is unavailable; using NeoForge's loading overlay fallback");
     }
 
@@ -343,10 +363,30 @@ public final class FractureWindowLoader implements ImmediateWindowProvider {
                 .orElse(null);
     }
 
-    private static Method findLoadingOverlayBridge(Class<?> bridgeClass) {
+    private static Method findLoadingOverlayBridge(
+            Class<?> bridgeClass,
+            boolean acceptsFrameRenderer
+    ) {
         try {
-            return bridgeClass.getMethod("loadingOverlay",
-                    Supplier.class, Supplier.class, Consumer.class, boolean.class);
+            if (acceptsFrameRenderer) {
+                try {
+                    return bridgeClass.getMethod(
+                            "loadingOverlay",
+                            Supplier.class,
+                            Supplier.class,
+                            Consumer.class,
+                            boolean.class,
+                            Consumer.class);
+                } catch (NoSuchMethodException ignored) {
+                    // Compatibility with a Host that still links the service-layer renderer.
+                }
+            }
+            return bridgeClass.getMethod(
+                    "loadingOverlay",
+                    Supplier.class,
+                    Supplier.class,
+                    Consumer.class,
+                    boolean.class);
         } catch (NoSuchMethodException exception) {
             throw new IllegalStateException(
                     "No loadingOverlay bridge was found on " + bridgeClass.getName(), exception);

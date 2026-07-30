@@ -1,19 +1,26 @@
 package org.hismeo.fracture_loader.render;
 
-import com.kaleblangley.haikalat.core.command.CommandBuffer;
-import com.kaleblangley.haikalat.core.device.GlRenderDevice;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_SCISSOR_TEST;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glScissor;
+import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 /**
- * Shared Haikalat renderer for both sides of the Minecraft window hand-off.
+ * Shared loading renderer for both sides of the Minecraft window hand-off.
  *
  * <p>Callers retain ownership of progress collection, framebuffer selection and presentation.
- * Each loading phase creates its own renderer so no GL state cache is carried across the module
- * and lifecycle boundary.</p>
+ * This SERVICE-layer class deliberately uses only raw LWJGL so the complete Haikalat runtime can
+ * remain in HaikalatHost's normal mod layer.</p>
  */
 public final class HaikalatLoadingFrameRenderer {
     private static final int MAX_PROGRESS_BARS = 3;
 
-    private final GlRenderDevice renderDevice = new GlRenderDevice();
     private final long startedAtNanos = System.nanoTime();
 
     public void render(int width, int height, FramebufferPolicy framebufferPolicy,
@@ -22,20 +29,18 @@ public final class HaikalatLoadingFrameRenderer {
             return;
         }
 
-        renderDevice.invalidateState();
-        CommandBuffer commands = renderDevice.createCommandBuffer();
         if (framebufferPolicy == FramebufferPolicy.BIND_DEFAULT) {
-            commands.bindDefaultFramebuffer();
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
-        commands.viewport(0, 0, width, height)
-                .enableScissor(false)
-                .clearColor(0.018F, 0.023F, 0.045F, 1.0F)
-                .clear(true, false);
+        glViewport(0, 0, width, height);
+        glDisable(GL_SCISSOR_TEST);
+        glClearColor(0.018F, 0.023F, 0.045F, 1.0F);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         int stripeHeight = Math.max(1, height / 12);
         for (int stripe = 0; stripe < 8; stripe++) {
             float shade = stripe / 7.0F;
-            clearRectangle(commands, 0, stripe * stripeHeight, width, stripeHeight,
+            clearRectangle(0, stripe * stripeHeight, width, stripeHeight,
                     0.025F + shade * 0.012F,
                     0.035F + shade * 0.016F,
                     0.070F + shade * 0.035F,
@@ -49,26 +54,25 @@ public final class HaikalatLoadingFrameRenderer {
         int markLeft = (width - markWidth) / 2;
         float pulse = pulse();
 
-        clearRectangle(commands, markLeft, centerY + 32, markWidth, 4,
+        clearRectangle(markLeft, centerY + 32, markWidth, 4,
                 0.26F + pulse * 0.16F, 0.78F, 1.0F, 1.0F);
-        clearRectangle(commands, markLeft + markWidth / 4, centerY + 20, markWidth / 2, 4,
+        clearRectangle(markLeft + markWidth / 4, centerY + 20, markWidth / 2, 4,
                 0.58F, 0.35F + pulse * 0.18F, 1.0F, 1.0F);
 
         int shownProgressBars = Math.min(MAX_PROGRESS_BARS, progressValues.length);
         for (int index = 0; index < shownProgressBars; index++) {
             float progress = clamp(progressValues[index]);
             int y = centerY - 32 - index * 18;
-            clearRectangle(commands, left, y, contentWidth, 6,
+            clearRectangle(left, y, contentWidth, 6,
                     0.09F, 0.11F, 0.18F, 1.0F);
-            clearRectangle(commands, left, y,
+            clearRectangle(left, y,
                     Math.min(contentWidth, Math.max(2, Math.round(contentWidth * progress))), 6,
                     index == 0 ? 0.22F : 0.44F,
                     index == 0 ? 0.76F : 0.34F,
                     0.98F, 1.0F);
         }
 
-        commands.enableScissor(false);
-        renderDevice.execute(commands);
+        glDisable(GL_SCISSOR_TEST);
     }
 
     public float indeterminateProgress() {
@@ -76,7 +80,7 @@ public final class HaikalatLoadingFrameRenderer {
     }
 
     public void invalidateState() {
-        renderDevice.invalidateState();
+        // Raw loading operations have no renderer-owned state cache to invalidate.
     }
 
     private float pulse() {
@@ -88,15 +92,15 @@ public final class HaikalatLoadingFrameRenderer {
         return Math.max(0.0F, Math.min(1.0F, value));
     }
 
-    private static void clearRectangle(CommandBuffer commands, int x, int y, int width, int height,
+    private static void clearRectangle(int x, int y, int width, int height,
                                        float red, float green, float blue, float alpha) {
         if (width <= 0 || height <= 0) {
             return;
         }
-        commands.scissor(x, y, width, height)
-                .enableScissor(true)
-                .clearColor(red, green, blue, alpha)
-                .clear(true, false);
+        glScissor(x, y, width, height);
+        glEnable(GL_SCISSOR_TEST);
+        glClearColor(red, green, blue, alpha);
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     public enum FramebufferPolicy {

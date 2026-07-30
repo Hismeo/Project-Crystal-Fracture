@@ -15,6 +15,7 @@ var projectName = [
         "CrystalLib",
         "FractureClient",
         "HaikalatHost",
+        "HaikalatHostExample",
         "HazeDungeon",
         "NuQuest",
         "FractureLoader"

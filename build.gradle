@@ -3,6 +3,8 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.86' apply false
 }
 
+ext.haikalatCoordinates = "com.github.KLjiana:haikalat:${haikalat_version}"
+
 subprojects {
     apply plugin: "net.neoforged.moddev"
 
@@ -54,6 +56,7 @@ subprojects {
     }
 
     repositories {
+        mavenCentral()
         maven { url "https://maven.parchmentmc.org" }
         maven { url "https://maven.theillusivec4.top/" }
         maven { url "https://maven.shedaniel.me/" }
