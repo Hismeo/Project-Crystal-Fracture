@@ -5,7 +5,10 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import org.hismeo.crystallib.api.config.CrystalConfigApi;
+import org.hismeo.fractureclient.client.config.OctopathVisualConfig;
 import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
+import org.hismeo.fractureclient.client.render.octopath.OctopathVisualExtension;
+import org.hismeo.haikalathost.api.client.advanced.event.RegisterHaikalatExtensionsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,5 +25,15 @@ public class FractureClient {
 
     public FractureClient(IEventBus iEventBus, ModContainer modContainer) {
         CrystalConfigApi.register(OrthographicCameraConfig.class);
+        CrystalConfigApi.register(OctopathVisualConfig.class);
+        iEventBus.addListener(FractureClient::registerHaikalatExtensions);
+    }
+
+    private static void registerHaikalatExtensions(RegisterHaikalatExtensionsEvent event) {
+        event.register(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                        MODID,
+                        "octopath_look"),
+                new OctopathVisualExtension());
     }
 }

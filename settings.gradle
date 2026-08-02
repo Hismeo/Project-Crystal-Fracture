@@ -11,11 +11,9 @@ pluginManagement {
 include(":CrystalFracture")
 var projectName = [
         "ActionGuide",
-        "BendsAnimator",
         "CrystalLib",
         "FractureClient",
         "HaikalatHost",
-        "HaikalatHostExample",
         "HazeDungeon",
         "NuQuest",
         "FractureLoader"

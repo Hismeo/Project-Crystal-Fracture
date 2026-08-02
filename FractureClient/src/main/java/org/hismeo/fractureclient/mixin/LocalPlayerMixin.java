@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.hismeo.fractureclient.client.control.CameraModeController;
 import org.hismeo.fractureclient.client.impl.mixin.LocalPlayerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
@@ -30,21 +31,29 @@ public abstract class LocalPlayerMixin extends Player implements LocalPlayerImpl
 
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/Input;hasForwardImpulse()Z"))
     public boolean alwaysForward(Input instance, Operation<Boolean> original) {
-        return this.isPlayerMove(input);
+        return CameraModeController.isOrthographic()
+                ? this.isPlayerMove(input)
+                : original.call(instance);
     }
 
     @Override
     public float maxUpStep() {
-        return 1.25f;
+        return CameraModeController.isOrthographic() ? 1.25F : super.maxUpStep();
     }
 
     @Override
     public void moveRelative(float amount, @NotNull Vec3 relative) {
-        this.moveKeyMove((LocalPlayer) (Object) this, minecraft, amount, relative);
+        if (CameraModeController.isOrthographic()) {
+            this.moveKeyMove((LocalPlayer) (Object) this, minecraft, amount, relative);
+        } else {
+            super.moveRelative(amount, relative);
+        }
     }
 
     @Override
     public boolean isSprinting() {
-        return this.isPlayerMove(input) && super.isSprinting();
+        return CameraModeController.isOrthographic()
+                ? this.isPlayerMove(input) && super.isSprinting()
+                : super.isSprinting();
     }
 }

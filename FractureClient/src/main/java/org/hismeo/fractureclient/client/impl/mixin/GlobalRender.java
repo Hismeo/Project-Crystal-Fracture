@@ -8,6 +8,7 @@ import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.hismeo.crystalfracture.CrystalFracture;
+import org.hismeo.fractureclient.client.control.CameraModeController;
 
 public class GlobalRender {
     private static final ResourceLocation MOUSE = CrystalFracture.packRL("textures/render/mouse.png");
@@ -23,6 +24,8 @@ public class GlobalRender {
     }
 
     public static void globalRender(Minecraft minecraft, DeltaTracker deltaTracker, boolean renderLevel, GuiGraphics guiGraphics, Window window) {
-        mouseRender(minecraft, guiGraphics);
+        if (CameraModeController.isOrthographic()) {
+            mouseRender(minecraft, guiGraphics);
+        }
     }
 }

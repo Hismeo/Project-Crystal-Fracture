@@ -3,6 +3,7 @@ package org.hismeo.fractureclient.mixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.neoforged.neoforge.client.loading.NeoForgeLoadingOverlay;
+import org.hismeo.fractureclient.client.control.CameraModeController;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,6 +18,8 @@ public class NeoForgeLoadingOverlayMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;getMillis()J", ordinal = 1))
     public void initMouseState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+        if (CameraModeController.isOrthographic()) {
+            GLFW.glfwSetInputMode(minecraft.getWindow().getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
+        }
     }
 }

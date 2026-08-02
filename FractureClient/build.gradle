@@ -30,9 +30,25 @@ repositories {
 dependencies {
 //    compileOnly "org.embeddedt.celeritas:celeritas-common:2.4.0-dev.5"
 //    compileOnly jarJar(group:"org.embeddedt.celeritas", name:"Celeritas", version: "neoforge-mc21.1-2.4.0-dev")
+    // The Host deliberately keeps its renderer-facing API in an isolated source set. Consume
+    // that API explicitly while keeping the actual Host project as the development runtime.
+    compileOnly(project(path: ':HaikalatHost', configuration: 'haikalatHostApiElements'))
+    compileOnly(rootProject.ext.haikalatCoordinates) {
+        transitive = false
+    }
     implementation(project(':HaikalatHost'))
     implementation(project(':CrystalLib'))
     implementation(project(':CrystalFracture'))
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
+    testImplementation(rootProject.ext.haikalatCoordinates) {
+        transitive = false
+    }
+}
+
+tasks.named("test", Test) {
+    useJUnitPlatform()
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

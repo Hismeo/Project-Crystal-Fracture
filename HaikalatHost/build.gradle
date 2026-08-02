@@ -34,11 +34,6 @@ neoForge {
         fracture_loader {
             sourceSet project(':FractureLoader').sourceSets.main
         }
-        // The compile-only consumer example is present in Host client runs, but is never packaged
-        // into the Host artifact.
-        haikalathost_example {
-            sourceSet project(':HaikalatHostExample').sourceSets.main
-        }
     }
 
     runs {
@@ -65,6 +60,12 @@ neoForge {
 }
 
 configurations {
+    // Keep Haikalat visible to IntelliJ's independently imported api/test source sets.
+    // Gradle tests could otherwise find its expanded classes through main resources by accident,
+    // while the IDE correctly reports that testCompileClasspath has no declared engine dependency.
+    apiCompileOnly.extendsFrom(compileOnly)
+    testCompileOnly.extendsFrom(compileOnly)
+
     haikalatHostApiElements {
         canBeConsumed = true
         canBeResolved = false
@@ -329,8 +330,7 @@ tasks.register("verifyRuntimePackaging") {
                 "org/hismeo/haikalathost/api/event/RegisterHaikalatContentEvent.class",
                 "org/hismeo/haikalathost/api/client/advanced/HaikalatRenderExtension.class",
                 "org/hismeo/haikalathost/api/client/advanced/HaikalatFrameContext.class",
-                "org/hismeo/haikalathost/api/client/advanced/event/"
-                        + "RegisterHaikalatExtensionsEvent.class",
+                "org/hismeo/haikalathost/api/client/advanced/event/RegisterHaikalatExtensionsEvent.class",
                 "META-INF/services/org.hismeo.haikalathost.api.HaikalatHostApi"
         ]
         def missingApiEntries = requiredApiEntries.findAll { !entries.contains(it) }

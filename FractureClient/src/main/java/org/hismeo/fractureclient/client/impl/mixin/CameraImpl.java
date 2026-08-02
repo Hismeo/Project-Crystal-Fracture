@@ -3,12 +3,15 @@ package org.hismeo.fractureclient.client.impl.mixin;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
+import org.hismeo.fractureclient.client.control.FloorAwareCameraController;
 import org.joml.Matrix4f;
 
 public final class CameraImpl {
+    private static final float ORTHOGRAPHIC_FAR_PLANE = 1024.0F;
+    private static final CurveAnimatedDeadZone DEAD_ZONE = new CurveAnimatedDeadZone();
+
     /**
      * 构建正交投影矩阵。
      * <p>
@@ -26,67 +29,55 @@ public final class CameraImpl {
         int width = window.getWidth();
         int height = window.getHeight();
 
-        float size = OrthographicCameraConfig.size;
+        float size = FloorAwareCameraController.getRenderSize();
         float rightLeft = Math.max(minScale, size * width / height);
         float minSize = Math.max(minScale, size);
+        // The pitched outdoor camera can sit on the player, placing the lower part of the ground
+        // behind camera depth zero. The floor-aware controller keeps that span visible while
+        // tightening the near plane again as an indoor camera rises above the active storey.
         return new Matrix4f().setOrtho(
                 -rightLeft, rightLeft,
                 -minSize, minSize,
-                -100, 100
+                FloorAwareCameraController.getAdaptiveNearPlane(),
+                ORTHOGRAPHIC_FAR_PLANE
         );
     }
 
-    static boolean followingX = false;
-    static boolean followingZ = false;
-    static boolean followingY = false;
-    static final double ENTER_X = 3;
-    static final double EXIT_X = 11.5;
-    static final double ENTER_Z = 2;
-    static final double EXIT_Z = 6.4;
-    static final double ENTER_Y = 0.1;
-    static final double EXIT_Y = 6;
-    //TODO 集合函数
-    public static void deadZone(Camera camera, double playerX, double playerY, double playerZ) {
-        Vec3 camPos = camera.getPosition();
-        double dx = playerX - camPos.x;
-        double dz = playerZ - camPos.z;
-        double dy = playerY - camPos.y;
-
-        // 瞬移保护
-        if (Mth.length(dx, dz, dy) > 40) {
-            camera.setPosition(playerX, playerY, playerZ);
-            followingX = false;
-            followingZ = false;
-            followingY = false;
-            return;
-        }
-
-        double absX = Math.abs(dx);
-        if (!followingX && absX > ENTER_X) followingX = true;
-        else if (followingX && absX < EXIT_X) followingX = false;
-
-        double absY = Math.abs(dy);
-        if (!followingY && absY > ENTER_Y) followingY = true;
-        else if (followingY && absY < EXIT_Y) followingY = false;
-
-        double absZ = Math.abs(dz);
-        if (!followingZ && absZ > ENTER_Z) followingZ = true;
-        else if (followingZ && absZ < EXIT_Z) followingZ = false;
-
-        double newX = followingX ? move(playerX, dx, ENTER_X, camPos.x, 0.01) : camPos.x;
-        double newY = followingY ? move(playerY, dy, ENTER_Y, camPos.y, 0.005) : camPos.y;
-        double newZ = followingZ ? move(playerZ, dz, ENTER_Z, camPos.z, 0.01) : camPos.z;
-
-        camera.setPosition(newX, newY, newZ);
+    public static void resetTracking() {
+        DEAD_ZONE.reset();
+        FloorAwareCameraController.reset();
     }
 
-    private static double move(double player, double d, double enter, double cam, double lerp) {
-        double targetY = player - Math.signum(d) * enter * 0.5;
-        double move = Mth.lerp(lerp, cam, targetY) - cam;
-        if (Math.abs(move) > 0.01) {
-            return cam + move;
-        } else {
-            return cam;
-        }
+    public static void deadZone(Camera camera, double playerX, double playerY, double playerZ) {
+        Vec3 cameraPosition = camera.getPosition();
+        CurveAnimatedDeadZone.Position tracked = DEAD_ZONE.update(
+                cameraPosition.x,
+                cameraPosition.y,
+                cameraPosition.z,
+                playerX,
+                playerY,
+                playerZ,
+                OrthographicCameraConfig.deadZoneTransitionSeconds,
+                System.nanoTime()
+        );
+        setFloorAwarePosition(camera, tracked, playerX, playerY, playerZ);
+    }
+
+    private static void setFloorAwarePosition(
+            Camera camera,
+            CurveAnimatedDeadZone.Position tracked,
+            double playerX,
+            double playerY,
+            double playerZ
+    ) {
+        Vec3 adjusted = FloorAwareCameraController.apply(
+                tracked.x(),
+                tracked.y(),
+                tracked.z(),
+                playerX,
+                playerY,
+                playerZ
+        );
+        camera.setPosition(adjusted.x, adjusted.y, adjusted.z);
     }
 }

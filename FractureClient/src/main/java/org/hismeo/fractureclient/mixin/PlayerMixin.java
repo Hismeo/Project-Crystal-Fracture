@@ -4,6 +4,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.hismeo.fractureclient.client.control.CameraModeController;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Player.class)
@@ -14,7 +15,10 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @Override
     public boolean isSprinting() {
-        this.setSharedFlag(3, true);
-        return true;
+        if (CameraModeController.isOrthographic()) {
+            this.setSharedFlag(3, true);
+            return true;
+        }
+        return super.isSprinting();
     }
 }

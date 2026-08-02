@@ -1,0 +1,7 @@
+{
+  "key.categories.fracture_client": "Fracture Client",
+  "key.fracture_client.room_editor": "开启 / 保存房间编辑器",
+  "key.fracture_client.room_editor_cancel": "取消房间编辑",
+  "key.fracture_client.room_editor_undo": "撤销房间选区操作",
+  "key.fracture_client.room_editor_height": "设置房间天花板（潜行：地板）"
+}

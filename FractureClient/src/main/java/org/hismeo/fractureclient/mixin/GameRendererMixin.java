@@ -8,7 +8,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import org.hismeo.crystallib.util.MatrixUtil;
+import org.hismeo.fractureclient.client.control.CameraModeController;
 import org.hismeo.fractureclient.client.impl.mixin.CameraImpl;
 import org.hismeo.fractureclient.client.impl.mixin.GlobalRender;
 import org.joml.Matrix4f;
@@ -34,7 +34,9 @@ public abstract class GameRendererMixin {
             index = 2
     )
     public Matrix4f frustumProjection(Matrix4f projectionMatrix) {
-        return CameraImpl.orthoMatrix4f(minecraft, 20.0F);
+        return CameraModeController.isOrthographic()
+                ? CameraImpl.orthoMatrix4f(minecraft, 20.0F)
+                : projectionMatrix;
     }
 
     @ModifyArg(
@@ -44,6 +46,9 @@ public abstract class GameRendererMixin {
             index = 6
     )
     public Matrix4f renderProjection(Matrix4f projectionMatrix, @Local(argsOnly = true) DeltaTracker tickCounter) {
+        if (!CameraModeController.isOrthographic()) {
+            return projectionMatrix;
+        }
         Matrix4f orthoMatrix = CameraImpl.orthoMatrix4f(minecraft, 0.0F);
         RenderSystem.setProjectionMatrix(orthoMatrix, VertexSorting.ORTHOGRAPHIC_Z);
         return orthoMatrix;

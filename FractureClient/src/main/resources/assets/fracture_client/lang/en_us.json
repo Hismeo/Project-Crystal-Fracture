@@ -1,0 +1,7 @@
+{
+  "key.categories.fracture_client": "Fracture Client",
+  "key.fracture_client.room_editor": "Open / Save Room Editor",
+  "key.fracture_client.room_editor_cancel": "Cancel Room Editing",
+  "key.fracture_client.room_editor_undo": "Undo Room Selection",
+  "key.fracture_client.room_editor_height": "Set Room Ceiling (Sneak: Floor)"
+}

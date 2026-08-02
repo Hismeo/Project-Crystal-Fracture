@@ -8,13 +8,18 @@
     "PlayerMixin"
   ],
   "client": [
+    "BlockMixin",
     "BlockRenderDispatcherMixin",
-    "CamaraTypeMixin",
+    "CameraTypeMixin",
     "CameraMixin",
+    "ClientLevelMixin",
     "GameRendererMixin",
+    "LevelRendererMixin",
+    "MinecraftMixin",
     "MouseHandlerMixin",
     "NeoForgeLoadingOverlayMixin",
-    "remove_stuff.TutorialMixin"
+    "remove_stuff.TutorialMixin",
+    "SectionCompilerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
