@@ -52,18 +52,23 @@ uniform float uStageSpotlightRadius;
 uniform float uLocalLightIntensity;
 uniform float uLocalLightReach;
 uniform float uLocalLightDaylightMultiplier;
-const int MAX_LOCAL_LIGHTS = 16;
+// Soft local lights use a separate 8 KiB std140 block. It is intentionally much larger than
+// the point-shadow budget, so a dense scene can retain stable lamps without replacing sources
+// every time the camera moves a fraction of a block.
+const int MAX_LOCAL_LIGHTS = 256;
+const int MAX_LOCAL_LIGHT_SHADOWS = 16;
 const int POINT_LIGHT_SHADOW_FACES = 6;
 const int POINT_LIGHT_SHADOW_ATLAS_COLUMNS = 12;
 uniform int uLocalLightCount;
-uniform vec3 uLocalLightPositions[MAX_LOCAL_LIGHTS];
-uniform vec3 uLocalLightColors[MAX_LOCAL_LIGHTS];
-uniform float uLocalLightPowers[MAX_LOCAL_LIGHTS];
+layout(std140, binding = 7) uniform OctopathLocalLightData {
+    vec4 uLocalLightPositionPowers[MAX_LOCAL_LIGHTS];
+    vec4 uLocalLightColors[MAX_LOCAL_LIGHTS];
+};
 uniform sampler2D uLocalLightShadowAtlas;
 uniform int uLocalLightShadowCount;
-uniform int uLocalLightShadowActive[MAX_LOCAL_LIGHTS];
-uniform vec3 uLocalLightShadowPositions[MAX_LOCAL_LIGHTS];
-uniform float uLocalLightShadowRanges[MAX_LOCAL_LIGHTS];
+uniform int uLocalLightShadowActive[MAX_LOCAL_LIGHT_SHADOWS];
+uniform vec3 uLocalLightShadowPositions[MAX_LOCAL_LIGHT_SHADOWS];
+uniform float uLocalLightShadowRanges[MAX_LOCAL_LIGHT_SHADOWS];
 uniform vec2 uLocalLightShadowInverseResolution;
 uniform float uLocalLightShadowAtlasTileStride;
 uniform float uLocalLightShadowAtlasGutter;
@@ -524,7 +529,8 @@ float pointLightShadowProjectedDepth(float forwardDistance, float farPlane) {
 // contribute. All six faces live in a shared atlas, and their shadows soften/fade before the
 // cube boundary so an actor proxy reads as local contact, never as a hard expanding fan.
 float localLightShadowMask(int shadowIndex, vec3 worldPosition, float centerDepth) {
-    if (shadowIndex < 0 || shadowIndex >= uLocalLightShadowCount) {
+    if (shadowIndex < 0 || shadowIndex >= uLocalLightShadowCount
+            || shadowIndex >= MAX_LOCAL_LIGHT_SHADOWS) {
         return 0.0;
     }
     if (uLocalLightShadowActive[shadowIndex] == 0) {
@@ -666,28 +672,41 @@ void main() {
     colorGrade = mix(colorGrade, vec3(0.78, 0.84, 0.96), weather * 0.22);
 
     vec3 localLight = vec3(0.0);
-    for (int index = 0; index < uLocalLightCount; index++) {
-        vec3 toLight = uLocalLightPositions[index] - worldPosition;
+    float reach = clamp(uLocalLightReach, 0.4, 2.5);
+    // A hard safety radius matters once the stable source list has 256 entries. The old compact
+    // core technically had an infinite tail, so hundreds of distant lamps could add both cost
+    // and a faint full-screen wash. Outside this radius their intended pool is invisible.
+    float maximumLightDistance = 6.5 * reach;
+    float maximumLightDistanceSquared = maximumLightDistance * maximumLightDistance;
+    int localLightCount = clamp(uLocalLightCount, 0, MAX_LOCAL_LIGHTS);
+    for (int index = 0; index < MAX_LOCAL_LIGHTS; index++) {
+        if (index >= localLightCount) {
+            break;
+        }
+        vec4 positionPower = uLocalLightPositionPowers[index];
+        vec3 toLight = positionPower.xyz - worldPosition;
         float distanceSquared = dot(toLight, toLight);
+        if (distanceSquared > maximumLightDistanceSquared) {
+            continue;
+        }
         // Final colour+depth does not contain a stable material normal for cutout leaves or
         // entity boundaries. A soft isotropic contribution is safer than deriving a false normal
         // from depth derivatives and creating black/bright slabs across foliage.
         // Keep the source's immediate pool readable, but deliberately stop it within a few
         // blocks. The post pass sees several interior lamps through the final colour target;
         // a broad falloff makes those hidden lamps add up into an orange full-screen wash.
-        float reach = clamp(uLocalLightReach, 0.4, 2.5);
         float distanceToLight = sqrt(max(distanceSquared, 0.0));
         float compactCore = 0.50 / (1.0 + distanceSquared * 0.20 / (reach * reach));
         float outerPool = 1.0 - smoothstep(1.5 * reach, 6.5 * reach, distanceToLight);
         float attenuation = (compactCore + 0.022 * outerPool * outerPool)
-                * uLocalLightPowers[index];
-        // The first two entries in the score-sorted local-light list may have a depth cube.
+                * positionPower.w;
+        // The stable leading shadow entries each own a depth cube.
         // They are intentionally independent: overlapping lamp pools should each be occluded
         // by their own source rather than inheriting the nearest lamp's shadow.
         if (index < uLocalLightShadowCount) {
             attenuation *= 1.0 - localLightShadowMask(index, worldPosition, depth);
         }
-        localLight += uLocalLightColors[index] * attenuation;
+        localLight += uLocalLightColors[index].rgb * attenuation;
     }
 
     // Daylight already illuminates the environment and supplies the readable surface contrast.

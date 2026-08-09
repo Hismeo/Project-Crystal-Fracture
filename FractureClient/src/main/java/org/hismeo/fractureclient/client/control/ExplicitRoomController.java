@@ -13,12 +13,26 @@ import org.hismeo.fractureclient.client.config.OrthographicCameraConfig;
 import org.hismeo.fractureclient.client.room.RoomRegion;
 import org.hismeo.fractureclient.client.room.RoomRegionStore;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 /** Resolves authored room masks before the heuristic room scanner is allowed to run. */
 public final class ExplicitRoomController {
     private static final int ENTER_CONFIRMATIONS = 2;
     private static final int EXIT_CONFIRMATIONS = 3;
     private static final int MAX_CACHED_WALL_BLOCKS = 65_536;
+    private static final int MAX_STACK_VERTICAL_GAP = 4;
     private static final int NO_ROOF_Y = Integer.MIN_VALUE;
+    private static final Direction[] HORIZONTAL_DIRECTIONS = {
+            Direction.NORTH,
+            Direction.SOUTH,
+            Direction.WEST,
+            Direction.EAST
+    };
 
     private static ClientLevel trackedLevel;
     private static RoomRegion activeRoom;
@@ -31,8 +45,10 @@ public final class ExplicitRoomController {
     private static Direction cachedZSide;
     private static int cachedExteriorDepth = -1;
     private static final LongOpenHashSet CACHED_ROOF = new LongOpenHashSet();
+    private static final LongOpenHashSet CACHED_UPPER_STOREYS = new LongOpenHashSet();
     private static final Long2IntOpenHashMap CACHED_ROOF_TOPS = new Long2IntOpenHashMap();
     private static final LongOpenHashSet CACHED_WALLS = new LongOpenHashSet();
+    private static final List<RoomRegion> CACHED_STACKED_ROOMS = new ArrayList<>();
 
     private ExplicitRoomController() {
     }
@@ -137,6 +153,9 @@ public final class ExplicitRoomController {
         if (floorCamera && !wallCutaway) {
             return resolveRoofOnlyCandidates(rayCandidates);
         }
+        LongOpenHashSet wholeFloorCutaway = floorCamera
+                ? createWholeFloorCutaway()
+                : CACHED_ROOF;
         LongOpenHashSet rayRoofIntersection = new LongOpenHashSet();
         LongOpenHashSet rayWallIntersection = new LongOpenHashSet();
         LongIterator iterator = rayCandidates.iterator();
@@ -149,10 +168,13 @@ public final class ExplicitRoomController {
                     RoomRegion.packColumn(x, z),
                     NO_ROOF_Y
             );
-            if (roofTopY != NO_ROOF_Y
+            boolean roofCandidate = floorCamera
+                    ? wholeFloorCutaway.contains(packedPos)
+                    : roofTopY != NO_ROOF_Y
                     && y <= roofTopY
                     && y > roofTopY - maximumLayers
-                    && y >= minimumRoofSearchY(room)) {
+                    && y >= minimumRoofSearchY(room);
+            if (roofCandidate) {
                 rayRoofIntersection.add(packedPos);
             }
             if (wallCutaway && CACHED_WALLS.contains(packedPos)) {
@@ -168,11 +190,11 @@ public final class ExplicitRoomController {
         result.addAll(rayWallIntersection);
 
         boolean canCullWholeRoof = OrthographicCameraConfig.cullWholeRoomRoof
-                && !CACHED_ROOF.isEmpty()
-                && CACHED_ROOF.size() <= maximumWholeCutaway
+                && !wholeFloorCutaway.isEmpty()
+                && wholeFloorCutaway.size() <= maximumWholeCutaway
                 && (floorCamera || !rayRoofIntersection.isEmpty());
         if (canCullWholeRoof) {
-            result.addAll(CACHED_ROOF);
+            result.addAll(wholeFloorCutaway);
         }
         if (wallCutaway
                 && !CACHED_WALLS.isEmpty()
@@ -183,24 +205,34 @@ public final class ExplicitRoomController {
     }
 
     private static LongOpenHashSet resolveRoofOnlyCandidates(LongOpenHashSet rayCandidates) {
+        LongOpenHashSet floorCutaway = createWholeFloorCutaway();
         int maximumWholeCutaway = Math.max(
                 64,
                 Math.min(8192, OrthographicCameraConfig.cullWholeRoofMaximumBlocks)
         );
         if (OrthographicCameraConfig.cullWholeRoomRoof
-                && !CACHED_ROOF.isEmpty()
-                && CACHED_ROOF.size() <= maximumWholeCutaway) {
-            return new LongOpenHashSet(CACHED_ROOF);
+                && !floorCutaway.isEmpty()
+                && floorCutaway.size() <= maximumWholeCutaway) {
+            return floorCutaway;
         }
 
         LongOpenHashSet result = new LongOpenHashSet();
         LongIterator iterator = rayCandidates.iterator();
         while (iterator.hasNext()) {
             long packedPos = iterator.nextLong();
-            if (CACHED_ROOF.contains(packedPos)) {
+            if (floorCutaway.contains(packedPos)) {
                 result.add(packedPos);
             }
         }
+        return result;
+    }
+
+    private static LongOpenHashSet createWholeFloorCutaway() {
+        LongOpenHashSet result = new LongOpenHashSet(
+                CACHED_ROOF.size() + CACHED_UPPER_STOREYS.size()
+        );
+        result.addAll(CACHED_ROOF);
+        result.addAll(CACHED_UPPER_STOREYS);
         return result;
     }
 
@@ -232,8 +264,10 @@ public final class ExplicitRoomController {
         cachedZSide = zSide;
         cachedExteriorDepth = exteriorDepth;
         CACHED_ROOF.clear();
+        CACHED_UPPER_STOREYS.clear();
         CACHED_ROOF_TOPS.clear();
         CACHED_WALLS.clear();
+        CACHED_STACKED_ROOMS.clear();
 
         ClientLevel level = trackedLevel;
         int roofShellDepth = Math.max(
@@ -247,6 +281,12 @@ public final class ExplicitRoomController {
             int x = RoomRegion.unpackX(packedColumn);
             int z = RoomRegion.unpackZ(packedColumn);
             cacheRoofColumn(level, room, roofPos, x, z, roofShellDepth);
+        }
+
+        List<RoomRegion> stackedRooms = findStackedRoomsAbove(room);
+        CACHED_STACKED_ROOMS.addAll(stackedRooms);
+        for (RoomRegion stackedRoom : stackedRooms) {
+            cacheUpperStorey(level, stackedRoom, roofPos, exteriorDepth);
         }
 
         Direction[] selectedSides = {xSide, zSide};
@@ -302,17 +342,176 @@ public final class ExplicitRoomController {
         return first != null && second != null && first.id().equals(second.id());
     }
 
+    /**
+     * Resolves an authored vertical room chain without adding linkage fields to room_regions.json.
+     * A room is the next storey when its footprint overlaps and its floor begins just above the
+     * lower room's authored ceiling. Repeating the search supports towers with more than two floors.
+     */
+    private static List<RoomRegion> findStackedRoomsAbove(RoomRegion baseRoom) {
+        List<RoomRegion> candidates = RoomRegionStore.roomsForCurrentWorld(Minecraft.getInstance());
+        List<RoomRegion> frontier = new ArrayList<>();
+        List<RoomRegion> result = new ArrayList<>();
+        Set<UUID> included = new HashSet<>();
+        included.add(baseRoom.id());
+        frontier.add(baseRoom);
+
+        for (int head = 0; head < frontier.size(); head++) {
+            RoomRegion lowerRoom = frontier.get(head);
+            for (RoomRegion candidate : candidates) {
+                if (included.contains(candidate.id())
+                        || !isDirectlyStackedAbove(lowerRoom, candidate)) {
+                    continue;
+                }
+                included.add(candidate.id());
+                frontier.add(candidate);
+                result.add(candidate);
+            }
+        }
+        result.sort(Comparator
+                .comparingInt(RoomRegion::floorY)
+                .thenComparing(RoomRegion::name));
+        return result;
+    }
+
+    private static boolean isDirectlyStackedAbove(RoomRegion lowerRoom, RoomRegion upperRoom) {
+        int verticalGap = upperRoom.floorY() - lowerRoom.ceilingY();
+        return verticalGap >= 0
+                && verticalGap <= MAX_STACK_VERTICAL_GAP
+                && footprintsOverlap(lowerRoom, upperRoom);
+    }
+
+    private static boolean footprintsOverlap(RoomRegion first, RoomRegion second) {
+        RoomRegion smaller = first.columnCount() <= second.columnCount() ? first : second;
+        RoomRegion larger = smaller == first ? second : first;
+        LongIterator iterator = smaller.columnIterator();
+        while (iterator.hasNext()) {
+            long packedColumn = iterator.nextLong();
+            if (larger.containsColumn(
+                    RoomRegion.unpackX(packedColumn),
+                    RoomRegion.unpackZ(packedColumn)
+            )) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Caches the complete solid upper storey, including its floor, boundary walls and roof. */
+    private static void cacheUpperStorey(
+            ClientLevel level,
+            RoomRegion room,
+            BlockPos.MutableBlockPos pos,
+            int exteriorDepth
+    ) {
+        if (level == null) {
+            return;
+        }
+        int minimumY = Math.max(level.getMinBuildHeight(), room.floorY() - 1);
+        int maximumY = Math.min(level.getMaxBuildHeight() - 1, room.ceilingY());
+        if (maximumY < minimumY) {
+            return;
+        }
+
+        LongIterator iterator = room.columnIterator();
+        while (iterator.hasNext()) {
+            long packedColumn = iterator.nextLong();
+            int x = RoomRegion.unpackX(packedColumn);
+            int z = RoomRegion.unpackZ(packedColumn);
+            cacheUpperStoreyColumn(level, pos, x, z, minimumY, maximumY);
+
+            for (Direction direction : HORIZONTAL_DIRECTIONS) {
+                int neighborX = x + direction.getStepX();
+                int neighborZ = z + direction.getStepZ();
+                if (room.containsColumn(neighborX, neighborZ)) {
+                    continue;
+                }
+                cacheUpperStoreyBoundary(
+                        level,
+                        pos,
+                        neighborX,
+                        neighborZ,
+                        direction,
+                        minimumY,
+                        maximumY,
+                        exteriorDepth
+                );
+            }
+        }
+    }
+
+    private static void cacheUpperStoreyBoundary(
+            ClientLevel level,
+            BlockPos.MutableBlockPos pos,
+            int startX,
+            int startZ,
+            Direction outwardDirection,
+            int minimumY,
+            int maximumY,
+            int exteriorDepth
+    ) {
+        for (int y = minimumY; y <= maximumY; y++) {
+            for (int outward = 0; outward <= exteriorDepth; outward++) {
+                int x = startX + outwardDirection.getStepX() * outward;
+                int z = startZ + outwardDirection.getStepZ() * outward;
+                pos.set(x, y, z);
+                BlockState state = level.getBlockState(pos);
+                if (!BlockCullController.isSafeHardCullState(state)) {
+                    // Never jump across an air gap into an adjacent building.
+                    break;
+                }
+                CACHED_UPPER_STOREYS.add(BlockPos.asLong(x, y, z));
+            }
+        }
+    }
+
+    private static void cacheUpperStoreyColumn(
+            ClientLevel level,
+            BlockPos.MutableBlockPos pos,
+            int x,
+            int z,
+            int minimumY,
+            int maximumY
+    ) {
+        for (int y = minimumY; y <= maximumY; y++) {
+            pos.set(x, y, z);
+            BlockState state = level.getBlockState(pos);
+            if (BlockCullController.isSafeHardCullState(state)) {
+                CACHED_UPPER_STOREYS.add(BlockPos.asLong(x, y, z));
+            }
+        }
+    }
+
     /** Invalidates a derived sloped-roof shell when the authored room is edited in-world. */
     public static void markDirty(ClientLevel level, BlockPos changedPos) {
         RoomRegion room = activeRoom;
         if (room == null
-                || level != trackedLevel
-                || changedPos.getY() < room.floorY()
-                || changedPos.getY() > room.ceilingY()
-                || !room.containsColumn(changedPos.getX(), changedPos.getZ())) {
+                || level != trackedLevel) {
             return;
         }
-        invalidateCaches();
+        if (mayAffectCachedRoom(room, changedPos, room.floorY())) {
+            invalidateCaches();
+            return;
+        }
+        for (RoomRegion stackedRoom : CACHED_STACKED_ROOMS) {
+            if (mayAffectCachedRoom(stackedRoom, changedPos, stackedRoom.floorY() - 1)) {
+                invalidateCaches();
+                return;
+            }
+        }
+    }
+
+    private static boolean mayAffectCachedRoom(
+            RoomRegion room,
+            BlockPos changedPos,
+            int minimumY
+    ) {
+        int expansion = 1 + Math.max(0, cachedExteriorDepth);
+        return changedPos.getY() >= minimumY
+                && changedPos.getY() <= room.ceilingY()
+                && changedPos.getX() >= room.minX() - expansion
+                && changedPos.getX() <= room.maxX() + expansion
+                && changedPos.getZ() >= room.minZ() - expansion
+                && changedPos.getZ() <= room.maxZ() + expansion;
     }
 
     private static void cacheRoofColumn(
@@ -368,7 +567,9 @@ public final class ExplicitRoomController {
         cachedZSide = null;
         cachedExteriorDepth = -1;
         CACHED_ROOF.clear();
+        CACHED_UPPER_STOREYS.clear();
         CACHED_ROOF_TOPS.clear();
         CACHED_WALLS.clear();
+        CACHED_STACKED_ROOMS.clear();
     }
 }

@@ -22,11 +22,14 @@ import java.util.Set;
 /**
  * Samples loaded emissive blocks from the actual visible world footprint rather than a fixed
  * player-radius disk. Dense lamps first merge into stable spatial clusters, then the previous
- * selection is retained with hysteresis. This keeps a small camera movement from repeatedly
- * swapping similarly scored glowstone/torch blocks in and out of the post-light budget.
+ * selection is retained with hysteresis. The larger source budget keeps a small camera movement
+ * from repeatedly swapping similarly scored glowstone/torch blocks in and out of the post-light
+ * field when a village, cave, or dense build contains many emitters.
  */
 final class OctopathLocalLightScanner {
-    private static final int MAX_LIGHTS = 16;
+    // This is deliberately independent from the 16-slot point-shadow atlas. All 256 entries
+    // participate in the soft local-light field; only the stable leading subset receives maps.
+    private static final int MAX_LIGHTS = 256;
     private static final int VERTICAL_RADIUS = 10;
     private static final int VIEWPORT_MARGIN = 2;
     private static final int VIEWPORT_SCAN_GUARD = 6;

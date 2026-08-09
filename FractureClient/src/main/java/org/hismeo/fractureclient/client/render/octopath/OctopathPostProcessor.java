@@ -3,6 +3,7 @@ package org.hismeo.fractureclient.client.render.octopath;
 import com.kaleblangley.haikalat.backend.framebuffer.Framebuffer;
 import com.kaleblangley.haikalat.backend.framebuffer.FramebufferDescriptor;
 import com.kaleblangley.haikalat.backend.shader.ShaderProgram;
+import com.kaleblangley.haikalat.backend.UniformBlock;
 import com.kaleblangley.haikalat.core.command.CommandBuffer;
 import com.kaleblangley.haikalat.core.presentation.PresentationTarget;
 import com.kaleblangley.haikalat.subsystems.postprocess.BloomPass;
@@ -25,8 +26,14 @@ import java.util.List;
  * one frame only; all intermediate targets belong to this post-processor.
  */
 final class OctopathPostProcessor implements AutoCloseable {
-    private static final int MAX_LOCAL_LIGHTS = 16;
+    // The soft light field retains many more sources than the shadow atlas. Keeping the two
+    // budgets independent prevents a dense settlement from continuously swapping visible lamps.
+    private static final int MAX_LOCAL_LIGHTS = 256;
     private static final int MAX_LOCAL_LIGHT_SHADOWS = OctopathPointLightShadowMap.MAX_LIGHTS;
+    private static final int LOCAL_LIGHT_BLOCK_BINDING = 7;
+    private static final int LOCAL_LIGHT_VECTOR_BYTES = 16;
+    private static final int LOCAL_LIGHT_POSITION_POWER_OFFSET = 0;
+    private static final int LOCAL_LIGHT_COLOR_OFFSET = MAX_LOCAL_LIGHTS * LOCAL_LIGHT_VECTOR_BYTES;
     private static final int MAX_SUNLIGHT_FILTERS = OctopathSunlightFilterScanner.MAX_FILTERS;
     private static final int MAX_WATER_MISTS = OctopathWaterMistScanner.MAX_MISTS;
     private static final int MAX_ENTITY_GROUND_SHADOWS = OctopathEntityGroundShadowScanner.MAX_SHADOWS;
@@ -39,6 +46,10 @@ final class OctopathPostProcessor implements AutoCloseable {
     private final ShaderProgram presentationShader;
     private final ScreenQuad screenQuad;
     private final BloomPass bloomPass;
+    // Two tightly packed vec4 arrays: xyz + power, followed by rgb + padding. A std140 block
+    // keeps 256 lamps below the guaranteed uniform-block limit instead of overflowing default
+    // fragment uniforms on drivers that pad vec3 arrays to vec4 slots.
+    private final UniformBlock localLightData;
 
     private Framebuffer sceneCopy;
     private Framebuffer ambientOcclusionScene;
@@ -75,6 +86,7 @@ final class OctopathPostProcessor implements AutoCloseable {
                 SHADER_ROOT + "octopath_present.fsh");
         screenQuad = new ScreenQuad();
         bloomPass = new BloomPass();
+        localLightData = new UniformBlock(MAX_LOCAL_LIGHTS * LOCAL_LIGHT_VECTOR_BYTES * 2);
     }
 
     void render(HaikalatFrameContext frame, OctopathFrameState state) {
@@ -494,10 +506,26 @@ final class OctopathPostProcessor implements AutoCloseable {
         commands.setUniformInt(lightingShader, "uLocalLightCount", count);
         for (int index = 0; index < count; index++) {
             OctopathLocalLight light = lights.get(index);
-            commands.setUniformVec3(lightingShader, "uLocalLightPositions[" + index + "]", light.position());
-            commands.setUniformVec3(lightingShader, "uLocalLightColors[" + index + "]", light.color());
-            commands.setUniformFloat(lightingShader, "uLocalLightPowers[" + index + "]", light.power());
+            int offset = index * LOCAL_LIGHT_VECTOR_BYTES;
+            Vector3f position = light.position();
+            Vector3f color = light.color();
+            localLightData.setVec4(
+                    LOCAL_LIGHT_POSITION_POWER_OFFSET + offset,
+                    position.x,
+                    position.y,
+                    position.z,
+                    light.power());
+            localLightData.setVec4(
+                    LOCAL_LIGHT_COLOR_OFFSET + offset,
+                    color.x,
+                    color.y,
+                    color.z,
+                    0.0F);
         }
+        // UniformBlock.bind() flushes the latest CPU data when this command executes. Binding it
+        // after the lighting program is selected makes the std140 layout explicit and avoids
+        // hundreds of individual uniform calls per frame.
+        commands.bindUniformBlock(LOCAL_LIGHT_BLOCK_BINDING, localLightData);
     }
 
     private void recordWaterMists(CommandBuffer commands, List<OctopathWaterMist> mists) {
@@ -665,6 +693,7 @@ final class OctopathPostProcessor implements AutoCloseable {
         volumetricSunlightShader.close();
         depthOfFieldShader.close();
         presentationShader.close();
+        localLightData.close();
     }
 
     private void ensureOpen() {

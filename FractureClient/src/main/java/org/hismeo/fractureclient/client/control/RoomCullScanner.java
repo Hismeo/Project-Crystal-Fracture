@@ -1119,9 +1119,10 @@ public final class RoomCullScanner {
     /**
      * Follows the connected solid structure above the current room instead of assuming that the
      * first ceiling is also the building's final roof. This reaches a second-storey wall and its
-     * high roof through the intervening floor. The full connected set is retained only as a safe
-     * membership mask for ray hits; whole-roof mode removes its air-backed ceiling surfaces,
-     * avoiding a several-thousand-block solid-volume transition.
+     * high roof through the intervening floor. The full connected set is retained as a safe
+     * membership mask for ray hits. In floor-camera mode, the cutaway starts at the current
+     * storey's first ceiling and includes the connected upper structure; otherwise an intermediate
+     * floor is removed while the second storey remains visible.
      */
     private static OverheadResult expandOverheadFromRoomSeeds(
             Snapshot snapshot,
@@ -1245,15 +1246,14 @@ public final class RoomCullScanner {
             );
             structuralBlocks.add(packedPos);
             // The conservative non-floor view only removes air-backed undersides. Once a floor
-            // camera is confirmed, remove the complete connected shell between the first ceiling
-            // and the resolved ridge; otherwise stair blocks resting on walls or the previous roof
-            // step remain as striped fragments.
+            // camera is confirmed, remove the complete connected structure from this storey's
+            // ceiling upward. cameraCeilingY deliberately remains the camera-height decision only:
+            // on a multi-storey building it resolves to the intermediate slab, not the final roof.
             if (y > 0 && snapshot.roomPassable()[packedIndex - plane]) {
                 wholeCutawayBlocks.add(packedPos);
             }
             if (cameraCeilingY >= 0
-                    && y >= structuralCeilingY
-                    && y <= cameraCeilingY) {
+                    && y >= structuralCeilingY) {
                 floorCutawayBlocks.add(packedPos);
             }
         }
