@@ -1,0 +1,26 @@
+{
+  "schema_version": 4,
+  "duration": 0.8,
+  "skeleton": {
+    "id": "game:humanoid",
+    "version": 1,
+    "topology_hash": "fixture-v1"
+  },
+  "sections": [
+    {"id": "startup", "start": 0.0, "end": 0.2},
+    {"id": "active", "start": 0.2, "end": 0.5},
+    {"id": "recovery", "start": 0.5, "end": 0.8}
+  ],
+  "events": [
+    {"id": "swing_vfx", "time": 0.2, "type": "vfx", "order": 1, "payload": {"effect": "crystal_fracture:sword_arc"}},
+    {"id": "swing_sound", "time": 0.2, "type": "sound", "order": 0, "payload": {"cue": "crystal_fracture:sword_swing"}},
+    {"id": "start", "time": 0.0, "type": "crystal_fracture:animation_start", "order": 0, "payload": {}}
+  ],
+  "states": [
+    {"id": "attack_main", "type": "attack", "start": 0.21, "end": 0.24, "payload": {"slot": "sword_main"}},
+    {"id": "combo_window", "type": "input", "start": 0.35, "end": 0.5, "payload": {"slot": "combo"}},
+    {"id": "armor", "type": "super_armor", "start": 0.2, "end": 0.5, "payload": {}}
+  ],
+  "root_motion": {"enabled": true, "bone": "motion_root", "mode": "xz_yaw"},
+  "loop": false
+}

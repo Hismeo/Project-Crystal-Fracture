@@ -15,11 +15,27 @@ neoForge {
             sourceSet sourceSets.main
         }
     }
+
+    runs {
+        gameTestServer {
+            systemProperty 'neoforge.enabledGameTestNamespaces', "${mod_id},minecraft"
+        }
+    }
 }
 
 dependencies {
     implementation(project(':CrystalLib'))
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
 }
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 

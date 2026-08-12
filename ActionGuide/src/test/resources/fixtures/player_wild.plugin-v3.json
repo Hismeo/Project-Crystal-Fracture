@@ -1,0 +1,34 @@
+{
+  "events": [
+    {"id":"evt_4cd0d40e70cf465d","order":0,"payload":{"cue":"attack","pitch":1,"volume":1},"time":0,"type":"sound"},
+    {"id":"evt_bf3dc023a9064c03","order":0,"payload":{"cue":"attack","pitch":1,"volume":1},"time":0.125,"type":"sound"},
+    {"id":"evt_12fe955d93c94f53","order":0,"payload":{"cue":"attack","pitch":1,"volume":1},"time":0.5,"type":"sound"},
+    {"id":"evt_fd9d8cc2907e4848","order":0,"payload":{"cue":"attack","pitch":1,"volume":1},"time":0.625,"type":"sound"},
+    {"id":"evt_2c0804d045b54114","order":0,"payload":{"cue":"attack","pitch":1,"volume":1},"time":0.95833,"type":"sound"},
+    {"id":"evt_869a3af23714434c","order":0,"payload":{"cue":"attack","pitch":1,"volume":1},"time":1.29167,"type":"sound"}
+  ],
+  "loop": false,
+  "root_motion": {"bone":"torso","enabled":true,"mode":"full"},
+  "schema_version": 3,
+  "sections": [
+    {"end":0.5,"id":"attack_1","start":0},
+    {"end":1,"id":"attack_2","start":0.5},
+    {"end":1.70833,"id":"attack_3","start":1}
+  ],
+  "skeleton": {
+    "id":"game:humanoid",
+    "topology_hash":"sha256:a1485d540a4120d6209382396d5fee5f721e09ae0f6ebb22ff21aa82be9fc5fa",
+    "version":1
+  },
+  "states": [
+    {"end":0.125,"id":"state_e09841495cae40cd","payload":{"allow":["dash"]},"start":0,"type":"cancel"},
+    {"end":0.375,"id":"state_f459e49db321466b","payload":{"slot":"primary"},"start":0.125,"type":"attack"},
+    {"end":0.5,"id":"state_1e8b0cd7b20e49aa","payload":{"slot":"combo"},"start":0.291667,"type":"input"},
+    {"end":0.625,"id":"state_fdcb47a0a6e2450a","payload":{"allow":["dash"]},"start":0.375,"type":"cancel"},
+    {"end":0.791667,"id":"state_a40b810e12994627","payload":{"slot":"primary"},"start":0.625,"type":"attack"},
+    {"end":1,"id":"state_5219f8d44dc04894","payload":{"slot":"combo"},"start":0.791667,"type":"input"},
+    {"end":1.291667,"id":"state_3476ffd2746d45f5","payload":{"allow":["dash"]},"start":0.791667,"type":"cancel"},
+    {"end":1.458334,"id":"state_72e9a02cd65243ba","payload":{"slot":"primary"},"start":1.291667,"type":"attack"},
+    {"end":1.70833,"id":"state_c8d39894e3e94a25","payload":{"allow":["dash"]},"start":1.458333,"type":"cancel"}
+  ]
+}
