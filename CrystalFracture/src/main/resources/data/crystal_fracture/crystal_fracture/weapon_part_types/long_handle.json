@@ -1,0 +1,4 @@
+{
+  "required_connects": ["head"],
+  "required_markers": ["grip"]
+}

@@ -12,7 +12,6 @@ import org.hismeo.actionguide.api.runtime.ActionCommand;
 import org.hismeo.actionguide.api.runtime.ActionRequestResult;
 import org.hismeo.actionguide.api.runtime.ActionRuntimeView;
 import org.hismeo.actionguide.api.network.ActionSyncListener;
-
 import java.util.Optional;
 
 public interface ActionGuideApi {

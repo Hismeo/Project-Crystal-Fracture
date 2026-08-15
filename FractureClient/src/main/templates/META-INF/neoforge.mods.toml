@@ -29,6 +29,16 @@ file="META-INF/accesstransformer.cfg"
    versionRange="${haikalat_host_version_range}"
    ordering="AFTER"
    side="CLIENT"
+[[dependencies."${mod_id}"]]
+   modId="crystal_fracture"
+   type="required"
+   ordering="AFTER"
+   side="CLIENT"
+[[dependencies."${mod_id}"]]
+   modId="action_guide"
+   type="required"
+   ordering="AFTER"
+   side="CLIENT"
 
 [features."${mod_id}"]
 openGLVersion="[4.6,)"

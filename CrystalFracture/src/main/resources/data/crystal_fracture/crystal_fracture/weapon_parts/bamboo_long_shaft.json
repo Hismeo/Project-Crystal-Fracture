@@ -1,0 +1,13 @@
+{
+  "id": "crystal_fracture:bamboo_long_shaft",
+  "type": "crystal_fracture:long_handle",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/bamboo_long_shaft.glb"
+  },
+  "connects": {
+    "head": "bamboo_long_shaft_head"
+  },
+  "markers": {
+    "grip": "bamboo_long_shaft_hand"
+  }
+}

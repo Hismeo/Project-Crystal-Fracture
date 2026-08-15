@@ -1,0 +1,8 @@
+{
+  "schema": "crystal_fracture:standard_sword",
+  "parts": {
+    "grip": "crystal_fracture:oak_grip",
+    "crossguard": "crystal_fracture:iron_crossguard",
+    "blade": "crystal_fracture:steel_blade"
+  }
+}

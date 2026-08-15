@@ -23,6 +23,11 @@ config="mixins.${mod_id}.json"
    versionRange="${minecraft_version_range}"
    ordering="NONE"
    side="BOTH"
+[[dependencies."${mod_id}"]]
+   modId="action_guide"
+   type="required"
+   ordering="AFTER"
+   side="BOTH"
 
 #[features.${mod_id}]
 #openGLVersion="[3.2,)"

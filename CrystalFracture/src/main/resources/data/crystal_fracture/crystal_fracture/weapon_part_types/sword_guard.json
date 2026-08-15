@@ -1,0 +1,4 @@
+{
+  "required_connects": ["guard", "blade"],
+  "required_markers": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "crystal_fracture:gaint_sword",
+  "type": "crystal_fracture:sword_blade",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/gaint_sword.glb"
+  },
+  "connects": {
+    "blade": "gaint_sword_mount"
+  },
+  "markers": {
+    "trail_start": "gaint_trail_start",
+    "trail_end": "gaint_trail_end"
+  }
+}

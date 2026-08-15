@@ -1,0 +1,4 @@
+{
+  "required_connects": ["guard"],
+  "required_markers": ["grip"]
+}

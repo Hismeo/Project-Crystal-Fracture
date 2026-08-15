@@ -1,0 +1,8 @@
+{
+  "cue": "crystal_fracture:dash",
+  "entry_section": "main",
+  "channel": "full_body",
+  "tags": ["crystal_fracture:movement", "crystal_fracture:dash"],
+  "transitions": [],
+  "end_policy": "complete"
+}

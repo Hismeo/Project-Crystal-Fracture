@@ -1,0 +1,11 @@
+{
+  "id": "crystal_fracture:labrys",
+  "type": "crystal_fracture:weapon_head",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/labrys.glb"
+  },
+  "connects": {
+    "head": "labrys_mount"
+  },
+  "markers": {}
+}

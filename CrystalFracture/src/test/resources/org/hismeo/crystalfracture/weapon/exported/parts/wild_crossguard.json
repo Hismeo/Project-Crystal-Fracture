@@ -1,0 +1,12 @@
+{
+  "id": "crystal_fracture:wild_crossguard",
+  "type": "crystal_fracture:sword_guard",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/wild_crossguard.glb"
+  },
+  "connects": {
+    "guard": "wild_crossguard_guard",
+    "blade": "wild_crossguard_blade"
+  },
+  "markers": {}
+}

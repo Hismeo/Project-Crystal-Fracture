@@ -36,6 +36,9 @@ dependencies {
     compileOnly(rootProject.ext.haikalatCoordinates) {
         transitive = false
     }
+    compileOnly(project(':ActionGuide')) {
+        transitive = false
+    }
     implementation(project(':HaikalatHost'))
     implementation(project(':CrystalLib'))
     implementation(project(':CrystalFracture'))
@@ -45,6 +48,11 @@ dependencies {
     testImplementation(rootProject.ext.haikalatCoordinates) {
         transitive = false
     }
+    testImplementation("org.joml:joml:1.10.9")
+    testRuntimeOnly("com.fasterxml.jackson.core:jackson-core:${haikalat_jackson_version}")
+    testImplementation(project(':ActionGuide')) {
+        transitive = false
+    }
 }
 
 tasks.named("test", Test) {
@@ -52,6 +60,13 @@ tasks.named("test", Test) {
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+sourceSets.test {
+    // Plain JUnit also compiles the client visual matrix layer, whose public types include
+    // Minecraft ResourceLocation and JOML interfaces supplied to the main ModDev source set.
+    compileClasspath += sourceSets.main.compileClasspath
+    runtimeClasspath += sourceSets.main.compileClasspath
+}
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [

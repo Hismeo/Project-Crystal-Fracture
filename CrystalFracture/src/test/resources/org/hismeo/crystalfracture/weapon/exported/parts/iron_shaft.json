@@ -1,0 +1,13 @@
+{
+  "id": "crystal_fracture:iron_shaft",
+  "type": "crystal_fracture:short_handle",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/iron_shaft.glb"
+  },
+  "connects": {
+    "guard": "iron_shaft_guard"
+  },
+  "markers": {
+    "grip": "iron_shaft_hand"
+  }
+}

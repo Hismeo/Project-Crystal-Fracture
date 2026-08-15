@@ -1,0 +1,34 @@
+{
+  "part_types": [
+    "axe_head",
+    "gaint_sword",
+    "hammer_head",
+    "long_handle",
+    "rapier",
+    "short_handle",
+    "sword",
+    "sword_guard"
+  ],
+  "parts": [
+    "bamboo_long_shaft",
+    "bamboo_shaft",
+    "crossguard",
+    "dh_hammer",
+    "gaint_sword",
+    "iron_long_shaft",
+    "iron_shaft",
+    "labrys",
+    "rapier",
+    "sword",
+    "wild_crossguard",
+    "wood_long_shaft",
+    "wood_shaft"
+  ],
+  "schemas": [
+    "gaint_sword",
+    "hammer",
+    "labrys",
+    "rapier",
+    "sword"
+  ]
+}

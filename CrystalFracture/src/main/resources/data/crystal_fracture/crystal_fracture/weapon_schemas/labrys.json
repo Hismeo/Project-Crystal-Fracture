@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "root": "handle",
+  "slots": {
+    "handle": {
+      "part_type": "crystal_fracture:long_handle"
+    },
+    "head": {
+      "part_type": "crystal_fracture:axe_head"
+    }
+  },
+  "connections": [
+    {
+      "parent": {
+        "slot": "handle",
+        "connect": "head"
+      },
+      "child": {
+        "slot": "head",
+        "connect": "head"
+      }
+    }
+  ],
+  "markers": {
+    "main_hand_grip": {
+      "slot": "handle",
+      "marker": "grip"
+    }
+  }
+}

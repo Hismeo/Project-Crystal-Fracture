@@ -1,0 +1,4 @@
+{
+  "required_connects": ["blade"],
+  "required_markers": ["trail_start", "trail_end"]
+}

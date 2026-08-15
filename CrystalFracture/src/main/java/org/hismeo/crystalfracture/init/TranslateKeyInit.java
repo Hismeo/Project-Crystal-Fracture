@@ -12,8 +12,9 @@ public class TranslateKeyInit {
     public static String TITLE_SCREEN = screen("title_screen");
 
     //=====================================KEY MAPPING=====================================
-    public static String CLIENT_CATEGORY = keyMapping("client");
+    public static String CLIENT_CATEGORY = "key.categories.crystal_fracture";
     public static String ROTATE_CAMERA = keyMapping("rotate_camera");
+    public static String DASH = keyMapping("dash");
 
     public static String keyMapping(String value) {
         return key("key", value);

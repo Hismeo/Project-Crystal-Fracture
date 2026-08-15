@@ -14,6 +14,7 @@ import org.hismeo.actionguide.api.cue.CueSection;
 import org.hismeo.actionguide.api.cue.CueState;
 import org.hismeo.actionguide.api.cue.CueTime;
 import org.hismeo.actionguide.api.cue.RootMotionContract;
+import org.hismeo.actionguide.api.cue.RootMotionKeyframe;
 import org.hismeo.actionguide.api.cue.RootMotionMode;
 import org.hismeo.actionguide.api.cue.SectionId;
 import org.hismeo.actionguide.api.cue.SkeletonBinding;
@@ -71,7 +72,8 @@ public final class CombatCueLoader {
         RootMotionContract rootMotion = new RootMotionContract(
                 rootMotionEnabled,
                 JsonFields.optionalString(rootMotionJson, "bone", rootMotionEnabled ? "motion_root" : ""),
-                RootMotionMode.parse(JsonFields.optionalString(rootMotionJson, "mode", "xz_yaw"))
+                RootMotionMode.parse(JsonFields.optionalString(rootMotionJson, "mode", "xz_yaw")),
+                parseRootMotionKeyframes(array(rootMotionJson, "keyframes"))
         );
         CombatCueDefinition cue = new CombatCueDefinition(
                 id, schema, duration, skeleton,
@@ -131,6 +133,23 @@ public final class CombatCueLoader {
                     CueTime.fromSeconds(JsonFields.decimal(value, "end", path)),
                     JsonFields.optionalObject(value, "payload")
             ));
+        }
+        return result;
+    }
+
+    private static List<RootMotionKeyframe> parseRootMotionKeyframes(JsonArray array) {
+        List<RootMotionKeyframe> result = new ArrayList<>();
+        for (int index = 0; index < array.size(); index++) {
+            String path = "$.root_motion.keyframes[" + index + "]";
+            JsonObject value = requireObject(array.get(index), path);
+            result.add(new RootMotionKeyframe(
+                    CueTime.fromSeconds(JsonFields.decimal(value, "time", path)),
+                    JsonFields.decimal(value, "x", path).doubleValue(),
+                    JsonFields.decimal(value, "y", path).doubleValue(),
+                    JsonFields.decimal(value, "z", path).doubleValue(),
+                    value.has("yaw")
+                            ? JsonFields.decimal(value, "yaw", path).doubleValue()
+                            : 0.0));
         }
         return result;
     }

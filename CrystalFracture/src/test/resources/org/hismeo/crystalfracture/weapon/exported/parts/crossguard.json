@@ -1,0 +1,12 @@
+{
+  "id": "crystal_fracture:crossguard",
+  "type": "crystal_fracture:sword_guard",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/crossguard.glb"
+  },
+  "connects": {
+    "guard": "crossguard_guard",
+    "blade": "crossguard_blade"
+  },
+  "markers": {}
+}

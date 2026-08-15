@@ -1,6 +1,6 @@
 var projectName = [
         //TODO
-//        "ActionGuide",
+        "ActionGuide",
         "CrystalLib",
 //        "HazeDungeon",
 //        "NuQuest"
@@ -27,6 +27,21 @@ neoForge {
 
 dependencies {
     projectName.forEach { mod -> implementation (project(":" + mod)) }
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("com.google.code.gson:gson:2.10.1")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.2")
+}
+
+tasks.named("test", Test) {
+    useJUnitPlatform()
+}
+
+sourceSets.test {
+    // WeaponSchema's strong IDs wrap Minecraft's ResourceLocation, but the plain
+    // JUnit source set does not inherit ModDev's generated Minecraft artifact.
+    compileClasspath += sourceSets.main.compileClasspath
+    runtimeClasspath += sourceSets.main.compileClasspath
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }

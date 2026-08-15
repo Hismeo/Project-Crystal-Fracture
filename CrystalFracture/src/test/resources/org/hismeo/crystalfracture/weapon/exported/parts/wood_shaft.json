@@ -1,0 +1,13 @@
+{
+  "id": "crystal_fracture:wood_shaft",
+  "type": "crystal_fracture:short_handle",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/wood_shaft.glb"
+  },
+  "connects": {
+    "guard": "wood_shaft_guard"
+  },
+  "markers": {
+    "grip": "wood_shaft_hand"
+  }
+}

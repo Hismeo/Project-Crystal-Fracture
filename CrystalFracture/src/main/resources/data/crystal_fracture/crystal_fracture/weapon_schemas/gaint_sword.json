@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "root": "handle",
+  "slots": {
+    "handle": {
+      "part_type": "crystal_fracture:short_handle"
+    },
+    "crossguard": {
+      "part_type": "crystal_fracture:sword_guard"
+    },
+    "blade": {
+      "part_type": "crystal_fracture:gaint_sword"
+    }
+  },
+  "connections": [
+    {
+      "parent": {"slot": "handle", "connect": "guard"},
+      "child": {"slot": "crossguard", "connect": "guard"}
+    },
+    {
+      "parent": {"slot": "crossguard", "connect": "blade"},
+      "child": {"slot": "blade", "connect": "blade"}
+    }
+  ],
+  "markers": {
+    "main_hand_grip": {
+      "slot": "handle",
+      "marker": "grip"
+    },
+    "trail_start": {
+      "slot": "blade",
+      "marker": "trail_start"
+    },
+    "trail_end": {
+      "slot": "blade",
+      "marker": "trail_end"
+    }
+  }
+}

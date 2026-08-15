@@ -1,5 +1,6 @@
 package org.hismeo.haikalathost.internal.api;
 
+import net.minecraft.resources.ResourceLocation;
 import org.hismeo.haikalathost.api.content.HaikalatAssetDefinition;
 import org.hismeo.haikalathost.api.content.HaikalatAssetState;
 import org.hismeo.haikalathost.api.content.HaikalatAssetStatus;
@@ -29,7 +30,7 @@ public final class MinecraftHaikalatAssets implements HaikalatAssets {
             List<HaikalatAssetDefinition> definitions,
             RegisteredSceneRepository.RepositorySnapshot repository
     ) {
-        Map<net.minecraft.resources.ResourceLocation,
+        Map<ResourceLocation,
                 RegisteredSceneRepository.SceneSnapshot> scenes =
                 repository == null
                         ? Map.of()

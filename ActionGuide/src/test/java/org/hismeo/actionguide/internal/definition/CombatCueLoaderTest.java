@@ -98,4 +98,25 @@ class CombatCueLoaderTest {
         assertFalse(loaded.warnings().isEmpty());
         assertThrows(UnsupportedOperationException.class, () -> loaded.value().sections().clear());
     }
+
+    @Test
+    void loadsAndInterpolatesServerReadableRootMotionKeyframes() {
+        String json = """
+                {"schema_version":4,"duration":1,"skeleton":{"id":"game:test","version":1},
+                 "sections":[{"id":"main","start":0,"end":1}],"events":[],"states":[],
+                 "root_motion":{"enabled":true,"bone":"bone","mode":"xz_yaw","keyframes":[
+                   {"time":0,"x":0,"y":0,"z":0,"yaw":350},
+                   {"time":1,"x":2,"y":1,"z":-4,"yaw":10}
+                 ]}}
+                """;
+        CombatCueDefinition cue = loader.load(CombatCueId.parse("test:dash"), json).value();
+
+        var middle = cue.rootMotion().sample(CueTime.fromSeconds("0.5"));
+        assertEquals(1.0, middle.x(), 0.000001);
+        assertEquals(0.5, middle.y(), 0.000001);
+        assertEquals(-2.0, middle.z(), 0.000001);
+        assertEquals(360.0, middle.yawDegrees(), 0.000001);
+        assertThrows(UnsupportedOperationException.class,
+                () -> cue.rootMotion().keyframes().clear());
+    }
 }

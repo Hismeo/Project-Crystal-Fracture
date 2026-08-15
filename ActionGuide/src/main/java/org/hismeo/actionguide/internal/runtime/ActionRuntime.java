@@ -19,6 +19,7 @@ import org.hismeo.actionguide.api.cue.CueItemId;
 import org.hismeo.actionguide.api.cue.CueSection;
 import org.hismeo.actionguide.api.cue.CueState;
 import org.hismeo.actionguide.api.cue.CueTime;
+import org.hismeo.actionguide.api.cue.RootMotionContract;
 import org.hismeo.actionguide.api.cue.SectionId;
 import org.hismeo.actionguide.api.event.ActionLifecycleListener;
 import org.hismeo.actionguide.api.event.CueEventHandler;
@@ -195,6 +196,11 @@ public final class ActionRuntime implements ActionRuntimeView {
     @Override
     public Optional<ActionInstanceView> currentAction() {
         return Optional.ofNullable(current).map(ActionInstance::view);
+    }
+
+    @Override
+    public Optional<RootMotionContract> currentRootMotion() {
+        return Optional.ofNullable(current).map(instance -> instance.cue.rootMotion());
     }
 
     @Override

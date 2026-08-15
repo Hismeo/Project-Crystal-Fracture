@@ -1,0 +1,14 @@
+{
+  "id": "crystal_fracture:sword",
+  "type": "crystal_fracture:sword",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/sword.glb"
+  },
+  "connects": {
+    "blade": "sword_mount"
+  },
+  "markers": {
+    "trail_start": "sword_trail_start",
+    "trail_end": "sword_trail_end"
+  }
+}

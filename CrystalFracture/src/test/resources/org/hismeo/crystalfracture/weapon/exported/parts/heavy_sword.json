@@ -1,0 +1,11 @@
+{
+  "id": "crystal_fracture:heavy_sword",
+  "type": "crystal_fracture:sword_blade",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/heavy_sword.glb"
+  },
+  "connects": {
+    "blade": "heavy_sword_mount"
+  },
+  "markers": {}
+}

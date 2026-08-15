@@ -1,0 +1,14 @@
+{
+  "id": "crystal_fracture:rapier",
+  "type": "crystal_fracture:sword_blade",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/rapier.glb"
+  },
+  "connects": {
+    "blade": "rapier_mount"
+  },
+  "markers": {
+    "trail_start": "rapier_trail_start",
+    "trail_end": "rapier_trail_end"
+  }
+}

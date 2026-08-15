@@ -1,0 +1,11 @@
+{
+  "id": "crystal_fracture:dh_hammer",
+  "type": "crystal_fracture:hammer_head",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/dh_hammer.glb"
+  },
+  "connects": {
+    "head": "dh_hammer_mount"
+  },
+  "markers": {}
+}

@@ -67,6 +67,20 @@ public final class DefinitionValidator {
                 }
             }
         }
+        if (cue.rootMotion().enabled()) {
+            for (int index = 0; index < cue.rootMotion().keyframes().size(); index++) {
+                var keyframe = cue.rootMotion().keyframes().get(index);
+                if (keyframe.time().compareTo(cue.duration()) > 0) {
+                    error(problems, "$.root_motion.keyframes[" + index + "].time",
+                            "root motion keyframe is after duration");
+                }
+                if (index > 0 && keyframe.time().compareTo(
+                        cue.rootMotion().keyframes().get(index - 1).time()) == 0) {
+                    error(problems, "$.root_motion.keyframes[" + index + "].time",
+                            "root motion keyframe times must be unique");
+                }
+            }
+        }
         return List.copyOf(problems);
     }
 

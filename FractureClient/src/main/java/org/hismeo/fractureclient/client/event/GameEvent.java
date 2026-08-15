@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.event.*;
 import org.hismeo.fractureclient.FractureClient;
 import org.hismeo.fractureclient.client.command.BlockScanDebugCommand;
 import org.hismeo.fractureclient.client.command.RoomRegionCommand;
+import org.hismeo.fractureclient.client.command.WeaponPreviewCommand;
 import org.hismeo.fractureclient.client.control.BlockCullController;
 import org.hismeo.fractureclient.client.control.CameraModeController;
 import org.hismeo.fractureclient.client.control.CameraRotateController;
@@ -30,6 +31,7 @@ public class GameEvent {
     public static void registerClientCommands(RegisterClientCommandsEvent event) {
         BlockScanDebugCommand.register(event.getDispatcher());
         RoomRegionCommand.register(event.getDispatcher());
+        WeaponPreviewCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

@@ -1,0 +1,13 @@
+{
+  "id": "crystal_fracture:iron_long_shaft",
+  "type": "crystal_fracture:long_handle",
+  "visual": {
+    "model": "crystal_fracture:weapon/parts/iron_long_shaft.glb"
+  },
+  "connects": {
+    "head": "iron_long_shaft_head"
+  },
+  "markers": {
+    "grip": "iron_long_shaft_hand"
+  }
+}
